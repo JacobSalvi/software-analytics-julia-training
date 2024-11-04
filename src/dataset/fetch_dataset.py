@@ -1,23 +1,30 @@
+import concurrent.futures
 from pathlib import Path
 import subprocess
-from typing import List, AnyStr
+import pandas as pd
+import json
 
 from src.utils import util
 
 
-def get_repository_urls() -> List[AnyStr]:
-    repositories_txt: Path = util.repositories_txt()
-    return repositories_txt.read_text().splitlines()
+def get_repository_urls() -> pd.DataFrame:
+    repositories_json: Path = util.repositories_json()
+    repositories = json.load(repositories_json.open())
+    return pd.DataFrame(repositories["items"])
 
 
 def fetch_dataset():
-    repository_urls: List[AnyStr] = get_repository_urls()
+    repositories: pd.DataFrame = get_repository_urls()
     data_dir: Path = util.data_dir()
-    for repository_url in repository_urls:
-        repository_name = repository_url.split("/")[-1]
-        if not data_dir.joinpath(repository_name).exists():
-            subprocess.run(["git", "clone", repository_url, data_dir.joinpath(repository_name).as_posix()])
-    return
+
+    def clone_repo(repo_name):
+        repository_url = f"https://github.com/{repo_name}.git"
+        destination: Path = data_dir.joinpath(repo_name.replace("/", "_"))
+        if not destination.exists():
+            subprocess.run(["git", "clone", repository_url, destination.as_posix()], check=True)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        executor.map(clone_repo, repositories['name'])
 
 
 if __name__ == "__main__":
