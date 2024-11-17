@@ -146,8 +146,6 @@ def main():
     argument_parser.add_argument("--remove-constraints", action="store_true")
     args = argument_parser.parse_args()
     repository_to_files = repo_to_files()
-    for name, files in repository_to_files.items():
-        parse_files(files, keep_comments=not args.remove_comments, keep_constraints=not args.remove_constraints)
     parse_args = [(files, not args.remove_comments, not args.remove_constraints) for name, files in
                   repository_to_files.items()]
 
@@ -160,6 +158,7 @@ def main():
 
         for future in as_completed(futures):
             results.extend(future.result())
+
     df = pd.DataFrame([r.__dict__ for r in results])
     output_file = util.data_dir().joinpath("function_definitions.json")
     df.to_json(output_file, orient="records", lines=True)
