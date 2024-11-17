@@ -2,19 +2,11 @@ import concurrent.futures
 from pathlib import Path
 import subprocess
 import pandas as pd
-import json
-
 from src.utils import util
 
 
-def get_repository_urls() -> pd.DataFrame:
-    repositories_json: Path = util.repositories_json()
-    repositories = json.load(repositories_json.open())
-    return pd.DataFrame(repositories["items"])
-
-
 def fetch_dataset():
-    repositories: pd.DataFrame = get_repository_urls()
+    repositories: pd.DataFrame = util.get_repository_urls()
     data_dir: Path = util.data_dir()
 
     def clone_repo(repo_name):
