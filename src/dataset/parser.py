@@ -150,14 +150,16 @@ def main():
                   repository_to_files.items()]
 
     results = []
-    with ThreadPoolExecutor() as executor:
-        futures = []
-        for files, keep_comments, keep_constraints in parse_args:
-            future = executor.submit(parse_files, files, keep_comments, keep_constraints)
-            futures.append(future)
-
-        for future in as_completed(futures):
-            results.extend(future.result())
+    # with ThreadPoolExecutor() as executor:
+    #     futures = []
+    #     for files, keep_comments, keep_constraints in parse_args:
+    #         future = executor.submit(parse_files, files, keep_comments, keep_constraints)
+    #         futures.append(future)
+    #
+    #     for future in as_completed(futures):
+    #         results.extend(future.result())
+    for k, v in repository_to_files.items():
+        parse_files(v, args.remove_comments, args.remove_constraints)
 
     df = pd.DataFrame([r.__dict__ for r in results])
     output_file = util.data_dir().joinpath("function_definitions.json")
