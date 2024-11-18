@@ -161,6 +161,7 @@ def main():
 
     df = pd.DataFrame([r.__dict__ for r in results])
     output_file = util.data_dir().joinpath("function_definitions.json")
+    print(f"Saving json to {output_file}")
     df.to_json(output_file, orient="records", lines=True)
     return
 
