@@ -69,7 +69,10 @@ def parse_files(input_files: List[Path],
     line_comment_query = language.query(line_comment_pattern)
     functions = []
     for file in input_files:
-        content: AnyStr = file.read_text()
+        try:
+            content: AnyStr = file.read_text()
+        except UnicodeDecodeError:
+            content = file.read_text(encoding="iso-8859-1")
         tree = parser.parse(content.encode())
         root_node = tree.root_node
         macro_results = macro_query.captures(root_node)

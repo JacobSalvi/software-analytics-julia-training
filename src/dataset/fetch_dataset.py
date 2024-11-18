@@ -13,7 +13,7 @@ def fetch_dataset():
         repository_url = f"https://github.com/{repo_name}.git"
         destination: Path = data_dir.joinpath(repo_name.replace("/", "_"))
         if not destination.exists():
-            subprocess.run(["git", "clone", repository_url, destination.as_posix()], check=True)
+            subprocess.run(["git", "clone", "--depth", "1", repository_url, destination.as_posix()], check=True)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         executor.map(clone_repo, repositories['name'])
