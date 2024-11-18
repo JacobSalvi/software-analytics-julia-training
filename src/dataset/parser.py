@@ -41,34 +41,43 @@ def parse_files(input_files: List[Path],
     language = get_language("julia")
     parser = get_parser("julia")
     doc_pattern = """
-    (
-      (_
-        (string_literal) @comment .
-        (function_definition) @function
-      )
-    )
-    (
       (_
         (macrocall_expression) @comment .
         (function_definition) @function
       )
-    ) 
-"""
+    """
     function_pattern = """
-    
         (_
             (function_definition) @function
         )
-    
+    """
+    string_literal_pattern = """
+    (_
+        (string_literal) @comment .
+        (function_definition) @function
+    )
+    """
+    line_comment_pattern = """
+    (_
+        (line_comment) @comment .
+        (function_definition) @function
+    )
     """
     macro_query = language.query(doc_pattern)
     function_query = language.query(function_pattern)
+    literal_query = language.query(string_literal_pattern)
+    line_comment_query = language.query(line_comment_pattern)
     functions = []
     for file in input_files:
         content: AnyStr = file.read_text()
         tree = parser.parse(content.encode())
         root_node = tree.root_node
         macro_results = macro_query.captures(root_node)
+        macro_results = [el for el in macro_results if el[1] == "comment" and "@doc" in el[0].text.decode("utf-8") or el[1] == "function"]
+        literal_results = literal_query.captures(root_node)
+        macro_results.extend(literal_results)
+        line_comment_results = line_comment_query.captures(root_node)
+        macro_results.extend(line_comment_results)
         function_results = function_query.captures(root_node)
         macro_results.extend([el for el in function_results if el not in macro_results])
         functions.extend(get_functions(macro_results=macro_results,
@@ -150,16 +159,14 @@ def main():
                   repository_to_files.items()]
 
     results = []
-    # with ThreadPoolExecutor() as executor:
-    #     futures = []
-    #     for files, keep_comments, keep_constraints in parse_args:
-    #         future = executor.submit(parse_files, files, keep_comments, keep_constraints)
-    #         futures.append(future)
-    #
-    #     for future in as_completed(futures):
-    #         results.extend(future.result())
-    for k, v in repository_to_files.items():
-        parse_files(v, args.remove_comments, args.remove_constraints)
+    with ThreadPoolExecutor() as executor:
+        futures = []
+        for files, keep_comments, keep_constraints in parse_args:
+            future = executor.submit(parse_files, files, keep_comments, keep_constraints)
+            futures.append(future)
+
+        for future in as_completed(futures):
+            results.extend(future.result())
 
     df = pd.DataFrame([r.__dict__ for r in results])
     output_file = util.data_dir().joinpath("function_definitions.json")
