@@ -28,7 +28,7 @@ def repo_to_files() -> Dict[AnyStr, List[Path]]:
     data_dir: Path = util.data_dir()
     repo_name_to_files: Dict[AnyStr, List[Path]] = dict()
     limit = 1024 * 1024
-    repository_names = [r for r in repositories["name"] if r not in ["Mehrnoom/Cryptocurrency-Pump-Dump"]]
+    repository_names = [r for r in repositories["name"] if r not in ["Mehrnoom/Cryptocurrency-Pump-Dump", "analytech-solutions/C.jl"]]
     for repo_name in repository_names:
         project_path: Path = data_dir.joinpath(repo_name.replace("/", "_"))
         if project_path.is_dir():
@@ -175,6 +175,7 @@ def main():
             results.extend(future.result())
 
     df = pd.DataFrame([r.__dict__ for r in results])
+    print(f"Saving {len(df)} rows")
     output_file = util.data_dir().joinpath("function_definitions.json")
     print(f"Saving json to {output_file}")
     df.to_json(output_file, orient="records", lines=True)
