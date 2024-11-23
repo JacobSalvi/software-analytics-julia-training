@@ -28,7 +28,8 @@ def repo_to_files() -> Dict[AnyStr, List[Path]]:
     data_dir: Path = util.data_dir()
     repo_name_to_files: Dict[AnyStr, List[Path]] = dict()
     limit = 1024 * 1024
-    for repo_name in repositories["name"]:
+    repository_names = [r for r in repositories["name"] if r not in ["Mehrnoom/Cryptocurrency-Pump-Dump"]]
+    for repo_name in repository_names:
         project_path: Path = data_dir.joinpath(repo_name.replace("/", "_"))
         if project_path.is_dir():
             files: List[Path] = get_files(project_path, suffix=".jl")
