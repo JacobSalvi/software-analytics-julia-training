@@ -28,7 +28,7 @@ def repo_to_files() -> Dict[AnyStr, List[Path]]:
     data_dir: Path = util.data_dir()
     repo_name_to_files: Dict[AnyStr, List[Path]] = dict()
     limit = 1024 * 1024
-    repository_names = [r for r in repositories["name"] if r not in ["Mehrnoom/Cryptocurrency-Pump-Dump", "analytech-solutions/C.jl", "terasakisatoshi/MyWorkflow.jl", "udohjeremiah/REPLference.jl", "JuliaIO/HDF5.jl", "vnegi10/CryptoDashApp.jl", "m3g/Packmol.jl", "JakobAsslaender/MRIgeneralizedBloch.jl","greimel/distributional-macroeconomics", "jmboehm/RegressionTables.jl", "analytech-solutions/CBinding.jl"]]
+    repository_names = [r for r in repositories["name"] if r not in ["Mehrnoom/Cryptocurrency-Pump-Dump", "analytech-solutions/C.jl", "terasakisatoshi/MyWorkflow.jl", "udohjeremiah/REPLference.jl", "JuliaIO/HDF5.jl", "vnegi10/CryptoDashApp.jl", "m3g/Packmol.jl", "JakobAsslaender/MRIgeneralizedBloch.jl","greimel/distributional-macroeconomics", "jmboehm/RegressionTables.jl", "analytech-solutions/CBinding.jl", "ordovician/code-samples-julia-second-language", "JuliaSIMD/StrideArraysCore.jl"]]
     for repo_name in repository_names:
         project_path: Path = data_dir.joinpath(repo_name.replace("/", "_"))
         if project_path.is_dir():
@@ -72,6 +72,7 @@ def parse_files(input_files: List[Path],
     line_comment_query = language.query(line_comment_pattern)
     functions = []
     for file in input_files:
+        print(f"{file}")
         try:
             content: AnyStr = file.read_text()
         except UnicodeDecodeError:
@@ -165,14 +166,9 @@ def main():
                   repository_to_files.items()]
 
     results = []
-    with ThreadPoolExecutor() as executor:
-        futures = []
-        for files, keep_comments, keep_constraints in parse_args:
-            future = executor.submit(parse_files, files, keep_comments, keep_constraints)
-            futures.append(future)
-
-        for future in as_completed(futures):
-            results.extend(future.result())
+    for k, v in repository_to_files.items():
+        results.extend(parse_files(v))
+        print(f"----- {k}")
 
     df = pd.DataFrame([r.__dict__ for r in results])
     print(f"Saving {len(df)} rows")
