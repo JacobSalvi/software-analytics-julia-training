@@ -1,9 +1,7 @@
 #ORRECT
 import json
 import os
-import tarfile
 from pathlib import Path
-import io
 
 import pandas as pd
 from pandas import DataFrame
@@ -35,7 +33,7 @@ class DataHandler:
         if not Path(DataHandler.PARSED).exists():
             df = process_data(pd.DataFrame(DataHandler.get_raw()))
             parsed = df.to_json(DataHandler.PARSED, orient="records", lines=True)
-            json.dump(parsed, DataHandler.PARSED.open("w"))
+            json.dump(parsed, DataHandler.PARSED.open())
         df = pd.DataFrame(json.load(DataHandler.PARSED.open()))
         return df
 
