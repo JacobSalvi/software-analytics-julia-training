@@ -1,11 +1,9 @@
-#ORRECT
 import json
 import os
 from pathlib import Path
 
 import pandas as pd
 from pandas import DataFrame
-from sympy import false
 from src.data.pre_process import process_data
 from src.utils import util
 
@@ -26,16 +24,19 @@ class DataHandler:
         return data
 
     @staticmethod
-    def get_parsed(force_parse: bool = false) -> DataFrame:
+    def get_parsed(force_parse: bool = False) -> DataFrame:
         if force_parse and Path(DataHandler.PARSED).exists():
             os.remove(DataHandler.PARSED)
 
         if not Path(DataHandler.PARSED).exists():
             df = process_data(pd.DataFrame(DataHandler.get_raw()))
-            parsed = df.to_json(DataHandler.PARSED, orient="records", lines=True)
-            json.dump(parsed, DataHandler.PARSED.open())
-        df = pd.DataFrame(json.load(DataHandler.PARSED.open()))
+            with open(DataHandler.PARSED, "w") as f:
+                df.to_json(f, orient="records", lines=True)
+
+        with open(DataHandler.PARSED, "r") as f:
+            df = pd.DataFrame([json.loads(line) for line in f])
         return df
+
 
 if __name__ == '__main__':
     try:

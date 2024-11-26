@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+from src.data.dataHanlder import DataHandler
 
 device = "cuda" # for GPU usage or "cpu" for CPU usage
 
@@ -40,7 +41,9 @@ def model_selector(model_name: str) -> tuple:
 
 
 def create_corpus():
-    pass
+    df = DataHandler.get_parsed()
+
+
 
 
 if __name__ == "__main__":
