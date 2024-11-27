@@ -1,10 +1,9 @@
 from argparse import ArgumentParser
-
 from LLM_load import load_llm
 from src.utils.util import model_types
 
 
-def predict_llm(model_type: str, prompt: str, max_length: int = 50, verbose: bool = False) -> str:
+def predict_llm(model_type: str, prompt: str, max_length: int = 20000, verbose: bool = False) -> str:
     model, tokenizer = load_llm(model_type, verbose)
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
     input_ids = input_ids.to(model.device)
@@ -33,8 +32,9 @@ def printer_prediction(prediction: str, model:str, prompt: str):
 def main():
     argparse = ArgumentParser()
     argparse.add_argument("--prompt", type=str, help="Prompt to generate text from", default="for loop in a list")
-    argparse.add_argument("--max_length", type=int, default=50, help="Maximum length of the generated text")
+    argparse.add_argument("--max_length", type=int, default=20000, help="Maximum length of the generated text")
     argparse.add_argument("--model", type=str, default="360m", help="Model name to use.", choices=model_types().append("all"))
+
 
     args = argparse.parse_args()
     if args.model == "all":
