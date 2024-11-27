@@ -5,8 +5,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForLan
     TrainingArguments
 from src.data.dataHanlder import DataHandler
 from datasets import Dataset
-
-from src.utils.util import models_dir
+from src.utils.util import get_model_path, model_types
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -50,18 +49,22 @@ def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCa
 
 def model_selector(model_name: str) -> tuple:
     if model_name == "360m":
-        return model_small_lm_360m(), models_dir().joinpath("360m")
+        return model_small_lm_360m(), get_model_path("360m")
     elif model_name == "135m":
-        return model_small_lm_135m(), models_dir().joinpath("135m")
+        return model_small_lm_135m(), get_model_path("135m")
     elif model_name == "1.7b":
-        return model_small_lm_1b(), models_dir().joinpath("1-7B")
+        return model_small_lm_1b(), get_model_path("1.7b")
     else:
         return model_small_lm_360m()
 
 
-def create_corpus(tokenizer):
+def create_corpus(tokenizer, sample_run:bool=False):
     #Dataset needed for efficient memory management
-    c_dataset = Dataset.from_pandas(DataHandler.get_parsed())
+    if sample_run:
+        print("Running a sample training run.")
+        c_dataset = Dataset.from_pandas(DataHandler.get_parsed().sample(1000))
+    else:
+        c_dataset = Dataset.from_pandas(DataHandler.get_parsed())
 
     def tokenize_function(df):
         combined_texts = [
@@ -109,11 +112,11 @@ def train_model(model, tokenizer, corpus, save_path):
         output_dir=save_path,                    # Directory to save model checkpoints
         overwrite_output_dir=True,               # Overwrite the content of the output directory
         num_train_epochs=1,                      # Number of training epochs
-        per_device_train_batch_size=8,           # Batch size per device during training
+        per_device_train_batch_size=4,           # Batch size per device during training
         gradient_accumulation_steps=2,           # Number of updates steps to accumulate before performing a backward/update pass
         warmup_steps=500,                        # Number of warmup steps for learning rate scheduler
         weight_decay=0.01,                       # Strength of weight decay
-        #logging_dir='./logs',                    # Directory for storing logs
+        logging_dir='./logs',                    # Directory for storing logs
         logging_steps=10,                        # Log every X updates steps
         save_steps=10000,                        # Save checkpoint every X updates steps
         save_total_limit=2,                      # Limit the total amount of checkpoints
@@ -132,6 +135,8 @@ def train_model(model, tokenizer, corpus, save_path):
     # Start training
     trainer.train()
 
+    tokenizer.save_pretrained(save_path)
+
 
 
 def tokenized_dataset_inspection(tokenized_dataset, tokenizer):
@@ -141,14 +146,29 @@ def tokenized_dataset_inspection(tokenized_dataset, tokenizer):
     print("Decoded Text:", tokenizer.decode(tokenized_dataset[i]['input_ids'], skip_special_tokens=False))
 
 
+def perform_train(model:str, sample_run:bool=False):
+    (model, tokenizer), path  = model_selector(model)
+    corpus = create_corpus(tokenizer, sample_run)
+    train_model(model, tokenizer, corpus, path)
+
+
+def perform_train_all(sample_run:bool=False):
+    perform_train("360m", sample_run)
+    perform_train("135m", sample_run)
+    perform_train("1.7b", sample_run)
+
 def main():
     argparse = ArgumentParser()
-    argparse.add_argument("--model_name", type=str, default="360m", help="Model name to use.",
-                          choices=["360m", "135m", "1.7b"])
+    argparse.add_argument("--model", type=str, default="360m", help="Model name to use.",
+                          choices= model_types().append("all"))
+    argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.", default=True)
+
     args = argparse.parse_args()
-    (model, tokenizer), path  = model_selector(args.model_name)
-    corpus = create_corpus(tokenizer)
-    train_model(model, tokenizer, corpus, path)
+
+    if args.model == "all":
+        perform_train_all(args.sample_run)
+    else:
+        perform_train(args.model, args.sample_run)
 
 if __name__ == "__main__":
     main()

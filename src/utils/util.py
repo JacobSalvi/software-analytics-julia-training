@@ -23,6 +23,19 @@ def get_repository_urls() -> pd.DataFrame:
     return pd.DataFrame(repositories["items"])
 
 
+def get_model_path(model_name: str) -> Path:
+    if model_name == "360m":
+        return models_dir().joinpath("360m")
+    elif model_name == "135m":
+        return models_dir().joinpath("135m")
+    elif model_name == "1.7b":
+        return models_dir().joinpath("1-7B")
+
+
+def model_types() -> list:
+    return ["360m", "135m", "1.7b"]
+
+
 def remove_all_files_and_subdirectories_in_folder(folder_path: Path):
     folder = Path(folder_path)
 
