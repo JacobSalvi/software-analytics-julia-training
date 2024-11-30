@@ -9,6 +9,7 @@ import pandas as pd
 def data_dir() -> Path:
     return Path(__file__).parents[2].joinpath('data')
 
+
 def models_dir() -> Path:
     return Path(__file__).parents[2].joinpath('models')
 
@@ -16,10 +17,6 @@ def models_dir() -> Path:
 def repositories_json() -> Path:
     return Path(__file__).parents[2].joinpath('repositories.json')
 
-
-def deepspeed_config_path() -> str:
-    config_path = Path(__file__).parents[2] / 'deepspeed_config.json'
-    return str(config_path.resolve())
 
 def get_repository_urls() -> pd.DataFrame:
     repo_json: Path = repositories_json()
@@ -51,6 +48,7 @@ def remove_all_files_and_subdirectories_in_folder(folder_path: Path):
             shutil.rmtree(item)
         elif item.is_file():
             item.unlink()
+
 
 def compress_file_to_tar_gz(output_filename, file_obj, file_name):
     with tarfile.open(output_filename, "w:gz") as tar:
