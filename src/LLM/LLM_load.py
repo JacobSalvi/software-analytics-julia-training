@@ -1,15 +1,18 @@
 import os
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+from src.LLM.LLM_utils import model_type_definer
 from src.utils.util import get_model_path
 
 
-def load_llm(model_type: str, verbose: bool = False) -> tuple:
+def load_llm(model_type: str, signature: bool, baseline: bool,  verbose: bool = False) -> tuple[AutoModelForCausalLM, AutoTokenizer]:
+    define_model_type = model_type_definer(model_type, baseline, signature)
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model_path = get_model_path(model_type)
+    model_path = get_model_path(define_model_type)
 
     if not model_path.exists() or not os.listdir(model_path):
-        print(f"Model {model_type} is not trained. Please train the model first, run LLM_train.py")
+        print(f"Model {define_model_type} is not trained. Please train the model first, run LLM_train.py")
     else:
         try:
             # Search for a folder named "checkpoint" within the model directory
@@ -30,7 +33,7 @@ def load_llm(model_type: str, verbose: bool = False) -> tuple:
                 model.resize_token_embeddings(len(tokenizer))
 
             if verbose:
-                print(f"Model {model_type} loaded successfully from {checkpoint_path}.")
+                print(f"Model {define_model_type} loaded successfully from {checkpoint_path}.")
             return model, tokenizer
 
         except Exception as e:

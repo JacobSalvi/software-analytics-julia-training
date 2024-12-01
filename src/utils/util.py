@@ -32,7 +32,7 @@ def get_repository_urls() -> pd.DataFrame:
 def get_model_path(model_name: str) -> Path:
     model_paths = {
         "360m": "360m",
-        "360M_signature": "360M_signature",
+        "360m_signature": "360m_signature",
         "360m_baseline": "360m_baseline",
         "135m": "135m",
         "135m_signature": "135m_signature",

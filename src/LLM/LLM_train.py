@@ -7,6 +7,7 @@ from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForLanguageModeling, Trainer, \
     TrainingArguments
 
+from src.LLM.LLM_utils import model_type_definer
 from src.data.dataHanlder import DataHandler
 from src.utils.util import get_model_path, base_model_types, remove_all_files_and_subdirectories_in_folder
 
@@ -139,14 +140,15 @@ def gradient_checkpointing_enable(model: str) -> int:
 
 
 def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
-    remove_all_files_and_subdirectories_in_folder(save_path)
+
     """
     Trains the model using the Hugging Face Trainer API.
     """
+    remove_all_files_and_subdirectories_in_folder(save_path)
 
-    if model_type == "1.7b":
+    model.config.use_cache = False
+    if "1.7b" in model_type:
         model.gradient_checkpointing_enable()
-        model.config.use_cache = False  # Explicitly set use_cache to False
         model = apply_lora_to_model(model, target_modules=["q_proj", "v_proj"], r=8, alpha=32, dropout=0.1)
 
     data_collator = DataCollatorForLanguageModeling(
@@ -216,6 +218,7 @@ def select_data(baseline: bool) -> DataFrame:
 
 
 def perform_train(model_type: str, signature: bool, baseline: bool, sample_run: bool = False):
+    print(f"Training model: {model_type_definer(model_type, baseline, signature)}")
     data = select_data(baseline)
     (model, tokenizer), path = model_selector(model_type, signature, baseline)
     corpus = create_corpus(data, tokenizer, signature, sample_run)
@@ -223,7 +226,9 @@ def perform_train(model_type: str, signature: bool, baseline: bool, sample_run: 
 
 
 def perform_train_all(signature: bool, baseline: bool,  sample_run: bool = False):
+    print("Training all models.")
     for model_type in base_model_types():
+        print("-------------------------------------------------------------------------------------------------------------------------")
         perform_train(model_type, signature, baseline,  sample_run)
 
 
