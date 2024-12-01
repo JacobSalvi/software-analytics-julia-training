@@ -146,6 +146,7 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
 
     if model_type == "1.7b":
         model.gradient_checkpointing_enable()
+        model.config.use_cache = False  # Explicitly set use_cache to False
         model = apply_lora_to_model(model, target_modules=["q_proj", "v_proj"], r=8, alpha=32, dropout=0.1)
 
     data_collator = DataCollatorForLanguageModeling(
@@ -216,7 +217,7 @@ def select_data(baseline: bool) -> DataFrame:
 
 def perform_train(model_type: str, signature: bool, baseline: bool, sample_run: bool = False):
     data = select_data(baseline)
-    (model, tokenizer), path = model_selector(model_type, signature)
+    (model, tokenizer), path = model_selector(model_type, signature, baseline)
     corpus = create_corpus(data, tokenizer, signature, sample_run)
     train_small(model_type, model, tokenizer, corpus, path)
 
