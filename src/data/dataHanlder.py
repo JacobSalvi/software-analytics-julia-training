@@ -39,9 +39,6 @@ class DataHandler:
 
     @staticmethod
     def baseline_pre_process(data: DataFrame) -> DataFrame:
-        """
-        Processes the data by cleaning the docstring, function header, and function body using lambda functions.
-        """
         data["doc_string"] = data["doc_string"].swifter.apply(lambda x: x.strip().lower() if isinstance(x, str) else x)
         data["function_header"] = data["function_header"].swifter.apply(
             lambda x: x.strip() if isinstance(x, str) else x)
