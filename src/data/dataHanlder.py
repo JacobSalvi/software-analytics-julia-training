@@ -37,6 +37,21 @@ class DataHandler:
             df = pd.DataFrame([json.loads(line) for line in f])
         return df
 
+    @staticmethod
+    def baseline_pre_process(data: DataFrame) -> DataFrame:
+        """
+        Processes the data by cleaning the docstring, function header, and function body using lambda functions.
+        """
+        data["doc_string"] = data["doc_string"].swifter.apply(lambda x: x.strip().lower() if isinstance(x, str) else x)
+        data["function_header"] = data["function_header"].swifter.apply(
+            lambda x: x.strip() if isinstance(x, str) else x)
+        data["function_body"] = data["function_body"].swifter.apply(lambda x: x.strip() if isinstance(x, str) else x)
+        return data
+
+    @staticmethod
+    def get_baseline():
+        return DataHandler.baseline_pre_process(pd.DataFrame(DataHandler.get_raw()))
+
 
 if __name__ == '__main__':
     try:

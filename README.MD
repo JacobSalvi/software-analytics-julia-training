@@ -23,3 +23,7 @@ export PYTHONPATH="$PYTHONPATH:$PWD"
 ```bash
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True deepspeed  --master_port=29501 --num_gpus=1 src/LLM/LLM_train.py --model "1.7b" --sample_run
 ```
+
+```bash
+python src/LLM/LLM_predict.py --prompt "A simple for loop" --model "135m"
+```

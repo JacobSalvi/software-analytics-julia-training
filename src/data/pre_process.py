@@ -1,4 +1,4 @@
-import swifter # DO NOT REMOVE
+import swifter  # DO NOT REMOVE
 
 
 def clean_docstring(docstring):
@@ -17,12 +17,14 @@ def clean_function_header(function_header):
     function_header.strip()
     return function_header
 
+
 def clean_function_body(function_body):
     """
     Clean function body from any unwanted characters
     """
     function_body.strip()
     return function_body
+
 
 def process_data(data):
     data["doc_string"] = data["doc_string"].swifter.apply(clean_docstring)

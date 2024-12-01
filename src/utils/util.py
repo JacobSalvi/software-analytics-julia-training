@@ -7,15 +7,20 @@ import pandas as pd
 
 
 def data_dir() -> Path:
-    return Path(__file__).parents[2].joinpath('data')
+    path = Path(__file__).parents[2].joinpath('data')
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def models_dir() -> Path:
-    return Path(__file__).parents[2].joinpath('models')
+    path = Path(__file__).parents[2].joinpath('models')
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def repositories_json() -> Path:
-    return Path(__file__).parents[2].joinpath('repositories.json')
+    path = Path(__file__).parents[2].joinpath('repositories.json')
+    return path
 
 
 def get_repository_urls() -> pd.DataFrame:
@@ -25,16 +30,32 @@ def get_repository_urls() -> pd.DataFrame:
 
 
 def get_model_path(model_name: str) -> Path:
-    if model_name == "360m":
-        return models_dir().joinpath("360m")
-    elif model_name == "135m":
-        return models_dir().joinpath("135m")
-    elif model_name == "1.7b":
-        return models_dir().joinpath("1-7B")
+    model_paths = {
+        "360m": "360m",
+        "360M_signature": "360M_signature",
+        "360m_baseline": "360m_baseline",
+        "135m": "135m",
+        "135m_signature": "135m_signature",
+        "135m_baseline": "135m_baseline",
+        "1.7b": "1-7B",
+        "1.7b_signature": "1-7B_signature",
+        "1.7b_baseline": "1-7B_baseline",
+    }
+
+    if model_name not in model_paths:
+        raise ValueError(f"Invalid model name: {model_name}")
+    path = models_dir().joinpath(model_paths[model_name])
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
-def model_types() -> list:
+def base_model_types() -> list:
     return ["360m", "135m", "1.7b"]
+
+
+def all_model_types() -> list:
+    return ["360m", "360m_signature", "360m_baseline", "135m", "135m_signature", "135m_baseline", "1.7b",
+            "1.7b_signature", "1.7b_baseline"]
 
 
 def remove_all_files_and_subdirectories_in_folder(folder_path: Path):
@@ -48,14 +69,3 @@ def remove_all_files_and_subdirectories_in_folder(folder_path: Path):
             shutil.rmtree(item)
         elif item.is_file():
             item.unlink()
-
-
-def compress_file_to_tar_gz(output_filename, file_obj, file_name):
-    with tarfile.open(output_filename, "w:gz") as tar:
-        tarinfo = tarfile.TarInfo(name=file_name)
-        file_obj.seek(0, io.SEEK_END)
-        tarinfo.size = file_obj.tell()
-        file_obj.seek(0)
-        tar.addfile(tarinfo, file_obj)
-
-    return output_filename

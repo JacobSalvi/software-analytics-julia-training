@@ -1,18 +1,23 @@
 from argparse import ArgumentParser
+from pathlib import Path
 import torch
+from datasets import Dataset
+from pandas import DataFrame
+from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForLanguageModeling, Trainer, \
     TrainingArguments
+
 from src.data.dataHanlder import DataHandler
-from datasets import Dataset
-from src.utils.util import get_model_path, model_types
-from peft import LoraConfig, get_peft_model
+from src.utils.util import get_model_path, base_model_types, remove_all_files_and_subdirectories_in_folder
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 INTERNAL_TEST = False
 
+MAX_LENGTH = 1024
 
-def model_small_lm_360m() -> tuple:
+
+def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
     model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
@@ -20,7 +25,7 @@ def model_small_lm_360m() -> tuple:
     return model, tokenizer
 
 
-def model_small_lm_135m() -> tuple:
+def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-135M"
     model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
@@ -28,7 +33,7 @@ def model_small_lm_135m() -> tuple:
     return model, tokenizer
 
 
-def model_small_lm_1b() -> tuple:
+def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-1.7B"
     model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
@@ -46,39 +51,58 @@ def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCa
             model.resize_token_embeddings(len(tokenizer))
 
 
-def model_selector(model_name: str) -> tuple:
-    if model_name == "360m":
-        return model_small_lm_360m(), get_model_path("360m")
-    elif model_name == "135m":
-        return model_small_lm_135m(), get_model_path("135m")
-    elif model_name == "1.7b":
-        return model_small_lm_1b(), get_model_path("1.7b")
+def model_selector(model_name: str, signature: bool, baseline: bool) -> tuple:
+    if signature and baseline:
+        raise ValueError("Cannot have both signature and baseline enabled.")
+
+    model_map = {
+        "360m": model_small_lm_360m,
+        "135m": model_small_lm_135m,
+        "1.7b": model_small_lm_1b,
+    }
+
+    path_suffix = "_signature" if signature else ""
+    path_suffix = "_baseline" if baseline else path_suffix
+
+    if model_name in model_map:
+        model_function = model_map[model_name]
+        model = model_function()
+        path = get_model_path(f"{model_name}{path_suffix}")
+        return model, path
     else:
-        return model_small_lm_360m()
+        raise ValueError(f"Invalid model name: {model_name}")
 
 
-def create_corpus(tokenizer, sample_run: bool = False) -> Dataset:
-    #Dataset needed for efficient memory management
+def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: bool, sample_run: bool = False) -> Dataset:
     if sample_run:
         print("Running a sample training run.")
-        c_dataset = Dataset.from_pandas(DataHandler.get_parsed().sample(1000))
+        c_dataset = Dataset.from_pandas(data.sample(1000))
     else:
-        c_dataset = Dataset.from_pandas(DataHandler.get_parsed())
+        c_dataset = Dataset.from_pandas(data)
 
     def tokenize_function(df):
-        combined_texts = [
-            f"{doc}\n\n{header}\n\n{body}".strip()
-            for doc, header, body in zip(
-                df.get("doc_string", []),
-                df.get("function_header", []),
-                df.get("function_body", [])
-            )
-        ]
+        if just_signature:
+            combined_texts = [
+                f"{header}\n\n{body}".strip()
+                for header, body in zip(
+                    df.get("function_header", []),
+                    df.get("function_body", [])
+                )
+            ]
+        else:
+            combined_texts = [
+                f"{doc}\n\n{header}\n\n{body}".strip()
+                for doc, header, body in zip(
+                    df.get("doc_string", []),
+                    df.get("function_header", []),
+                    df.get("function_body", [])
+                )
+            ]
         return tokenizer(
             combined_texts,
             truncation=True,
             padding='max_length',  # Use 'longest' for dynamic padding within each batch
-            max_length=512,
+            max_length=MAX_LENGTH,
             return_attention_mask=True
         )
 
@@ -114,7 +138,8 @@ def gradient_checkpointing_enable(model: str) -> int:
         return 1
 
 
-def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: str):
+def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
+    remove_all_files_and_subdirectories_in_folder(save_path)
     """
     Trains the model using the Hugging Face Trainer API.
     """
@@ -130,7 +155,7 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: s
 
     # Define training arguments
     training_args = TrainingArguments(
-        output_dir=save_path,  # Directory to save model checkpoints
+        output_dir=str(save_path),  # Directory to save model checkpoints
         overwrite_output_dir=True,  # Overwrite the content of the output directory
         num_train_epochs=1,  # Number of training epochs
         per_device_train_batch_size=batch_size_per_model(model_type),  # Batch size per device during training
@@ -182,32 +207,39 @@ def tokenized_dataset_inspection(tokenized_dataset, tokenizer):
     print("Decoded Text:", tokenizer.decode(tokenized_dataset[i]['input_ids'], skip_special_tokens=False))
 
 
-def perform_train(model_type: str, sample_run: bool = False):
-    (model, tokenizer), path = model_selector(model_type)
-    corpus = create_corpus(tokenizer, sample_run)
+def select_data(baseline: bool) -> DataFrame:
+    if baseline:
+        return DataHandler.get_baseline()
+    else:
+        return DataHandler.get_parsed()
+
+
+def perform_train(model_type: str, signature: bool, baseline: bool, sample_run: bool = False):
+    data = select_data(baseline)
+    (model, tokenizer), path = model_selector(model_type, signature)
+    corpus = create_corpus(data, tokenizer, signature, sample_run)
     train_small(model_type, model, tokenizer, corpus, path)
 
 
-def perform_train_all(sample_run: bool = False):
-    perform_train("360m", sample_run)
-    perform_train("135m", sample_run)
-    perform_train("1.7b", sample_run)
+def perform_train_all(signature: bool, baseline: bool,  sample_run: bool = False):
+    for model_type in base_model_types():
+        perform_train(model_type, signature, baseline,  sample_run)
 
 
 def main():
     argparse = ArgumentParser()
-    argparse.add_argument("--model", type=str, default="1.7b", help="Model name to use.",
-                          choices=model_types().append("all"))
+    argparse.add_argument("--model", type=str, default="135m", help="Model name to use.",
+                          choices=base_model_types().append("all"))
     argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.", default=True)
-    argparse.add_argument("--local_rank", type=int, default=0,
-                          help="Local rank for distributed training (provided by DeepSpeed)")
+    argparse.add_argument("--signature", action="store_true", help="Use only function signature for training.")
+    argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
 
     args = argparse.parse_args()
 
     if args.model == "all":
-        perform_train_all(args.sample_run)
+        perform_train_all(args.signature, args.baseline, args.sample_run)
     else:
-        perform_train(args.model, args.sample_run)
+        perform_train(args.model, args.signature, args.baseline, args.sample_run)
 
 
 if __name__ == "__main__":
