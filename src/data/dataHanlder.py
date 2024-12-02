@@ -4,7 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 from pandas import DataFrame
-from src.data.pre_process import process_data
+
+from src import utils
 from src.utils import util
 
 
@@ -29,7 +30,7 @@ class DataHandler:
             os.remove(DataHandler.PARSED)
 
         if not Path(DataHandler.PARSED).exists():
-            df = process_data(pd.DataFrame(DataHandler.get_raw()))
+            df = pd.read_json(utils.util.data_dir().joinpath("function_definitions_preprocessed.json"))
             with open(DataHandler.PARSED, "w") as f:
                 df.to_json(f, orient="records", lines=True)
 
