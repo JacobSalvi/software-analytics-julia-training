@@ -19,7 +19,7 @@ def preprocess(df: pd.DataFrame) -> pd.DataFrame:
 def main():
     df = pd.read_json(util.data_dir().joinpath("function_definitions.json"), lines=True)
     df = preprocess(df)
-    df.to_json(util.data_dir().joinpath("function_definitions_preprocessed.json"), lines=True)
+    df.to_json(util.data_dir().joinpath("function_definitions_preprocessed.json"), orient="records", lines=True)
 
 
 if __name__ == '__main__':
