@@ -65,9 +65,6 @@ AVAILABLE_MODELS = [
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
-# Load images
-IMAGES = {"Philippe": app.get_asset_url("Philippe.jpg")}
-
 # Define Layout
 conversation = html.Div(
     html.Div(id="display-conversation"),
@@ -116,7 +113,7 @@ def update_display(chat_history):
             messages.append(textbox(message['content'], box="AI", app=app))
         elif message['role'] == 'user':
             messages.append(textbox(message['content'], box="user"))
-    return messages#[::-1]  # Reverse to match the flex-direction: column-reverse
+    return messages
 
 @app.callback(
     Output("user-input", "value"),
@@ -124,6 +121,12 @@ def update_display(chat_history):
 )
 def clear_input(n_clicks, n_submit):
     return ""
+
+
+
+def format_response():
+    pass
+
 
 @app.callback(
     [Output("store-conversation", "data"), Output("loading-component", "children")],
@@ -137,7 +140,6 @@ def run_chatbot(n_clicks, n_submit, user_input, chat_history, selected_model):
     if user_input is None or user_input.strip() == "":
         return chat_history, None
 
-
     if not chat_history:
         chat_history = []
 
@@ -147,15 +149,15 @@ def run_chatbot(n_clicks, n_submit, user_input, chat_history, selected_model):
     model_path = get_model_path(selected_model)
     
     try:       
-        assistant_reply = f"Selected model: {selected_model}. This is a test response."
-        assistant_reply = predict_llm(selected_model, user_input)
-        print(assistant_reply)
+        assistant_reply = predict_llm(selected_model, user_input) #unformatted
+        format_response()
         chat_history.append({"role": "assistant", "content": assistant_reply})
     except Exception as e:
         assistant_reply = "I'm sorry, but I'm unable to assist with that request."
         chat_history.append({"role": "assistant", "content": assistant_reply})
 
     return chat_history, None
+
 
 if __name__ == "__main__":
     app.run_server(debug=False)
