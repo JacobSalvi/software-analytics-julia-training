@@ -20,7 +20,7 @@ MAX_LENGTH = 1024
 
 def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).co(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -116,7 +116,7 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
     )
 
     # Set the format for PyTorch tensors
-    tokenized_dataset.set_format(type='torch', columns=['input_ids', 'attention_mask'])
+    tokenized_dataset.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
     if INTERNAL_TEST:
         tokenized_dataset_inspection(tokenized_dataset, tokenizer)
 
@@ -125,11 +125,11 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
 
 def batch_size_per_model(model: str) -> int:
     if model == "360m":
-        return 4
+        return 1
     elif model == "135m":
-        return 8
-    elif model == "1.7b":
         return 4
+    elif model == "1.7b":
+        return 1
 
 
 def gradient_checkpointing_enable(model: str) -> int:
