@@ -148,11 +148,19 @@ def run_chatbot(n_clicks, n_submit, user_input, chat_history, selected_model):
 
     model_path = get_model_path(selected_model)
     
-    try:       
-        assistant_reply = predict_llm(selected_model, user_input) #unformatted
+    model_type = selected_model.split('_')[0].lower()
+    baseline = False
+    signature = False
+    if "_baseline" in selected_model:
+            baseline = True
+    elif "_signature" in selected_model:
+        signature = True
+    try:
+        assistant_reply = predict_llm(model_type, user_input, signature, baseline) #unformatted
         format_response()
         chat_history.append({"role": "assistant", "content": assistant_reply})
     except Exception as e:
+        print(e)
         assistant_reply = "I'm sorry, but I'm unable to assist with that request."
         chat_history.append({"role": "assistant", "content": assistant_reply})
 
