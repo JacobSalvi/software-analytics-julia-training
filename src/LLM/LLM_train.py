@@ -209,6 +209,7 @@ def tokenized_dataset_inspection(tokenized_dataset, tokenizer):
     i = 0
     print("Input IDs:", tokenized_dataset[i]['input_ids'])
     print("Attention Mask:", tokenized_dataset[i]['attention_mask'])
+    print("Labels:", tokenized_dataset[i]['labels'])
     print("Decoded Text:", tokenizer.decode(tokenized_dataset[i]['input_ids'], skip_special_tokens=False))
 
 
