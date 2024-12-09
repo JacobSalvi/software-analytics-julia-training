@@ -4,8 +4,24 @@
 install cuda
 install openmpi
 
-## How to run the code 
+# Set up the environment
+Create a virtual environment:
 
+```bash
+python3 -m venv .venv
+```
+
+Source the environment:
+```bash
+sourche .venv/bin/activawe
+```
+
+Source the environment on the server:
+```bash
+eval "$(/home/SA24-G1/miniconda3/bin/conda shell.bash hook)"
+```
+
+Install the requirements:
 ```bash
 pip install -r requirements.txt
 ```

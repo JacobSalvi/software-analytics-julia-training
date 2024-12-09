@@ -1,9 +1,14 @@
+import argparse
+from pathlib import Path
+
 import pandas as pd
 
 from src.utils import util
 
 
-def preprocess(df: pd.DataFrame) -> pd.DataFrame:
+def preprocess(df: pd.DataFrame, remove_no_docs: bool = False) -> pd.DataFrame:
+    if remove_no_docs:
+        df = df[df["doc_string"] != ""]
     df.loc[(df["doc_string"] == "") & (df["has_internal_comments"] == False) & (df["has_constraints"] == False), "function_body"] = ""
     df['function_body'] = df['function_body'].str.replace(r'(^|\n).*# TODO.*(\n|$)', '', regex=True)
     benchmark = pd.read_json(util.benchmark_prompts(), lines=True)
@@ -17,9 +22,14 @@ def preprocess(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--remove-no-docs", dest="remove_no_docs", action="store_true")
+    parser.add_argument("--output",  type=Path)
+    args = parser.parse_args()
     df = pd.read_json(util.data_dir().joinpath("function_definitions.json"), lines=True)
-    df = preprocess(df)
-    df.to_json(util.data_dir().joinpath("function_definitions_preprocessed.json"), lines=True)
+    df = preprocess(df, remove_no_docs=args.remove_no_docs)
+    output = args.output if args.output else util.data_dir().joinpath("function_definitions_preprocessed.json")
+    df.to_json(output, orient="records", lines=True)
 
 
 if __name__ == '__main__':
