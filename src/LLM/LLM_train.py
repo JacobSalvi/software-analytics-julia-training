@@ -99,13 +99,15 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
                     df.get("function_body", [])
                 )
             ]
-        return tokenizer(
+        tokenized = tokenizer(
             combined_texts,
             truncation=True,
             padding='max_length',  # Use 'longest' for dynamic padding within each batch
             max_length=MAX_LENGTH,
             return_attention_mask=True
         )
+        tokenized["labels"] = tokenized["input_ids"].copy()
+        return tokenized
 
     tokenized_dataset = c_dataset.map(
         tokenize_function,
