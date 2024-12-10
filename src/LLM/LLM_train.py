@@ -84,7 +84,7 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
     def tokenize_function(df):
         if just_signature:
             combined_texts = [
-                f"{header}\n\n{body}".strip()
+                f"{header}{body}".strip()
                 for header, body in zip(
                     df.get("function_header", []),
                     df.get("function_body", [])
@@ -92,7 +92,7 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
             ]
         else:
             combined_texts = [
-                f"{doc}\n\n{header}\n\n{body}".strip()
+                f"{doc}\n{header}{body}".strip()
                 for doc, header, body in zip(
                     df.get("doc_string", []),
                     df.get("function_header", []),
