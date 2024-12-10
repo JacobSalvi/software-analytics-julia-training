@@ -158,6 +158,8 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
 
     # Define training arguments
     training_args = TrainingArguments(
+        learning_rate=5e-5,
+        max_grad_norm=1.0,
         output_dir=str(save_path),  # Directory to save model checkpoints
         overwrite_output_dir=True,  # Overwrite the content of the output directory
         num_train_epochs=1,  # Number of training epochs
