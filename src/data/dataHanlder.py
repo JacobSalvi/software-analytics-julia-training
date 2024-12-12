@@ -30,7 +30,7 @@ class DataHandler:
             os.remove(DataHandler.PARSED)
 
         if not Path(DataHandler.PARSED).exists():
-            df = pd.read_json(utils.util.data_dir().joinpath("function_definitions_preprocessed.json"))
+            df = pd.read_json(utils.util.data_dir().joinpath("function_definitions_preprocessed.json"), lines=True)
             with open(DataHandler.PARSED, "w") as f:
                 df.to_json(f, orient="records", lines=True)
 

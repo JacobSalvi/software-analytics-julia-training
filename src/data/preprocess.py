@@ -8,7 +8,8 @@ from src.utils import util
 
 def preprocess(df: pd.DataFrame, remove_no_docs: bool = False) -> pd.DataFrame:
     if remove_no_docs:
-        df = df[df["doc_string"] != ""]
+        df = df[df['doc_string'].str.contains("[a-zA-Z]")]
+    df["function_header"] = df["function_header"].str.replace(" (", "(")
     df.loc[(df["doc_string"] == "") & (df["has_internal_comments"] == False) & (df["has_constraints"] == False), "function_body"] = ""
     df['function_body'] = df['function_body'].str.replace(r'(^|\n).*# TODO.*(\n|$)', '', regex=True)
     benchmark = pd.read_json(util.benchmark_prompts(), lines=True)
