@@ -19,6 +19,9 @@ def preprocess(df: pd.DataFrame, remove_no_docs: bool = False) -> pd.DataFrame:
     mask = df['function_header'].apply(
         lambda x: any(name == x.split("function ")[-1].split("(")[0] for name in function_names_filter))
     df = df[~mask]
+    df["doc_string"] = df["doc_string"].str.strip()
+    df["function_header"] = df["function_header"].str.strip()
+    df["function_body"] = df["function_body"].str.strip()
     return df
 
 

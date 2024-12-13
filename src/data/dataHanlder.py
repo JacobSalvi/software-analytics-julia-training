@@ -25,17 +25,8 @@ class DataHandler:
         return data
 
     @staticmethod
-    def get_parsed(force_parse: bool = False) -> DataFrame:
-        if force_parse and Path(DataHandler.PARSED).exists():
-            os.remove(DataHandler.PARSED)
-
-        if not Path(DataHandler.PARSED).exists():
-            df = pd.read_json(utils.util.data_dir().joinpath("function_definitions_preprocessed.json"), lines=True)
-            with open(DataHandler.PARSED, "w") as f:
-                df.to_json(f, orient="records", lines=True)
-
-        with open(DataHandler.PARSED, "r") as f:
-            df = pd.DataFrame([json.loads(line) for line in f])
+    def get_parsed() -> DataFrame:
+        df = pd.read_json(utils.util.data_dir().joinpath("function_definitions_preprocessed.json"), lines=True)
         return df
 
     @staticmethod
@@ -53,6 +44,6 @@ class DataHandler:
 
 if __name__ == '__main__':
     try:
-        DataHandler.get_parsed(True)
+        DataHandler.get_parsed()
     except FileNotFoundError as e:
         print(e)
