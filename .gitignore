@@ -162,5 +162,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-data/fd_raw.json
+data/fd.json
 data/fd_parsed.json

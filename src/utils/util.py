@@ -11,6 +11,8 @@ def data_dir() -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
 
+def get_raw_data_path() -> Path:
+    return data_dir().joinpath("fd.json")
 
 def models_dir() -> Path:
     path = Path(__file__).parents[2].joinpath('models')
