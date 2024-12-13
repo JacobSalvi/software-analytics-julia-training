@@ -1,17 +1,14 @@
 import json
-import os
 from pathlib import Path
 
 import pandas as pd
 from pandas import DataFrame
-
-from src import utils
 from src.utils import util
 
 
 class DataHandler:
-    PARSED = util.data_dir().joinpath("fd_parsed.json")
-    RAW = util.data_dir().joinpath("fd_raw.json")
+    PARSED = util.data_dir().joinpath("function_definitions_preprocessed.json")
+    RAW = util.get_raw_data_path()
 
     @staticmethod
     def get_raw() -> list:
@@ -25,14 +22,9 @@ class DataHandler:
         return data
 
     @staticmethod
-    def get_parsed(force_parse: bool = False) -> DataFrame:
-        if force_parse and Path(DataHandler.PARSED).exists():
-            os.remove(DataHandler.PARSED)
-
+    def get_parsed() -> DataFrame:
         if not Path(DataHandler.PARSED).exists():
-            df = pd.read_json(utils.util.data_dir().joinpath("function_definitions_preprocessed.json"))
-            with open(DataHandler.PARSED, "w") as f:
-                df.to_json(f, orient="records", lines=True)
+            raise FileNotFoundError(f"The file {DataHandler.PARSED.name} does not exist, please pre-process the data first with data/preprocess.py")
 
         with open(DataHandler.PARSED, "r") as f:
             df = pd.DataFrame([json.loads(line) for line in f])
@@ -50,9 +42,3 @@ class DataHandler:
     def get_baseline():
         return DataHandler.baseline_pre_process(pd.DataFrame(DataHandler.get_raw()))
 
-
-if __name__ == '__main__':
-    try:
-        DataHandler.get_parsed(True)
-    except FileNotFoundError as e:
-        print(e)
