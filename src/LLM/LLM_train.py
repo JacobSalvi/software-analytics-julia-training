@@ -20,7 +20,7 @@ MAX_LENGTH = 1024
 
 def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -28,7 +28,7 @@ def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 
 def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-135M"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -36,7 +36,7 @@ def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 
 def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-1.7B"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -92,20 +92,22 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
             ]
         else:
             combined_texts = [
-                f"{doc}\n{header}{body}".strip()
+                f"{doc}\n{header}\n{body}".strip()
                 for doc, header, body in zip(
                     df.get("doc_string", []),
                     df.get("function_header", []),
                     df.get("function_body", [])
                 )
             ]
-        return tokenizer(
+        tokenized = tokenizer(
             combined_texts,
             truncation=True,
             padding='max_length',  # Use 'longest' for dynamic padding within each batch
             max_length=MAX_LENGTH,
             return_attention_mask=True
         )
+        tokenized["labels"] = tokenized["input_ids"].copy()
+        return tokenized
 
     tokenized_dataset = c_dataset.map(
         tokenize_function,

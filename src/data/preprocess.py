@@ -10,17 +10,9 @@ from src.utils.util import get_raw_data_path
 
 def preprocess(df: pd.DataFrame, remove_no_docs: bool = False) -> pd.DataFrame:
     if remove_no_docs:
-        df = df[df["doc_string"] != ""]
-    df.loc[(df["doc_string"] == "") & (df["has_internal_comments"] == False) & (
-                df["has_constraints"] == False), "function_body"] = ""
-    df['function_body'] = df['function_body'].str.replace(r'(^|\n).*# TODO.*(\n|$)', '', regex=True)
-
-    # Remove leading and trailing whitespace and newlines using .strip()
-    for column in ['doc_string', 'function_header', 'function_body']:
-        if column in df.columns:
-            df[column] = df[column].str.strip()
-
-
+        df = df[df['doc_string'].str.contains("[a-zA-Z]")]
+    df["function_header"] = df["function_header"].str.replace(" (", "(")
+    df.loc[(df["doc_string"] == "") & (df["has_internal_comments"] == False) & (df["has_constraints"] == False), "function_body"] = ""
     benchmark = pd.read_json(util.benchmark_prompts(), lines=True)
     benchmark['function_name'] = benchmark['prompt'].str.split('\n').str[-2]
     benchmark["function_name"] = benchmark["function_name"].str.split('function ').str[-1].str.split("(").str[0]
@@ -32,6 +24,9 @@ def preprocess(df: pd.DataFrame, remove_no_docs: bool = False) -> pd.DataFrame:
     )
 
     df = df[~mask]
+    df["doc_string"] = df["doc_string"].str.strip()
+    df["function_header"] = df["function_header"].str.strip()
+    df["function_body"] = df["function_body"].str.strip()
     return df
 
 
