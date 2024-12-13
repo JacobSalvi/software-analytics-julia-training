@@ -15,6 +15,12 @@ def preprocess(df: pd.DataFrame, remove_no_docs: bool = False) -> pd.DataFrame:
                 df["has_constraints"] == False), "function_body"] = ""
     df['function_body'] = df['function_body'].str.replace(r'(^|\n).*# TODO.*(\n|$)', '', regex=True)
 
+    # Remove leading and trailing whitespace and newlines using .strip()
+    for column in ['doc_string', 'function_header', 'function_body']:
+        if column in df.columns:
+            df[column] = df[column].str.strip()
+
+
     benchmark = pd.read_json(util.benchmark_prompts(), lines=True)
     benchmark['function_name'] = benchmark['prompt'].str.split('\n').str[-2]
     benchmark["function_name"] = benchmark["function_name"].str.split('function ').str[-1].str.split("(").str[0]

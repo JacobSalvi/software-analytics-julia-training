@@ -243,6 +243,9 @@ def main():
     argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
 
     args = argparse.parse_args()
+    print(f"sample_run: {args.sample_run}")
+    print(f"signature: {args.signature}")
+    print(f"baseline: {args.baseline}")
 
     if args.model == "all":
         perform_train_all(args.signature, args.baseline, args.sample_run)

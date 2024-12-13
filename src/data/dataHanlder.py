@@ -28,6 +28,7 @@ class DataHandler:
 
         with open(DataHandler.PARSED, "r") as f:
             df = pd.DataFrame([json.loads(line) for line in f])
+            df.to_csv(util.data_dir().joinpath("function_definitions_preprocessed.csv"), index=False)
         return df
 
     @staticmethod
@@ -42,3 +43,7 @@ class DataHandler:
     def get_baseline():
         return DataHandler.baseline_pre_process(pd.DataFrame(DataHandler.get_raw()))
 
+
+
+if __name__ == "__main__":
+    DataHandler.get_parsed()

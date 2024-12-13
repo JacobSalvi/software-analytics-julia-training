@@ -104,3 +104,8 @@ To run the chatbot UI
 ```bash
 python src/chatbot/app.py
 ```
+TO REMOVE: 
+
+```bash 
+python src/LLM/LLM_train.py --model "360m" --sample_run
+```
