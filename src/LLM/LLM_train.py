@@ -3,10 +3,9 @@ from pathlib import Path
 import torch
 from datasets import Dataset
 from pandas import DataFrame
-from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, get_peft_model,prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForLanguageModeling, Trainer, \
-    TrainingArguments
-
+    TrainingArguments,BitsAndBytesConfig
 from src.LLM.LLM_utils import model_type_definer
 from src.data.dataHanlder import DataHandler
 from src.utils.util import get_model_path, base_model_types, remove_all_files_and_subdirectories_in_folder
@@ -20,7 +19,7 @@ MAX_LENGTH = 1024
 
 def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -28,7 +27,7 @@ def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 
 def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-135M"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -36,7 +35,12 @@ def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 
 def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-1.7B"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+    nf4_config = BitsAndBytesConfig( load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.float16 
+        )
+    model = AutoModelForCausalLM.from_pretrained(checkpoint,quantization_config = nf4_config).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -84,7 +88,7 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
     def tokenize_function(df):
         if just_signature:
             combined_texts = [
-                f"{header}\n\n{body}".strip()
+                f"{header}{body}".strip()
                 for header, body in zip(
                     df.get("function_header", []),
                     df.get("function_body", [])
@@ -92,7 +96,7 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
             ]
         else:
             combined_texts = [
-                f"{doc}\n\n{header}\n\n{body}".strip()
+                f"{doc}\n{header}\n{body}".strip()
                 for doc, header, body in zip(
                     df.get("doc_string", []),
                     df.get("function_header", []),
@@ -115,8 +119,8 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
 
     # Set the format for PyTorch tensors
     tokenized_dataset.set_format(type='torch', columns=['input_ids', 'attention_mask'])
-    if INTERNAL_TEST:
-        tokenized_dataset_inspection(tokenized_dataset, tokenizer)
+    '''if INTERNAL_TEST:
+        tokenized_dataset_inspection(tokenized_dataset, tokenizer)'''
 
     return tokenized_dataset
 
@@ -125,18 +129,19 @@ def batch_size_per_model(model: str) -> int:
     if model == "360m":
         return 4
     elif model == "135m":
-        return 8
+        return 4
     elif model == "1.7b":
         return 4
 
 
 def gradient_checkpointing_enable(model: str) -> int:
     if model == "360m":
-        return 2
+        return 4
     elif model == "135m":
-        return 2
+        return 4
     elif model == "1.7b":
-        return 1
+        return 4
+
 
 
 def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
@@ -147,20 +152,27 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
     remove_all_files_and_subdirectories_in_folder(save_path)
 
     model.config.use_cache = False
-    if "1.7b" in model_type:
+    if model_type == "1.7b":
         model.gradient_checkpointing_enable()
+        model = prepare_model_for_kbit_training(model)
         model = apply_lora_to_model(model, target_modules=["q_proj", "v_proj"], r=8, alpha=32, dropout=0.1)
+
+
 
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer,
         mlm=False,  # Set to False for causal language modeling
     )
 
+    
+
     # Define training arguments
     training_args = TrainingArguments(
+        learning_rate=1e-4,
+        max_grad_norm=1.0,
         output_dir=str(save_path),  # Directory to save model checkpoints
         overwrite_output_dir=True,  # Overwrite the content of the output directory
-        num_train_epochs=1,  # Number of training epochs
+        num_train_epochs=5,  # Number of training epochs
         per_device_train_batch_size=batch_size_per_model(model_type),  # Batch size per device during training
         gradient_accumulation_steps=gradient_checkpointing_enable(model_type),  # Accumulate gradients
         warmup_steps=500,  # Number of warmup steps for learning rate scheduler
@@ -169,21 +181,24 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
         logging_steps=50,  # Log every X updates steps
         save_steps=20000,  # Save checkpoint every X updates steps
         save_total_limit=2,  # Limit the total amount of checkpoints
-        fp16=torch.cuda.is_available(),  # Use mixed precision if available
+        fp16=True,  # Use mixed precision if available
         remove_unused_columns=True,  # Remove columns not used by the model
-        gradient_checkpointing=True,
+        gradient_checkpointing=False,
     )
+    
+    
 
     # Initialize Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=corpus,
-        data_collator=data_collator,
+        data_collator=data_collator
     )
 
     print(f"Model is on device: {next(model.parameters()).device}")
     print(f"Training device: {trainer.args.device}")
+
 
     # Start training
     trainer.train()
@@ -201,6 +216,8 @@ def apply_lora_to_model(model, target_modules=["q_proj", "v_proj"], r=8, alpha=3
     model = get_peft_model(model, lora_config)
     print(f"LoRA applied with target_modules={target_modules}, r={r}, alpha={alpha}, dropout={dropout}.")
     return model
+
+
 
 
 def tokenized_dataset_inspection(tokenized_dataset, tokenizer):
@@ -236,11 +253,14 @@ def main():
     argparse = ArgumentParser()
     argparse.add_argument("--model", type=str, default="135m", help="Model name to use.",
                           choices=base_model_types().append("all"))
-    argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.", default=True)
+    argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.")
     argparse.add_argument("--signature", action="store_true", help="Use only function signature for training.")
     argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
 
     args = argparse.parse_args()
+    print(f"sample_run: {args.sample_run}")
+    print(f"signature: {args.signature}")
+    print(f"baseline: {args.baseline}")
 
     if args.model == "all":
         perform_train_all(args.signature, args.baseline, args.sample_run)

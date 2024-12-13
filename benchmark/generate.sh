@@ -20,10 +20,10 @@ if [ -z "$MODEL_DIR" ]; then
     echo "Error: No model directory specified."
     exit 1
 fi
-
+echo $MODEL_DIR
 # Identify the latest checkpoint directory
 CHECKPOINT=$(ls -d "$MODEL_DIR"/checkpoint-* 2>/dev/null | sort -V | tail -n 1)
-
+echo $CHECKPOINT
 # Validate that a checkpoint directory was found
 if [ -z "$CHECKPOINT" ]; then
     echo "Error: No checkpoint directories found in $MODEL_DIR"
@@ -69,3 +69,5 @@ python3 -u ./MultiPL-E/automodel.py \
         --max-tokens $MAX_TOKENS | grep -v '^#'
 
 echo "Model generation completed. Results are saved in $OUTPUT_DIR"
+
+

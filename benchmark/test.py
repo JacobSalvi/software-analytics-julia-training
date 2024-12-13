@@ -5,18 +5,12 @@ import matplotlib.pyplot as plt
 from statsmodels.stats.contingency_tables import mcnemar
 
 def read_results(file):
-    """
-    Reads a JSON file and extracts the 'passed' column as a boolean list.
-    """
     if not os.path.exists(file):
         raise FileNotFoundError(f"File {file} does not exist.")
     df = pd.read_json(file)
     return df['passed']
 
 def mcnemartest(n_11, n_10, n_01, n_00):
-    """
-    Performs McNemar's test on a contingency table.
-    """
     table = [[n_11, n_10],
              [n_01, n_00]]
     result = mcnemar(table, exact=True)  
@@ -24,18 +18,11 @@ def mcnemartest(n_11, n_10, n_01, n_00):
     return result
 
 def effect_size(count_passed_1, count_failed_1, count_passed_2, count_failed_2):
-    """
-    Calculates the odds ratio as a measure of effect size.
-    """
     odds_ratio = (count_passed_1 / count_failed_1) / (count_passed_2 / count_failed_2)
     print(f"Odds Ratio (Effect Size): {odds_ratio}")
     return odds_ratio
 
 def graphs(models, copilot_file, specific_models=None):
-    """
-    Displays a stacked bar graph showing the number of correct (True) 
-    and incorrect (False) predictions for all models and Copilot.
-    """
     if specific_models:
         models = [model for model in models if model in specific_models]
 
@@ -72,6 +59,59 @@ def graphs(models, copilot_file, specific_models=None):
 
     plt.show()
 
+def efficiency_of_models(model_0_file,model_1_file, model_2_file):
+    if not os.path.exists(model_0_file):
+        raise FileNotFoundError(f"File {model_0_file} does not exist")
+    if not os.path.exists(model_1_file):
+        raise FileNotFoundError(f"File {model_1_file} does not exist.")
+    if not os.path.exists(model_2_file):
+        raise FileNotFoundError(f"File {model_2_file} does not exist.")
+    
+    model_0_results = read_results(model_0_file)
+    model_1_results = read_results(model_1_file)
+    model_2_results = read_results(model_2_file)
+
+    correct_0 = model_0_results.sum()
+    correct_1 = model_1_results.sum()
+    correct_2 = model_2_results.sum()
+    total = len(model_0_results)
+
+    print(f"Model CoPilot - Passed : {correct_0}/{total} ({(correct_0/total)*100:.2f}%)")
+    print(f"Model 135m - Passed: {correct_1}/{total} ({(correct_1/total)*100:.2f}%)")
+    print(f"Model 360m - Passed: {correct_2}/{total} ({(correct_2/total)*100:.2f}%)")
+
+    
+    failed_1 = total - correct_1
+    failed_2 = total - correct_2
+    effect_size(correct_1, failed_1, correct_2, failed_2)
+
+def compare_models(model_1, model_2):
+
+    model_1_file = f"{model_1}_results_jl.json"
+    model_2_file = f"{model_2}_results_jl.json"
+
+    if not os.path.exists(model_1_file):
+        raise FileNotFoundError(f"File {model_1_file} does not exist.")
+    if not os.path.exists(model_2_file):
+        raise FileNotFoundError(f"File {model_2_file} does not exist.")
+    
+
+    model_1_results = read_results(model_1_file)
+    model_2_results = read_results(model_2_file)
+
+
+    correct_1 = model_1_results.sum()
+    correct_2 = model_2_results.sum()
+    total = len(model_1_results)
+
+    print(f"Calculating the effect size for the following 2 models ")
+
+    
+    failed_1 = total - correct_1
+    failed_2 = total - correct_2
+    effect_size(correct_1, failed_1, correct_2, failed_2)
+
+
 def main():
     arguments = argparse.ArgumentParser()
     arguments.add_argument("--specific_models", nargs='*', type=str, help="Optional list of specific models to analyze")
@@ -104,14 +144,33 @@ def main():
         print(f"Results for {model}:")
         mcnemartest(n_11, n_10, n_01, n_00)
 
-        count_passed_1 = sum(model_results)
-        count_failed_1 = len(model_results) - count_passed_1
-        count_passed_2 = sum(copilot_results)
-        count_failed_2 = len(copilot_results) - count_passed_2
-
-        effect_size(count_passed_1, count_failed_1, count_passed_2, count_failed_2)
-
     graphs(models, copilot_file)
+
+    model_0 = "copilot"
+    model_1 = "135m"
+    model_2 = "360m"
+
+    model_0_file = f"{model_0}_results_jl.json"
+    model_1_file = f"{model_1}_results_jl.json"
+    model_2_file = f"{model_2}_results_jl.json"
+
+    print("Calculating the efficiency of the models")
+    efficiency_of_models(model_0_file,model_1_file, model_2_file)
+
+    while True:
+        print("Enter the 2 models you want to compare (or type 'exit' to quit):")
+        user_input = input()
+        if user_input.lower() == 'exit': 
+            print("Exiting...")
+            break
+        models = user_input.split()
+        if len(models) != 2:  
+            print("Please enter exactly two models.")
+            continue
+        compare_models(models[0], models[1])  
+
+    
+
 
 if __name__ == "__main__":
     main()

@@ -1,10 +1,21 @@
 from argparse import ArgumentParser
-from LLM_load import load_llm
+from src.LLM.LLM_load import load_llm
 from src.utils.util import base_model_types, all_model_types
 
 import os
+import re
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+#import re
+
+'''def clean_output(output: str) -> str:
+    # Match function definition and return statement
+    cleaned_output = re.sub(r'function\s+\w+\s*\(.*?\)::.*?\n(.*?return\s+.*)', r'\1', output)
+    cleaned_output = cleaned_output.strip()
+    cleaned_output = re.sub(r'\n{2,}', '\n', cleaned_output)
+    
+    return cleaned_output'''
 
 
 def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, max_new_tokens: int = 40, verbose: bool = False) -> str:
@@ -20,7 +31,10 @@ def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, m
         pad_token_id=tokenizer.pad_token_id,
         attention_mask=attention_mask
     )
-    return tokenizer.decode(output[0], skip_special_tokens=False)
+    decoded_output = tokenizer.decode(output[0], skip_special_tokens=False)
+    cleaned_output = clean_output(decoded_output)
+
+    return decoded_output
 
 
 def predict_llm_all(prompt: str, signature: bool, baseline: bool, max_length: int = 50, verbose: bool = False) -> list[str]:
@@ -40,6 +54,7 @@ def printer_predictions(predictions: list[str], prompt: str):
 
 def printer_prediction(prediction: str, model: str, prompt: str):
     print(f"Prompt: {prompt}, Model: {model}")
+    #print("Insomnia")
     print(prediction)
 
 
