@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from LLM_load import load_llm
+from src.LLM.LLM_load import load_llm
 from src.utils.util import base_model_types, all_model_types
 
 import os
