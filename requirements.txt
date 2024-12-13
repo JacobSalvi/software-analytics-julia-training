@@ -44,3 +44,6 @@ xxhash==3.5.0
 yarl==1.18.0
 tree-sitter-languages~=1.10.2
 tree-sitter~=0.21.3
+dash~=2.18.2
+dash-bootstrap-components~=1.6.0
+openai~=1.57.3
