@@ -132,11 +132,11 @@ def batch_size_per_model(model: str) -> int:
 
 def gradient_checkpointing_enable(model: str) -> int:
     if model == "360m":
-        return 2
+        return 4
     elif model == "135m":
-        return 2
+        return 4
     elif model == "1.7b":
-        return 1
+        return 4
 
 
 def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
@@ -158,11 +158,11 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
 
     # Define training arguments
     training_args = TrainingArguments(
-        learning_rate=5e-5,
+        learning_rate=1e-4,
         max_grad_norm=1.0,
         output_dir=str(save_path),  # Directory to save model checkpoints
         overwrite_output_dir=True,  # Overwrite the content of the output directory
-        num_train_epochs=1,  # Number of training epochs
+        num_train_epochs=5,  # Number of training epochs
         per_device_train_batch_size=batch_size_per_model(model_type),  # Batch size per device during training
         gradient_accumulation_steps=gradient_checkpointing_enable(model_type),  # Accumulate gradients
         warmup_steps=500,  # Number of warmup steps for learning rate scheduler
@@ -238,7 +238,7 @@ def main():
     argparse = ArgumentParser()
     argparse.add_argument("--model", type=str, default="135m", help="Model name to use.",
                           choices=base_model_types().append("all"))
-    argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.", default=True)
+    argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.")
     argparse.add_argument("--signature", action="store_true", help="Use only function signature for training.")
     argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
 
