@@ -39,7 +39,10 @@ def clean_output(output: str) -> str:
     return truncated_output.strip()
 
 
-def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, max_new_tokens: int = 1024, verbose: bool = False) -> str:
+def predict_llm(model_type: str, prompt: str,
+                signature: bool, baseline: bool,
+                max_new_tokens: int = 1024, original_output: bool = False,
+                verbose: bool = False) -> str:
     try:
         model, tokenizer = load_llm(model_type, signature, baseline, verbose)
     except Exception as e:
@@ -53,15 +56,16 @@ def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, m
         attention_mask=attention_mask
     )
     decoded_output = tokenizer.decode(output[0], skip_special_tokens=False)
-    decoded_output = clean_output(decoded_output)
-    decoded_output = julia_formatter(decoded_output)
+    if not original_output:
+        decoded_output = clean_output(decoded_output)
+        decoded_output = julia_formatter(decoded_output)
     return decoded_output
 
 
-def predict_llm_all(prompt: str, signature: bool, baseline: bool, max_length: int = 1024, verbose: bool = False) -> list[str]:
+def predict_llm_all(prompt: str, signature: bool, baseline: bool, max_length: int = 1024, original_output: bool = False, verbose: bool = False) -> list[str]:
     predictions = []
     for model_type in base_model_types():
-        predictions.append(predict_llm(model_type, prompt, signature, baseline, max_length, verbose))
+        predictions.append(predict_llm(model_type, prompt, signature, baseline, max_length, original_output, verbose))
     return predictions
 
 
@@ -81,20 +85,20 @@ def printer_prediction(prediction: str, model: str, prompt: str):
 
 def main():
     argparse = ArgumentParser()
-    argparse.add_argument("--prompt", type=str, help="Prompt to generate text from", default="for loop in a list")
-    argparse.add_argument("--max_length", type=int, default=1024, help="Maximum length of the generated text")
-    argparse.add_argument("--model", type=str, default="360m", help="Model name to use.",
+    argparse.add_argument("--prompt", type=str, help="Prompt to generate text from", default=""""for loop in a list""""")
+    argparse.add_argument("--max_length", type=int, default=1024, help="Maximum length of the generated text.")
+    argparse.add_argument("--model", type=str, default="135m", help="Model name to use.",
                           choices=all_model_types().append("all"))
     argparse.add_argument("--signature", action="store_true", help="Use only function signature for training.")
     argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
-
+    argparse.add_argument("--original_output", action="store_true", help="Use original output format.")
 
     args = argparse.parse_args()
     if args.model == "all":
-        predictions = predict_llm_all(args.prompt, args.signature, args.baseline, args.max_length, False)
+        predictions = predict_llm_all(args.prompt, args.signature, args.baseline, args.max_length, args.original_output, False)
         printer_predictions(predictions, args.prompt)
     else:
-        prediction = predict_llm(args.model, args.prompt, args.signature, args.baseline, args.max_length, False)
+        prediction = predict_llm(args.model, args.prompt, args.signature, args.baseline, args.max_length, args.original_output,  False)
         printer_prediction(prediction, args.model, args.prompt)
 
 
