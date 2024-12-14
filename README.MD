@@ -1,6 +1,3 @@
-
-
-
 ## Set up the environment
 Create a virtual environment:
 
