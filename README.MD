@@ -44,13 +44,15 @@ model can be `135m`, `360m`, `1.7b`
 python src/LLM/LLM_train.py --model "135m" 
 ```
 
-`--sample_run` is used to train the model on a small subset of the data
+`--sample` is used to train the model on a subset of the data, specify the number of samples you want to train on. 
+
 ```bash 
-python src/LLM/LLM_train.py --model "1.7b" --sample_run
+python src/LLM/LLM_train.py --model "1.7b" --sample=1000
 ```
 
-the model will be saved in the `models` directory along with the tokenizer 
+`--signature` is used to train the model on the signature data
 
+the model will be saved in the `models` directory along with the tokenizer 
 
 ### Train all models
 train all models 135m, 360m, 1.7b
@@ -59,15 +61,15 @@ train all models 135m, 360m, 1.7b
 python src/LLM/LLM_train.py --model "all" 
 ```
 
-- `--sample_run` is used to train the model on a small subset of the data
+- `--sample` is used to train the model on a small subset of the data
 - `--signature` is used to train the model on the signature data
 - `--baseline` is used to train the model on the baseline data without any preprocessing
 
 ```bash
-python src/LLM/LLM_train.py --model "all" --signature --sample_run
+python src/LLM/LLM_train.py --model "all" --signature --sample=1000
 ```
 ```bash 
-python src/LLM/LLM_train.py --model "all" --baseline --sample_run
+python src/LLM/LLM_train.py --model "all" --baseline --sample=1000
 ```
 
 ## Evaluate
@@ -135,5 +137,5 @@ python benchmark/test.py
 ```
 
 ```bash 
-python src/LLM/LLM_train.py --model "1.7b" --sample_run
+python src/LLM/LLM_train.py --model "1.7b" --sample=100000
 ```

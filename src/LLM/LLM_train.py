@@ -86,11 +86,12 @@ def create_corpus(
     data: DataFrame,
     tokenizer: AutoTokenizer,
     just_signature: bool,
-    sample_run: bool = False
+    sample: int = None
 ) -> Dataset:
-    if sample_run:
+    # If the user provided a sample size, use it. Otherwise, use the full dataset.
+    if sample is not None:
         print("Running a sample training run.")
-        c_dataset = Dataset.from_pandas(data.sample(1000))
+        c_dataset = Dataset.from_pandas(data.sample(min(sample, len(data))))
     else:
         c_dataset = Dataset.from_pandas(data)
 
@@ -272,19 +273,19 @@ def select_data(baseline: bool) -> DataFrame:
         return DataHandler.get_parsed()
 
 
-def perform_train(model_type: str, signature: bool, baseline: bool, sample_run: bool = False):
+def perform_train(model_type: str, signature: bool, baseline: bool, sample: int = None):
     print(f"Training model: {model_type_definer(model_type, baseline, signature)}")
     data = select_data(baseline)
     (model, tokenizer), path = model_selector(model_type, signature, baseline)
-    corpus = create_corpus(data, tokenizer, signature, sample_run)
+    corpus = create_corpus(data, tokenizer, signature, sample)
     train_small(model_type, model, tokenizer, corpus, path)
 
 
-def perform_train_all(signature: bool, baseline: bool, sample_run: bool = False):
+def perform_train_all(signature: bool, baseline: bool, sample: int = None):
     print("Training all models.")
     for model_type in base_model_types():
         print("-------------------------------------------------------------------------------------------------------------------------")
-        perform_train(model_type, signature, baseline, sample_run)
+        perform_train(model_type, signature, baseline, sample)
 
 
 def main():
@@ -297,19 +298,22 @@ def main():
         help="Model name to use.",
         choices=models
     )
-    argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.")
+    argparse.add_argument("--sample", type=int, default=None, help="Run training with a sample.")
     argparse.add_argument("--signature", action="store_true", help="Use only function signature for training.")
     argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
 
     args = argparse.parse_args()
-    print(f"sample_run: {args.sample_run}")
+    print(f"sample: {args.sample}")
     print(f"signature: {args.signature}")
     print(f"baseline: {args.baseline}")
 
+    if args.sample is not None and args.sample < 1:
+        raise ValueError("Sample run must be greater than 0.")
+
     if args.model == "all":
-        perform_train_all(args.signature, args.baseline, args.sample_run)
+        perform_train_all(args.signature, args.baseline, args.sample)
     else:
-        perform_train(args.model, args.signature, args.baseline, args.sample_run)
+        perform_train(args.model, args.signature, args.baseline, args.sample)
 
 
 if __name__ == "__main__":

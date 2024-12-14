@@ -9,14 +9,17 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 def clean_output(output: str) -> str:
-    cleaned_output = re.sub(r'function\s+\w+\s*\(.*?\)::.*?\n(.*?return\s+.*)', r'\1', output)
-    cleaned_output = cleaned_output.strip()
-    cleaned_output = re.sub(r'\n{2,}', '\n', cleaned_output)
-    
-    return cleaned_output
+    """
+    Cleans the generated output by removing unnecessary newlines and whitespace.
+    """
+    output = output.strip()
+    # Remove duplicate newlines
+    output = re.sub(r'\n{2,}', '\n', output)
+    return output
 
 
-def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, max_new_tokens: int = 40, verbose: bool = False) -> str:
+
+def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, max_new_tokens: int = 1024, verbose: bool = False) -> str:
     try:
         model, tokenizer = load_llm(model_type, signature, baseline, verbose)
     except Exception as e:
@@ -35,7 +38,7 @@ def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, m
     return decoded_output
 
 
-def predict_llm_all(prompt: str, signature: bool, baseline: bool, max_length: int = 50, verbose: bool = False) -> list[str]:
+def predict_llm_all(prompt: str, signature: bool, baseline: bool, max_length: int = 1024, verbose: bool = False) -> list[str]:
     predictions = []
     for model_type in base_model_types():
         predictions.append(predict_llm(model_type, prompt, signature, baseline, max_length, verbose))
