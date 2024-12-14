@@ -1,22 +1,42 @@
 from argparse import ArgumentParser
 from src.LLM.LLM_load import load_llm
+from src.utils.julia_formatter import  julia_formatter
 from src.utils.util import base_model_types, all_model_types
 
 import os
 import re
+
+
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 def clean_output(output: str) -> str:
     """
-    Cleans the generated output by removing unnecessary newlines and whitespace.
+    Cleans the generated output:
+    - Truncates it after the last matching 'end' for all opened 'function' blocks.
+    - Ensures the code is syntactically complete.
     """
-    output = output.strip()
-    # Remove duplicate newlines
-    output = re.sub(r'\n{2,}', '\n', output)
-    return output
+    lines = output.splitlines()
+    function_count = 0
+    end_count = 0
+    truncated_lines = []
 
+    for line in lines:
+        if re.search(r'^\s*function\b', line):
+            function_count += 1
+
+        if re.search(r'^\s*end\b', line):
+            end_count += 1
+
+        truncated_lines.append(line)
+
+        if end_count == function_count and function_count > 0:
+            break
+
+    truncated_output = "\n".join(truncated_lines)
+
+    return truncated_output.strip()
 
 
 def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, max_new_tokens: int = 1024, verbose: bool = False) -> str:
@@ -33,8 +53,8 @@ def predict_llm(model_type: str, prompt: str, signature: bool, baseline: bool, m
         attention_mask=attention_mask
     )
     decoded_output = tokenizer.decode(output[0], skip_special_tokens=False)
-    cleaned_output = clean_output(decoded_output)
-
+    decoded_output = clean_output(decoded_output)
+    decoded_output = julia_formatter(decoded_output)
     return decoded_output
 
 
