@@ -7,19 +7,8 @@ import re
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-#import re
 
 def clean_output(output: str) -> str:
-    # Match function definition and return statement
-    cleaned_output = re.sub(r'function\s+\w+\s*\(.*?\)::.*?\n(.*?return\s+.*)', r'\1', output)
-    cleaned_output = cleaned_output.strip()
-    cleaned_output = re.sub(r'\n{2,}', '\n', cleaned_output)
-    
-    return cleaned_output
-
-
-def clean_output(output: str) -> str:
-    # Match function definition and return statement
     cleaned_output = re.sub(r'function\s+\w+\s*\(.*?\)::.*?\n(.*?return\s+.*)', r'\1', output)
     cleaned_output = cleaned_output.strip()
     cleaned_output = re.sub(r'\n{2,}', '\n', cleaned_output)
@@ -63,7 +52,6 @@ def printer_predictions(predictions: list[str], prompt: str):
 
 def printer_prediction(prediction: str, model: str, prompt: str):
     print(f"Prompt: {prompt}, Model: {model}")
-    #print("Insomnia")
     print(prediction)
 
 
