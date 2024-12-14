@@ -44,7 +44,7 @@ python src/data/preprocess.py
 model can be `135m`, `360m`, `1.7b`
 
 ```BASH 
-python src/LLM/LLM_train.py --model "360m" 
+python src/LLM/LLM_train.py --model "135m" 
 ```
 
 `--sample_run` is used to train the model on a small subset of the data

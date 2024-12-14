@@ -4,42 +4,27 @@ import torch
 from datasets import Dataset
 from pandas import DataFrame
 from peft import LoraConfig, get_peft_model
-from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForLanguageModeling, Trainer, \
-    TrainingArguments
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    DataCollatorForLanguageModeling,
+    Trainer,
+    TrainingArguments,
+)
 
 from src.LLM.LLM_utils import model_type_definer
 from src.data.dataHanlder import DataHandler
-from src.utils.util import get_model_path, base_model_types, remove_all_files_and_subdirectories_in_folder
+from src.utils.util import (
+    get_model_path,
+    base_model_types,
+    remove_all_files_and_subdirectories_in_folder,
+)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 INTERNAL_TEST = False
 
 MAX_LENGTH = 1024
-
-
-def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
-    checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-    add_special_tokens_if_needed(tokenizer, model)
-    return model, tokenizer
-
-
-def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
-    checkpoint = "HuggingFaceTB/SmolLM-135M"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-    add_special_tokens_if_needed(tokenizer, model)
-    return model, tokenizer
-
-
-def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
-    checkpoint = "HuggingFaceTB/SmolLM-1.7B"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-    add_special_tokens_if_needed(tokenizer, model)
-    return model, tokenizer
 
 
 def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCausalLM):
@@ -50,6 +35,30 @@ def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCa
             tokenizer.add_special_tokens({'pad_token': '[PAD]'})
             print("Added new pad_token: [PAD]")
             model.resize_token_embeddings(len(tokenizer))
+
+
+def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
+    checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
+    model = AutoModelForCausalLM.from_pretrained(checkpoint)
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
+    add_special_tokens_if_needed(tokenizer, model)
+    return model, tokenizer
+
+
+def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
+    checkpoint = "HuggingFaceTB/SmolLM-135M"
+    model = AutoModelForCausalLM.from_pretrained(checkpoint)
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
+    add_special_tokens_if_needed(tokenizer, model)
+    return model, tokenizer
+
+
+def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
+    checkpoint = "HuggingFaceTB/SmolLM-1.7B"
+    model = AutoModelForCausalLM.from_pretrained(checkpoint)
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
+    add_special_tokens_if_needed(tokenizer, model)
+    return model, tokenizer
 
 
 def model_selector(model_name: str, signature: bool, baseline: bool) -> tuple:
@@ -67,14 +76,19 @@ def model_selector(model_name: str, signature: bool, baseline: bool) -> tuple:
 
     if model_name in model_map:
         model_function = model_map[model_name]
-        model = model_function()
+        model, tokenizer = model_function()
         path = get_model_path(f"{model_name}{path_suffix}")
-        return model, path
+        return (model, tokenizer), path
     else:
         raise ValueError(f"Invalid model name: {model_name}")
 
 
-def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: bool, sample_run: bool = False) -> Dataset:
+def create_corpus(
+    data: DataFrame,
+    tokenizer: AutoTokenizer,
+    just_signature: bool,
+    sample_run: bool = False
+) -> Dataset:
     if sample_run:
         print("Running a sample training run.")
         c_dataset = Dataset.from_pandas(data.sample(1000))
@@ -84,7 +98,7 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
     def tokenize_function(df):
         if just_signature:
             combined_texts = [
-                f"{header}{body}".strip()
+                f"{header}\n{body}".strip()
                 for header, body in zip(
                     df.get("function_header", []),
                     df.get("function_body", [])
@@ -92,7 +106,7 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
             ]
         else:
             combined_texts = [
-                f"{doc}\n{header}{body}".strip()
+                f"{doc}\n{header}\n{body}".strip()
                 for doc, header, body in zip(
                     df.get("doc_string", []),
                     df.get("function_header", []),
@@ -123,24 +137,28 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
 
 def batch_size_per_model(model: str) -> int:
     if model == "360m":
-        return 4
+        return 8
     elif model == "135m":
         return 8
     elif model == "1.7b":
-        return 4
+        return 2
 
 
-def gradient_checkpointing_enable(model: str) -> int:
+def gradient_accumulation_steps_per_model(model: str) -> int:
     if model == "360m":
-        return 4
+        return 2
     elif model == "135m":
-        return 4
+        return 2
     elif model == "1.7b":
         return 4
 
 
-def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
+def enable_gradient_checkpointing(model: AutoModelForCausalLM):
+    model.gradient_checkpointing_enable()
+    print("Gradient checkpointing enabled.")
 
+
+def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
     """
     Trains the model using the Hugging Face Trainer API.
     """
@@ -148,32 +166,39 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
 
     model.config.use_cache = False
     if "1.7b" in model_type:
-        model.gradient_checkpointing_enable()
-        model = apply_lora_to_model(model, target_modules=["q_proj", "v_proj"], r=8, alpha=32, dropout=0.1)
+        enable_gradient_checkpointing(model)
+        model = apply_lora_to_model(
+            model,
+            target_modules=["q_proj", "v_proj"],
+            r=8,
+            alpha=32,
+            dropout=0.1
+        )
 
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer,
         mlm=False,  # Set to False for causal language modeling
     )
 
-    # Define training arguments
+    # Define training arguments with optimizations
     training_args = TrainingArguments(
-        learning_rate=1e-4,
+        learning_rate=1e-3,
         max_grad_norm=1.0,
         output_dir=str(save_path),  # Directory to save model checkpoints
         overwrite_output_dir=True,  # Overwrite the content of the output directory
-        num_train_epochs=5,  # Number of training epochs
+        num_train_epochs=1,  # Number of training epochs
         per_device_train_batch_size=batch_size_per_model(model_type),  # Batch size per device during training
-        gradient_accumulation_steps=gradient_checkpointing_enable(model_type),  # Accumulate gradients
+        gradient_accumulation_steps=gradient_accumulation_steps_per_model(model_type),  # Accumulate gradients
         warmup_steps=500,  # Number of warmup steps for learning rate scheduler
         weight_decay=0.01,  # Strength of weight decay
         logging_dir='./logs',  # Directory for storing logs
-        logging_steps=50,  # Log every X updates steps
-        save_steps=20000,  # Save checkpoint every X updates steps
+        logging_steps=500,  # Log every X updates steps
+        save_steps=50000,  # Save checkpoint every X updates steps
         save_total_limit=2,  # Limit the total amount of checkpoints
         fp16=torch.cuda.is_available(),  # Use mixed precision if available
         remove_unused_columns=True,  # Remove columns not used by the model
-        gradient_checkpointing=True,
+        dataloader_num_workers=4,  # Adjusted for optimal performance
+        gradient_checkpointing=True,  # Enable gradient checkpointing
     )
 
     # Initialize Trainer
@@ -227,17 +252,23 @@ def perform_train(model_type: str, signature: bool, baseline: bool, sample_run: 
     train_small(model_type, model, tokenizer, corpus, path)
 
 
-def perform_train_all(signature: bool, baseline: bool,  sample_run: bool = False):
+def perform_train_all(signature: bool, baseline: bool, sample_run: bool = False):
     print("Training all models.")
     for model_type in base_model_types():
         print("-------------------------------------------------------------------------------------------------------------------------")
-        perform_train(model_type, signature, baseline,  sample_run)
+        perform_train(model_type, signature, baseline, sample_run)
 
 
 def main():
     argparse = ArgumentParser()
-    argparse.add_argument("--model", type=str, default="135m", help="Model name to use.",
-                          choices=base_model_types().append("all"))
+    models = base_model_types() + ["all"]
+    argparse.add_argument(
+        "--model",
+        type=str,
+        default="135m",
+        help="Model name to use.",
+        choices=models
+    )
     argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.")
     argparse.add_argument("--signature", action="store_true", help="Use only function signature for training.")
     argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
