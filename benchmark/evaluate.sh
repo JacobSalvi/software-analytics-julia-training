@@ -25,7 +25,7 @@ else
 fi
 
 # ========== Setup the benchmark parameters ========== #
-
+cd benchmark
 MODEL_NAME=$1
 MODEL_LABEL=$(echo $MODEL_NAME | cut -d'/' -f 2)
 
@@ -51,3 +51,5 @@ python3 -u extract.py -i ./$OUTPUT_DIR -o ${MODEL_LABEL}_results_${LANGUAGE}.jso
 echo "Printing the results..."
 TEMPERATURE_LABEL=$(echo $TEMPERATURE | sed 's/\./_/g')
 python3 -u ./MultiPL-E/pass_k.py ./$OUTPUT_DIR/* | tee $OUTPUT_DIR/pass_result_temp_${TEMPERATURE_LABEL}.csv
+
+export PATH=$PATH:~/benchmark
