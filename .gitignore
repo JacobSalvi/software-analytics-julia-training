@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 MultiPL-E/
 
+results/
+models/
 data/
 
 # C extensions
