@@ -26,9 +26,8 @@ class DataHandler:
         if not Path(DataHandler.PARSED).exists():
             raise FileNotFoundError(f"The file {DataHandler.PARSED.name} does not exist, please pre-process the data first with data/preprocess.py")
 
-        with open(DataHandler.PARSED, "r") as f:
-            df = pd.DataFrame([json.loads(line) for line in f])
-            df.to_csv(util.data_dir().joinpath("function_definitions_preprocessed.csv"), index=False)
+        df = pd.read_json(util.data_dir().joinpath("function_definitions_preprocessed.json"), lines=True)
+
         return df
 
     @staticmethod
@@ -42,6 +41,7 @@ class DataHandler:
     @staticmethod
     def get_baseline():
         return DataHandler.baseline_pre_process(pd.DataFrame(DataHandler.get_raw()))
+
 
 
 

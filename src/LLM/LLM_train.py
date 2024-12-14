@@ -3,22 +3,12 @@ from pathlib import Path
 import torch
 from datasets import Dataset
 from pandas import DataFrame
-from peft import LoraConfig, get_peft_model
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    DataCollatorForLanguageModeling,
-    Trainer,
-    TrainingArguments,
-)
-
+from peft import LoraConfig, get_peft_model,prepare_model_for_kbit_training
+from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForLanguageModeling, Trainer, \
+    TrainingArguments,BitsAndBytesConfig
 from src.LLM.LLM_utils import model_type_definer
 from src.data.dataHanlder import DataHandler
-from src.utils.util import (
-    get_model_path,
-    base_model_types,
-    remove_all_files_and_subdirectories_in_folder,
-)
+from src.utils.util import get_model_path, base_model_types, remove_all_files_and_subdirectories_in_folder
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -39,7 +29,7 @@ def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCa
 
 def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -47,7 +37,7 @@ def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 
 def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-135M"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -55,10 +45,25 @@ def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 
 def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-1.7B"
-    model = AutoModelForCausalLM.from_pretrained(checkpoint)
+    nf4_config = BitsAndBytesConfig( load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.float16
+        )
+    model = AutoModelForCausalLM.from_pretrained(checkpoint,quantization_config = nf4_config).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
+
+
+def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCausalLM):
+    if tokenizer.pad_token is None:
+        if tokenizer.eos_token:
+            tokenizer.pad_token = tokenizer.eos_token
+        else:
+            tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            print("Added new pad_token: [PAD]")
+            model.resize_token_embeddings(len(tokenizer))
 
 
 def model_selector(model_name: str, signature: bool, baseline: bool) -> tuple:
@@ -137,9 +142,9 @@ def create_corpus(
 
 def batch_size_per_model(model: str) -> int:
     if model == "360m":
-        return 8
+        return 4
     elif model == "135m":
-        return 8
+        return 4
     elif model == "1.7b":
         return 2
 
@@ -159,6 +164,7 @@ def enable_gradient_checkpointing(model: AutoModelForCausalLM):
 
 
 def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
+
     """
     Trains the model using the Hugging Face Trainer API.
     """
@@ -177,10 +183,10 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
 
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer,
-        mlm=False,  # Set to False for causal language modeling
+        mlm=False,
     )
 
-    # Define training arguments with optimizations
+    # Define training arguments
     training_args = TrainingArguments(
         learning_rate=1e-3,
         max_grad_norm=1.0,
@@ -195,22 +201,25 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
         logging_steps=500,  # Log every X updates steps
         save_steps=50000,  # Save checkpoint every X updates steps
         save_total_limit=2,  # Limit the total amount of checkpoints
-        fp16=torch.cuda.is_available(),  # Use mixed precision if available
+        fp16=True,  # Use mixed precision if available
         remove_unused_columns=True,  # Remove columns not used by the model
         dataloader_num_workers=4,  # Adjusted for optimal performance
         gradient_checkpointing=True,  # Enable gradient checkpointing
     )
+
+
 
     # Initialize Trainer
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=corpus,
-        data_collator=data_collator,
+        data_collator=data_collator
     )
 
     print(f"Model is on device: {next(model.parameters()).device}")
     print(f"Training device: {trainer.args.device}")
+
 
     # Start training
     trainer.train()
@@ -228,6 +237,8 @@ def apply_lora_to_model(model, target_modules=["q_proj", "v_proj"], r=8, alpha=3
     model = get_peft_model(model, lora_config)
     print(f"LoRA applied with target_modules={target_modules}, r={r}, alpha={alpha}, dropout={dropout}.")
     return model
+
+
 
 
 def tokenized_dataset_inspection(tokenized_dataset, tokenizer):
