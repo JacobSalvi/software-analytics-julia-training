@@ -134,3 +134,6 @@ Run the test.py in benchmark to get the efficiency of the models on MultiPl-E be
 python benchmark/test.py
 ```
 
+```bash 
+python src/LLM/LLM_train.py --model "1.7b" --sample_run
+```

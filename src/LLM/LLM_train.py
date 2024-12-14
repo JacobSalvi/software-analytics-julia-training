@@ -16,7 +16,6 @@ INTERNAL_TEST = False
 
 MAX_LENGTH = 1024
 
-
 def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCausalLM):
     if tokenizer.pad_token is None:
         if tokenizer.eos_token:
@@ -45,12 +44,7 @@ def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 
 def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-1.7B"
-    nf4_config = BitsAndBytesConfig( load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.float16
-        )
-    model = AutoModelForCausalLM.from_pretrained(checkpoint,quantization_config = nf4_config).to(device)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint,torch_dtype=torch.float16).to(device)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
@@ -163,6 +157,28 @@ def enable_gradient_checkpointing(model: AutoModelForCausalLM):
     print("Gradient checkpointing enabled.")
 
 
+def is_gpu_available():
+    return torch.cuda.is_available()
+
+def is_bf16_supported():
+    if not is_gpu_available():
+        return False
+
+    device_properties = torch.cuda.get_device_properties(0)
+    # BF16 support typically requires Compute Capability >= 8.0 (Ampere or newer)
+    return device_properties.major >= 8 or (device_properties.major == 7 and device_properties.minor == 5)
+
+def get_fp16_flag():
+    fp = is_gpu_available() and not is_bf16_supported()
+    print(f"fp16 flag: {fp}")
+    return fp
+
+def get_bf16_flag():
+    bf = is_gpu_available() and is_bf16_supported()
+    print(f"bf16 flag: {bf}")
+    return bf
+
+
 def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
 
     """
@@ -188,7 +204,7 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
 
     # Define training arguments
     training_args = TrainingArguments(
-        learning_rate=1e-3,
+        learning_rate=5e-4,
         max_grad_norm=1.0,
         output_dir=str(save_path),  # Directory to save model checkpoints
         overwrite_output_dir=True,  # Overwrite the content of the output directory
@@ -197,14 +213,15 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
         gradient_accumulation_steps=gradient_accumulation_steps_per_model(model_type),  # Accumulate gradients
         warmup_steps=500,  # Number of warmup steps for learning rate scheduler
         weight_decay=0.01,  # Strength of weight decay
-        logging_dir='./logs',  # Directory for storing logs
         logging_steps=500,  # Log every X updates steps
         save_steps=50000,  # Save checkpoint every X updates steps
         save_total_limit=2,  # Limit the total amount of checkpoints
-        fp16=True,  # Use mixed precision if available
+        fp16=get_fp16_flag(),  # Use mixed precision if available
+        bf16=get_bf16_flag(),  # turn this on if GPU supports bf16
         remove_unused_columns=True,  # Remove columns not used by the model
         dataloader_num_workers=4,  # Adjusted for optimal performance
         gradient_checkpointing=True,  # Enable gradient checkpointing
+        optim="adamw_torch",  # Use AdamW optimizer implemented in PyTorch for better compatibility
     )
 
 
