@@ -2,6 +2,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+MultiPL-E/
+
+results/
+models/
+data/
 
 # C extensions
 *.so
@@ -164,3 +169,4 @@ cython_debug/
 
 data/fd.json
 data/fd_parsed.json
+benchmark/.DS_Store
