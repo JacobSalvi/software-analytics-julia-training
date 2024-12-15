@@ -1,0 +1,4018 @@
+name,language,prompt,doctests,original,prompt_terminology,tests,stop_tokens
+HumanEval_0_has_close_elements,jl,""""""" Check if in given vector of numbers, are any two numbers closer to each other than
+given threshold.
+>>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+false
+>>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+true""""""
+function has_close_elements(numbers::Vector{Float64}, threshold::Float64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_0_has_close_elements.py,reworded,"using Test
+
+@testset begin
+
+candidate = has_close_elements;
+	@test(candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == true)
+	@test(candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == false)
+	@test(candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == true)
+	@test(candidate([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == false)
+	@test(candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == true)
+	@test(candidate([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == true)
+	@test(candidate([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_100_make_a_pile,jl,"""""""Given a positive integer n, you have to make a pile of n levels of stones.
+The first level has n stones.
+The number of stones in the next level is:
+    - the next odd number if n is odd.
+    - the next even number if n is even.
+Return the number of stones in each level in a vector, where element at index
+i represents the number of stones in the level (i+1).
+Examples:
+>>> make_a_pile(3)
+[3, 5, 7]""""""
+function make_a_pile(n::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_100_make_a_pile.py,reworded,"using Test
+
+@testset begin
+
+candidate = make_a_pile;
+	@test(candidate(3) == [3, 5, 7])
+	@test(candidate(4) == [4, 6, 8, 10])
+	@test(candidate(5) == [5, 7, 9, 11, 13])
+	@test(candidate(6) == [6, 8, 10, 12, 14, 16])
+	@test(candidate(8) == [8, 10, 12, 14, 16, 18, 20, 22])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_101_words_string,jl,"""""""You will be given a string of words separated by commas or spaces. Your task is
+to split the string into words and return a vector of the words.
+For example:
+>>> words_string(""Hi, my name is John"")
+[""Hi"", ""my"", ""name"", ""is"", ""John""]
+>>> words_string(""One, two, three, four, five, six"")
+[""One"", ""two"", ""three"", ""four"", ""five"", ""six""]""""""
+function words_string(s::String)::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_101_words_string.py,reworded,"using Test
+
+@testset begin
+
+candidate = words_string;
+	@test(candidate(""Hi, my name is John"") == [""Hi"", ""my"", ""name"", ""is"", ""John""])
+	@test(candidate(""One, two, three, four, five, six"") == [""One"", ""two"", ""three"", ""four"", ""five"", ""six""])
+	@test(candidate(""Hi, my name"") == [""Hi"", ""my"", ""name""])
+	@test(candidate(""One,, two, three, four, five, six,"") == [""One"", ""two"", ""three"", ""four"", ""five"", ""six""])
+	@test(candidate("""") == Vector{String}([]))
+	@test(candidate(""ahmed     , gamal"") == [""ahmed"", ""gamal""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_102_choose_num,jl,"""""""This function takes two positive numbers x and y and returns the
+biggest even integer number that is in the range [x, y] inclusive. If 
+there's no such number, then the function should return -1.
+For example:
+>>> choose_num(12, 15)
+14
+>>> choose_num(13, 12)
+-1""""""
+function choose_num(x::Int64, y::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_102_choose_num.py,reworded,"using Test
+
+@testset begin
+
+candidate = choose_num;
+	@test(candidate(12, 15) == 14)
+	@test(candidate(13, 12) == -1)
+	@test(candidate(33, 12354) == 12354)
+	@test(candidate(5234, 5233) == -1)
+	@test(candidate(6, 29) == 28)
+	@test(candidate(27, 10) == -1)
+	@test(candidate(7, 7) == -1)
+	@test(candidate(546, 546) == 546)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_103_rounded_avg,jl,"""""""You are given two positive integers n and m, and your task is to compute the
+average of the integers from n through m (including n and m). 
+Round the answer to the nearest integer and convert that to binary.
+If n is greater than m, return -1.
+Example:
+>>> rounded_avg(1, 5)
+""0b11""
+>>> rounded_avg(7, 5)
+-1
+>>> rounded_avg(10, 20)
+""0b1111""
+>>> rounded_avg(20, 33)
+""0b11010""""""""
+function rounded_avg(n::Int64, m::Int64)::Union{String, Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_103_rounded_avg.py,reworded,"using Test
+
+@testset begin
+
+candidate = rounded_avg;
+	@test(candidate(1, 5) == ""0b11"")
+	@test(candidate(7, 13) == ""0b1010"")
+	@test(candidate(964, 977) == ""0b1111001010"")
+	@test(candidate(996, 997) == ""0b1111100100"")
+	@test(candidate(560, 851) == ""0b1011000010"")
+	@test(candidate(185, 546) == ""0b101101110"")
+	@test(candidate(362, 496) == ""0b110101101"")
+	@test(candidate(350, 902) == ""0b1001110010"")
+	@test(candidate(197, 233) == ""0b11010111"")
+	@test(candidate(7, 5) == -1)
+	@test(candidate(5, 1) == -1)
+	@test(candidate(5, 5) == ""0b101"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_104_unique_digits,jl,"""""""Given a vector of positive integers x. return a sorted vector of all 
+elements that hasn't any even digit.
+Note: Returned vector should be sorted in increasing order.
+For example:
+>>> unique_digits([15, 33, 1422, 1])
+[1, 15, 33]
+>>> unique_digits([152, 323, 1422, 10])
+[]""""""
+function unique_digits(x::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_104_unique_digits.py,reworded,"using Test
+
+@testset begin
+
+candidate = unique_digits;
+	@test(candidate([15, 33, 1422, 1]) == [1, 15, 33])
+	@test(candidate([152, 323, 1422, 10]) == Vector{Int64}([]))
+	@test(candidate([12345, 2033, 111, 151]) == [111, 151])
+	@test(candidate([135, 103, 31]) == [31, 135])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_105_by_length,jl,"""""""Given a vector of integers, sort the integers that are between 1 and 9 inclusive,
+reverse the resulting vector, and then replace each digit by its corresponding name from
+""One"", ""Two"", ""Three"", ""Four"", ""Five"", ""Six"", ""Seven"", ""Eight"", ""Nine"".
+For example:
+>>> by_length([2, 1, 1, 4, 5, 8, 2, 3])
+[""Eight"", ""Five"", ""Four"", ""Three"", ""Two"", ""Two"", ""One"", ""One""]
+  If the vector is empty, return an empty vector:
+>>> by_length([])
+[]
+  If the vector has any strange number ignore it:
+>>> by_length([1, -1, 55])
+[""One""]""""""
+function by_length(arr::Vector{Int64})::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_105_by_length.py,reworded,"using Test
+
+@testset begin
+
+candidate = by_length;
+	@test(candidate([2, 1, 1, 4, 5, 8, 2, 3]) == [""Eight"", ""Five"", ""Four"", ""Three"", ""Two"", ""Two"", ""One"", ""One""])
+	@test(candidate(Vector{Int64}([])) == Vector{String}([]))
+	@test(candidate([1, -1, 55]) == [""One""])
+	@test(candidate([1, -1, 3, 2]) == [""Three"", ""Two"", ""One""])
+	@test(candidate([9, 4, 8]) == [""Nine"", ""Eight"", ""Four""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_106_f,jl,""""""" Implement the function f that takes n as a parameter,
+and returns a vector of size n, such that the value of the element at index i is the factorial of i if i is even
+or the sum of numbers from 1 to i otherwise.
+i starts from 1.
+the factorial of i is the multiplication of the numbers from 1 to i (1 * 2 * ... * i).
+Example:
+>>> f(5)
+[1, 2, 6, 24, 15]""""""
+function f(n::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_106_f.py,reworded,"using Test
+
+@testset begin
+
+candidate = f;
+	@test(candidate(5) == [1, 2, 6, 24, 15])
+	@test(candidate(7) == [1, 2, 6, 24, 15, 720, 28])
+	@test(candidate(1) == [1])
+	@test(candidate(3) == [1, 2, 6])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_107_even_odd_palindrome,jl,"""""""Given a positive integer n, return a tuple that has the number of even and odd
+integer palindromes that fall within the range(1, n), inclusive.
+Example 1:
+>>> even_odd_palindrome(3)
+(1, 2)
+    Explanation:
+    Integer palindrome are 1, 2, 3. one of them is even, and two of them are odd.
+Example 2:
+>>> even_odd_palindrome(12)
+(4, 6)
+    Explanation:
+    Integer palindrome are 1, 2, 3, 4, 5, 6, 7, 8, 9, 11. four of them are even, and 6 of them are odd.
+Note:
+    1. 1 <= n <= 10^3
+    2. returned tuple has the number of even and odd integer palindromes respectively.""""""
+function even_odd_palindrome(n::Int64)::Tuple{Int64, Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_107_even_odd_palindrome.py,reworded,"using Test
+
+@testset begin
+
+candidate = even_odd_palindrome;
+	@test(candidate(123) == (8, 13))
+	@test(candidate(12) == (4, 6))
+	@test(candidate(3) == (1, 2))
+	@test(candidate(63) == (6, 8))
+	@test(candidate(25) == (5, 6))
+	@test(candidate(19) == (4, 6))
+	@test(candidate(9) == (4, 5))
+	@test(candidate(1) == (0, 1))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_108_count_nums,jl,"""""""Write a function count_nums which takes a vector of integers and returns
+the number of elements which has a sum of digits > 0.
+If a number is negative, then its first signed digit will be negative:
+e.g. -123 has signed digits -1, 2, and 3.
+>>> count_nums([])
+0
+>>> count_nums([-1, 11, -11])
+1
+>>> count_nums([1, 1, 2])
+3""""""
+function count_nums(arr::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_108_count_nums.py,reworded,"using Test
+
+@testset begin
+
+candidate = count_nums;
+	@test(candidate(Vector{Int64}([])) == 0)
+	@test(candidate([-1, -2, 0]) == 0)
+	@test(candidate([1, 1, 2, -2, 3, 4, 5]) == 6)
+	@test(candidate([1, 6, 9, -6, 0, 1, 5]) == 5)
+	@test(candidate([1, 100, 98, -7, 1, -1]) == 4)
+	@test(candidate([12, 23, 34, -45, -56, 0]) == 5)
+	@test(candidate([0, 1]) == 1)
+	@test(candidate([1]) == 1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_109_move_one_ball,jl,"""""""We have a vector 'arr' of N integers arr[1], arr[2], ..., arr[N].The
+numbers in the vector will be randomly ordered. Your task is to determine if
+it is possible to get a vector sorted in non-decreasing order by performing 
+the following operation on the given vector:
+    You are allowed to perform right shift operation any number of times.
+One right shift operation means shifting all elements of the vector by one
+position in the right direction. The last element of the vector will be moved to
+the starting position in the vector i.e. 0th index. 
+If it is possible to obtain the sorted vector by performing the above operation
+then return true else return false.
+If the given vector is empty then return true.
+Note: The given vector is guaranteed to have unique elements.
+For Example:
+>>> move_one_ball([3, 4, 5, 1, 2])
+true
+Explanation: By performin 2 right shift operations, non-decreasing order can
+             be achieved for the given vector.
+>>> move_one_ball([3, 5, 4, 1, 2])
+false
+Explanation:It is not possible to get non-decreasing order for the given
+            vector by performing any number of right shift operations.""""""
+function move_one_ball(arr::Vector{Int64})::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_109_move_one_ball.py,reworded,"using Test
+
+@testset begin
+
+candidate = move_one_ball;
+	@test(candidate([3, 4, 5, 1, 2]) == true)
+	@test(candidate([3, 5, 10, 1, 2]) == true)
+	@test(candidate([4, 3, 1, 2]) == false)
+	@test(candidate([3, 5, 4, 1, 2]) == false)
+	@test(candidate(Vector{Int64}([])) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_10_make_palindrome,jl,""""""" Find the shortest palindrome that begins with a supplied string.
+Algorithm idea is simple:
+- Find the longest postfix of supplied string that is a palindrome.
+- Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.
+>>> make_palindrome("""")
+""""
+>>> make_palindrome(""cat"")
+""catac""
+>>> make_palindrome(""cata"")
+""catac""""""""
+function make_palindrome(string::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_10_make_palindrome.py,reworded,"using Test
+
+@testset begin
+
+candidate = make_palindrome;
+	@test(candidate("""") == """")
+	@test(candidate(""x"") == ""x"")
+	@test(candidate(""xyz"") == ""xyzyx"")
+	@test(candidate(""xyx"") == ""xyx"")
+	@test(candidate(""jerry"") == ""jerryrrej"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_110_exchange,jl,"""""""In this problem, you will implement a function that takes two vectors of numbers,
+and determines whether it is possible to perform an exchange of elements
+between them to make lst1 a vector of only even numbers.
+There is no limit on the number of exchanged elements between lst1 and lst2.
+If it is possible to exchange elements between the lst1 and lst2 to make
+all the elements of lst1 to be even, return ""YES"".
+Otherwise, return ""NO"".
+For example:
+>>> exchange([1, 2, 3, 4], [1, 2, 3, 4])
+""YES""
+>>> exchange([1, 2, 3, 4], [1, 5, 3, 4])
+""NO""
+It is assumed that the input vectors will be non-empty.""""""
+function exchange(lst1::Vector{Int64}, lst2::Vector{Int64})::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_110_exchange.py,reworded,"using Test
+
+@testset begin
+
+candidate = exchange;
+	@test(candidate([1, 2, 3, 4], [1, 2, 3, 4]) == ""YES"")
+	@test(candidate([1, 2, 3, 4], [1, 5, 3, 4]) == ""NO"")
+	@test(candidate([1, 2, 3, 4], [2, 1, 4, 3]) == ""YES"")
+	@test(candidate([5, 7, 3], [2, 6, 4]) == ""YES"")
+	@test(candidate([5, 7, 3], [2, 6, 3]) == ""NO"")
+	@test(candidate([3, 2, 6, 1, 8, 9], [3, 5, 5, 1, 1, 1]) == ""NO"")
+	@test(candidate([100, 200], [200, 200]) == ""YES"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_111_histogram,jl,"""""""Given a string representing a space separated lowercase letters, return a dictionary
+of the letter with the most repetition and containing the corresponding count.
+If several letters have the same occurrence, return all of them.
+Example:
+>>> histogram(""a b c"")
+Dict(""a"" => 1, ""b"" => 1, ""c"" => 1)
+>>> histogram(""a b b a"")
+Dict(""a"" => 2, ""b"" => 2)
+>>> histogram(""a b c a b"")
+Dict(""a"" => 2, ""b"" => 2)
+>>> histogram(""b b b b a"")
+Dict(""b"" => 4)
+>>> histogram("""")
+Dict()""""""
+function histogram(test::String)::Dict{String, Int64}> 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_111_histogram.py,reworded,"using Test
+
+@testset begin
+
+candidate = histogram;
+	@test(candidate(""a b b a"") == Dict(""a"" => 2, ""b"" => 2))
+	@test(candidate(""a b c a b"") == Dict(""a"" => 2, ""b"" => 2))
+	@test(candidate(""a b c d g"") == Dict(""a"" => 1, ""b"" => 1, ""c"" => 1, ""d"" => 1, ""g"" => 1))
+	@test(candidate(""r t g"") == Dict(""r"" => 1, ""t"" => 1, ""g"" => 1))
+	@test(candidate(""b b b b a"") == Dict(""b"" => 4))
+	@test(candidate(""r t g"") == Dict(""r"" => 1, ""t"" => 1, ""g"" => 1))
+	@test(candidate("""") == Dict())
+	@test(candidate(""a"") == Dict(""a"" => 1))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_112_reverse_delete,jl,"""""""Task
+We are given two strings s and c, you have to deleted all the characters in s that are equal to any character in c
+then check if the result string is palindrome.
+A string is called palindrome if it reads the same backward as forward.
+You should return a tuple containing the result string and true/false for the check.
+Example
+>>> reverse_delete(""abcde"", ""ae"")
+(""bcd"", false)
+>>> reverse_delete(""abcdef"", ""b"")
+(""acdef"", false)
+>>> reverse_delete(""abcdedcba"", ""ab"")
+(""cdedc"", true)""""""
+function reverse_delete(s::String, c::String)::Tuple{String, Bool} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_112_reverse_delete.py,reworded,"using Test
+
+@testset begin
+
+candidate = reverse_delete;
+	@test(candidate(""abcde"", ""ae"") == (""bcd"", false))
+	@test(candidate(""abcdef"", ""b"") == (""acdef"", false))
+	@test(candidate(""abcdedcba"", ""ab"") == (""cdedc"", true))
+	@test(candidate(""dwik"", ""w"") == (""dik"", false))
+	@test(candidate(""a"", ""a"") == ("""", true))
+	@test(candidate(""abcdedcba"", """") == (""abcdedcba"", true))
+	@test(candidate(""abcdedcba"", ""v"") == (""abcdedcba"", true))
+	@test(candidate(""vabba"", ""v"") == (""abba"", true))
+	@test(candidate(""mamma"", ""mia"") == ("""", true))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_113_odd_count,jl,"""""""Given a vector of strings, where each string consists of only digits, return a vector.
+Each element i of the output should be ""the number of odd elements in the
+string i of the input."" where all the i's should be replaced by the number
+of odd digits in the i'th string of the input.
+>>> odd_count([""1234567""])
+[""the number of odd elements 4n the str4ng 4 of the 4nput.""]
+>>> odd_count([""3"", ""11111111""])
+[""the number of odd elements 1n the str1ng 1 of the 1nput."", ""the number of odd elements 8n the str8ng 8 of the 8nput.""]""""""
+function odd_count(lst::Vector{String})::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_113_odd_count.py,reworded,"using Test
+
+@testset begin
+
+candidate = odd_count;
+	@test(candidate([""1234567""]) == [""the number of odd elements 4n the str4ng 4 of the 4nput.""])
+	@test(candidate([""3"", ""11111111""]) == [""the number of odd elements 1n the str1ng 1 of the 1nput."", ""the number of odd elements 8n the str8ng 8 of the 8nput.""])
+	@test(candidate([""271"", ""137"", ""314""]) == [""the number of odd elements 2n the str2ng 2 of the 2nput."", ""the number of odd elements 3n the str3ng 3 of the 3nput."", ""the number of odd elements 2n the str2ng 2 of the 2nput.""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_114_minSubArraySum,jl,"""""""Given a vector of integers nums, find the minimum sum of any non-empty sub-vector
+of nums.
+Example
+>>> minSubArraySum([2, 3, 4, 1, 2, 4])
+1
+>>> minSubArraySum([-1, -2, -3])
+-6""""""
+function minSubArraySum(nums::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_114_minSubArraySum.py,reworded,"using Test
+
+@testset begin
+
+candidate = minSubArraySum;
+	@test(candidate([2, 3, 4, 1, 2, 4]) == 1)
+	@test(candidate([-1, -2, -3]) == -6)
+	@test(candidate([-1, -2, -3, 2, -10]) == -14)
+	@test(candidate([-9999999999999999]) == -9999999999999999)
+	@test(candidate([0, 10, 20, 1000000]) == 0)
+	@test(candidate([-1, -2, -3, 10, -5]) == -6)
+	@test(candidate([100, -1, -2, -3, 10, -5]) == -6)
+	@test(candidate([10, 11, 13, 8, 3, 4]) == 3)
+	@test(candidate([100, -33, 32, -1, 0, -2]) == -33)
+	@test(candidate([-10]) == -10)
+	@test(candidate([7]) == 7)
+	@test(candidate([1, -1]) == -1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_115_max_fill,jl,"""""""You are given a rectangular grid of wells. Each row represents a single well,
+and each 1 in a row represents a single unit of water.
+Each well has a corresponding bucket that can be used to extract water from it, 
+and all buckets have the same capacity.
+Your task is to use the buckets to empty the wells.
+Output the number of times you need to lower the buckets.
+Example 1:
+>>> max_fill([[0, 0, 1, 0], [0, 1, 0, 0], [1, 1, 1, 1]], 1)
+6
+Example 2:
+>>> max_fill([[0, 0, 1, 1], [0, 0, 0, 0], [1, 1, 1, 1], [0, 1, 1, 1]], 2)
+5
+Example 3:
+>>> max_fill([[0, 0, 0], [0, 0, 0]], 5)
+0
+Constraints:
+    * all wells have the same length
+    * 1 <= grid.length <= 10^2
+    * 1 <= grid[:,1].length <= 10^2
+    * grid[i][j] -> 0 | 1
+    * 1 <= capacity <= 10""""""
+function max_fill(grid::Vector{Vector{Int64}}, capacity::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_115_max_fill.py,reworded,"using Test
+
+@testset begin
+
+candidate = max_fill;
+	@test(candidate([[0, 0, 1, 0], [0, 1, 0, 0], [1, 1, 1, 1]], 1) == 6)
+	@test(candidate([[0, 0, 1, 1], [0, 0, 0, 0], [1, 1, 1, 1], [0, 1, 1, 1]], 2) == 5)
+	@test(candidate([[0, 0, 0], [0, 0, 0]], 5) == 0)
+	@test(candidate([[1, 1, 1, 1], [1, 1, 1, 1]], 2) == 4)
+	@test(candidate([[1, 1, 1, 1], [1, 1, 1, 1]], 9) == 2)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_116_sort_array,jl,"""""""In this Kata, you have to sort a vector of non-negative integers according to
+number of ones in their binary representation in ascending order.
+For similar number of ones, sort based on decimal value.
+It must be implemented like this:
+>>> sort_array([1, 5, 2, 3, 4])
+[1, 2, 3, 4, 5]
+>>> sort_array([-2, -3, -4, -5, -6])
+[-6, -5, -4, -3, -2]
+>>> sort_array([1, 0, 2, 3, 4])
+[0, 1, 2, 3, 4]""""""
+function sort_array(arr::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_116_sort_array.py,reworded,"using Test
+
+@testset begin
+
+candidate = sort_array;
+	@test(candidate([1, 5, 2, 3, 4]) == [1, 2, 4, 3, 5])
+	@test(candidate([-2, -3, -4, -5, -6]) == [-4, -2, -6, -5, -3])
+	@test(candidate([1, 0, 2, 3, 4]) == [0, 1, 2, 4, 3])
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([2, 5, 77, 4, 5, 3, 5, 7, 2, 3, 4]) == [2, 2, 4, 4, 3, 3, 5, 5, 5, 7, 77])
+	@test(candidate([3, 6, 44, 12, 32, 5]) == [32, 3, 5, 6, 12, 44])
+	@test(candidate([2, 4, 8, 16, 32]) == [2, 4, 8, 16, 32])
+	@test(candidate([2, 4, 8, 16, 32]) == [2, 4, 8, 16, 32])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_117_select_words,jl,"""""""Given a string s and a natural number n, you have been tasked to implement 
+a function that returns a vector of all words from string s that contain exactly 
+n consonants, in order these words appear in the string s.
+If the string s is empty then the function should return an empty vector.
+Note: you may assume the input string contains only letters and spaces.
+Examples:
+>>> select_words(""Mary had a little lamb"", 4)
+[""little""]
+>>> select_words(""Mary had a little lamb"", 3)
+[""Mary"", ""lamb""]
+>>> select_words(""simple white space"", 2)
+[]
+>>> select_words(""Hello world"", 4)
+[""world""]
+>>> select_words(""Uncle sam"", 3)
+[""Uncle""]""""""
+function select_words(s::String, n::Int64)::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_117_select_words.py,reworded,"using Test
+
+@testset begin
+
+candidate = select_words;
+	@test(candidate(""Mary had a little lamb"", 4) == [""little""])
+	@test(candidate(""Mary had a little lamb"", 3) == [""Mary"", ""lamb""])
+	@test(candidate(""simple white space"", 2) == Vector{String}([]))
+	@test(candidate(""Hello world"", 4) == [""world""])
+	@test(candidate(""Uncle sam"", 3) == [""Uncle""])
+	@test(candidate("""", 4) == Vector{String}([]))
+	@test(candidate(""a b c d e f"", 1) == [""b"", ""c"", ""d"", ""f""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_118_get_closest_vowel,jl,"""""""You are given a word. Your task is to find the closest vowel that stands between 
+two consonants from the right side of the word (case sensitive).
+Vowels in the beginning and ending doesn't count. Return empty string if you didn't
+find any vowel met the above condition. 
+You may assume that the given string contains English letter only.
+Example:
+>>> get_closest_vowel(""yogurt"")
+""u""
+>>> get_closest_vowel(""FULL"")
+""U""
+>>> get_closest_vowel(""quick"")
+""""
+>>> get_closest_vowel(""ab"")
+""""""""""
+function get_closest_vowel(word::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_118_get_closest_vowel.py,reworded,"using Test
+
+@testset begin
+
+candidate = get_closest_vowel;
+	@test(candidate(""yogurt"") == ""u"")
+	@test(candidate(""full"") == ""u"")
+	@test(candidate(""easy"") == """")
+	@test(candidate(""eAsy"") == """")
+	@test(candidate(""ali"") == """")
+	@test(candidate(""bad"") == ""a"")
+	@test(candidate(""most"") == ""o"")
+	@test(candidate(""ab"") == """")
+	@test(candidate(""ba"") == """")
+	@test(candidate(""quick"") == """")
+	@test(candidate(""anime"") == ""i"")
+	@test(candidate(""Asia"") == """")
+	@test(candidate(""Above"") == ""o"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_119_match_parens,jl,"""""""You are given a vector of two strings, both strings consist of open
+parentheses '(' or close parentheses ')' only.
+Your job is to check if it is possible to concatenate the two strings in
+some order, that the resulting string will be good.
+A string S is considered to be good if and only if all parentheses in S
+are balanced. For example: the string '(())()' is good, while the string
+'())' is not.
+Return 'Yes' if there's a way to make a good string, and return 'No' otherwise.
+Examples:
+>>> match_parens([""()("", "")""])
+""Yes""
+>>> match_parens(["")"", "")""])
+""No""""""""
+function match_parens(lst::Vector{String})::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_119_match_parens.py,reworded,"using Test
+
+@testset begin
+
+candidate = match_parens;
+	@test(candidate([""()("", "")""]) == ""Yes"")
+	@test(candidate(["")"", "")""]) == ""No"")
+	@test(candidate([""(()(())"", ""())())""]) == ""No"")
+	@test(candidate(["")())"", ""(()()(""]) == ""Yes"")
+	@test(candidate([""(())))"", ""(()())((""]) == ""Yes"")
+	@test(candidate([""()"", ""())""]) == ""No"")
+	@test(candidate([""(()("", ""()))()""]) == ""Yes"")
+	@test(candidate([""(((("", ""((())""]) == ""No"")
+	@test(candidate(["")(()"", ""(()(""]) == ""No"")
+	@test(candidate(["")("", "")(""]) == ""No"")
+	@test(candidate([""("", "")""]) == ""Yes"")
+	@test(candidate(["")"", ""(""]) == ""Yes"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_11_string_xor,jl,""""""" Input are two strings a and b consisting only of 1s and 0s.
+Perform binary XOR on these inputs and return result also as a string.
+>>> string_xor(""010"", ""110"")
+""100""""""""
+function string_xor(a::String, b::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_11_string_xor.py,reworded,"using Test
+
+@testset begin
+
+candidate = string_xor;
+	@test(candidate(""111000"", ""101010"") == ""010010"")
+	@test(candidate(""1"", ""1"") == ""0"")
+	@test(candidate(""0101"", ""0000"") == ""0101"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_120_maximum,jl,"""""""Given a vector arr of integers and a positive integer k, return a sorted vector 
+of length k with the maximum k numbers in arr.
+Example 1:
+>>> maximum([-3, -4, 5], 3)
+[-4, -3, 5]
+Example 2:
+>>> maximum([4, -4, 4], 2)
+[4, 4]
+Example 3:
+>>> maximum([-3, 2, 1, 2, -1, -2, 1], 1)
+[2]
+Note:
+    1. The length of the vector will be in the range of [1, 1000].
+    2. The elements in the vector will be in the range of [-1000, 1000].
+    3. 0 <= k <= len(arr)""""""
+function maximum(arr::Vector{Int64}, k::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_120_maximum.py,reworded,"using Test
+
+@testset begin
+
+candidate = maximum;
+	@test(candidate([-3, -4, 5], 3) == [-4, -3, 5])
+	@test(candidate([4, -4, 4], 2) == [4, 4])
+	@test(candidate([-3, 2, 1, 2, -1, -2, 1], 1) == [2])
+	@test(candidate([123, -123, 20, 0, 1, 2, -3], 3) == [2, 20, 123])
+	@test(candidate([-123, 20, 0, 1, 2, -3], 4) == [0, 1, 2, 20])
+	@test(candidate([5, 15, 0, 3, -13, -8, 0], 7) == [-13, -8, 0, 0, 3, 5, 15])
+	@test(candidate([-1, 0, 2, 5, 3, -10], 2) == [3, 5])
+	@test(candidate([1, 0, 5, -7], 1) == [5])
+	@test(candidate([4, -4], 2) == [-4, 4])
+	@test(candidate([-10, 10], 2) == [-10, 10])
+	@test(candidate([1, 2, 3, -23, 243, -400, 0], 0) == Vector{Int64}([]))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_121_solution,jl,"""""""Given a non-empty vector of integers, return the sum of all of the odd elements that are in even positions.
+Examples
+>>> solution([5, 8, 7, 1])
+12
+>>> solution([3, 3, 3, 3, 3])
+9
+>>> solution([30, 13, 24, 321])
+0""""""
+function solution(lst::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_121_solution.py,reworded,"using Test
+
+@testset begin
+
+candidate = solution;
+	@test(candidate([5, 8, 7, 1]) == 12)
+	@test(candidate([3, 3, 3, 3, 3]) == 9)
+	@test(candidate([30, 13, 24, 321]) == 0)
+	@test(candidate([5, 9]) == 5)
+	@test(candidate([2, 4, 8]) == 0)
+	@test(candidate([30, 13, 23, 32]) == 23)
+	@test(candidate([3, 13, 2, 9]) == 3)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_122_add_elements,jl,"""""""Given a non-empty vector of integers arr and an integer k, return
+the sum of the elements with at most two digits from the first k elements of arr.
+Example:
+>>> add_elements([111, 21, 3, 4000, 5, 6, 7, 8, 9], 4)
+24
+Constraints:
+    1. 1 <= len(arr) <= 100
+    2. 1 <= k <= len(arr)""""""
+function add_elements(arr::Vector{Int64}, k::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_122_add_elements.py,reworded,"using Test
+
+@testset begin
+
+candidate = add_elements;
+	@test(candidate([1, -2, -3, 41, 57, 76, 87, 88, 99], 3) == -4)
+	@test(candidate([111, 121, 3, 4000, 5, 6], 2) == 0)
+	@test(candidate([11, 21, 3, 90, 5, 6, 7, 8, 9], 4) == 125)
+	@test(candidate([111, 21, 3, 4000, 5, 6, 7, 8, 9], 4) == 24)
+	@test(candidate([1], 1) == 1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_123_get_odd_collatz,jl,"""""""Given a positive integer n, return a sorted vector that has the odd numbers in collatz sequence.
+The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined
+as follows: start with any positive integer n. Then each term is obtained from the 
+previous term as follows: if the previous term is even, the next term is one half of 
+the previous term. If the previous term is odd, the next term is 3 times the previous
+term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.
+Note: 
+    1. Collatz(1) is [1].
+    2. returned vector sorted in increasing order.
+For example:
+get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.
+>>> get_odd_collatz(5)
+[1, 5]""""""
+function get_odd_collatz(n::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_123_get_odd_collatz.py,reworded,"using Test
+
+@testset begin
+
+candidate = get_odd_collatz;
+	@test(candidate(14) == [1, 5, 7, 11, 13, 17])
+	@test(candidate(5) == [1, 5])
+	@test(candidate(12) == [1, 3, 5])
+	@test(candidate(1) == [1])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_124_valid_date,jl,"""""""You have to write a function which validates a given date string and
+returns true if the date is valid otherwise false.
+The date is valid if all of the following rules are satisfied:
+1. The date string is not empty.
+2. The number of days is not less than 1 or higher than 31 days for months 1,3,5,7,8,10,12. And the number of days is not less than 1 or higher than 30 days for months 4,6,9,11. And, the number of days is not less than 1 or higher than 29 for the month 2.
+3. The months should not be less than 1 or higher than 12.
+4. The date should be in the format: mm-dd-yyyy
+>>> valid_date(""03-11-2000"")
+true
+>>> valid_date(""15-01-2012"")
+false
+>>> valid_date(""04-0-2040"")
+false
+>>> valid_date(""06-04-2020"")
+true
+>>> valid_date(""06/04/2020"")
+false""""""
+function valid_date(date::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_124_valid_date.py,reworded,"using Test
+
+@testset begin
+
+candidate = valid_date;
+	@test(candidate(""03-11-2000"") == true)
+	@test(candidate(""15-01-2012"") == false)
+	@test(candidate(""04-0-2040"") == false)
+	@test(candidate(""06-04-2020"") == true)
+	@test(candidate(""01-01-2007"") == true)
+	@test(candidate(""03-32-2011"") == false)
+	@test(candidate("""") == false)
+	@test(candidate(""04-31-3000"") == false)
+	@test(candidate(""06-06-2005"") == true)
+	@test(candidate(""21-31-2000"") == false)
+	@test(candidate(""04-12-2003"") == true)
+	@test(candidate(""04122003"") == false)
+	@test(candidate(""20030412"") == false)
+	@test(candidate(""2003-04"") == false)
+	@test(candidate(""2003-04-12"") == false)
+	@test(candidate(""04-2003"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_125_split_words,jl,"""""""Given a string of words, return a vector of words split on whitespace, if no whitespaces exists in the text you
+should split on commas ',' if no commas exists you should return the number of lower-case letters with odd order in the
+alphabet, ord('a') = 0, ord('b') = 1, ... ord('z') = 25
+Examples
+>>> split_words(""Hello world!"")
+[""Hello"", ""world!""]
+>>> split_words(""Hello,world!"")
+[""Hello"", ""world!""]
+>>> split_words(""abcdef"")
+3""""""
+function split_words(txt::String)::Union{Vector{String}, Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_125_split_words.py,reworded,"using Test
+
+@testset begin
+
+candidate = split_words;
+	@test(candidate(""Hello world!"") == [""Hello"", ""world!""])
+	@test(candidate(""Hello,world!"") == [""Hello"", ""world!""])
+	@test(candidate(""Hello world,!"") == [""Hello"", ""world,!""])
+	@test(candidate(""Hello,Hello,world !"") == [""Hello,Hello,world"", ""!""])
+	@test(candidate(""abcdef"") == 3)
+	@test(candidate(""aaabb"") == 2)
+	@test(candidate(""aaaBb"") == 1)
+	@test(candidate("""") == 0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_126_is_sorted,jl,"""""""Given a vector of numbers, return whether or not they are sorted
+in ascending order. If vector has more than 1 duplicate of the same
+number, return false. Assume no negative numbers and only integers.
+Examples
+>>> is_sorted([5])
+true
+>>> is_sorted([1, 2, 3, 4, 5])
+true
+>>> is_sorted([1, 3, 2, 4, 5])
+false
+>>> is_sorted([1, 2, 3, 4, 5, 6])
+true
+>>> is_sorted([1, 2, 3, 4, 5, 6, 7])
+true
+>>> is_sorted([1, 3, 2, 4, 5, 6, 7])
+false
+>>> is_sorted([1, 2, 2, 3, 3, 4])
+true
+>>> is_sorted([1, 2, 2, 2, 3, 4])
+false""""""
+function is_sorted(lst::Vector{Int64})::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_126_is_sorted.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_sorted;
+	@test(candidate([5]) == true)
+	@test(candidate([1, 2, 3, 4, 5]) == true)
+	@test(candidate([1, 3, 2, 4, 5]) == false)
+	@test(candidate([1, 2, 3, 4, 5, 6]) == true)
+	@test(candidate([1, 2, 3, 4, 5, 6, 7]) == true)
+	@test(candidate([1, 3, 2, 4, 5, 6, 7]) == false)
+	@test(candidate(Vector{Int64}([])) == true)
+	@test(candidate([1]) == true)
+	@test(candidate([3, 2, 1]) == false)
+	@test(candidate([1, 2, 2, 2, 3, 4]) == false)
+	@test(candidate([1, 2, 3, 3, 3, 4]) == false)
+	@test(candidate([1, 2, 2, 3, 3, 4]) == true)
+	@test(candidate([1, 2, 3, 4]) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_127_intersection,jl,"""""""You are given two intervals,
+where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).
+The given intervals are closed which means that the interval (start, end)
+includes both start and end.
+For each given interval, it is assumed that its start is less or equal its end.
+Your task is to determine whether the length of intersection of these two 
+intervals is a prime number.
+Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+which its length is 1, which not a prime number.
+If the length of the intersection is a prime number, return ""YES"",
+otherwise, return ""NO"".
+If the two intervals don't intersect, return ""NO"".
+[input/output] samples:
+>>> intersection((1, 2), (2, 3))
+""NO""
+>>> intersection((-1, 1), (0, 4))
+""NO""
+>>> intersection((-3, -1), (-5, 5))
+""YES""""""""
+function intersection(interval1::Tuple{Int64, Int64}, interval2::Tuple{Int64, Int64})::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_127_intersection.py,reworded,"using Test
+
+@testset begin
+
+candidate = intersection;
+	@test(candidate((1, 2), (2, 3)) == ""NO"")
+	@test(candidate((-1, 1), (0, 4)) == ""NO"")
+	@test(candidate((-3, -1), (-5, 5)) == ""YES"")
+	@test(candidate((-2, 2), (-4, 0)) == ""YES"")
+	@test(candidate((-11, 2), (-1, -1)) == ""NO"")
+	@test(candidate((1, 2), (3, 5)) == ""NO"")
+	@test(candidate((1, 2), (1, 2)) == ""NO"")
+	@test(candidate((-2, -2), (-3, -2)) == ""NO"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_128_prod_signs,jl,"""""""You are given a vector arr of integers and you need to return
+sum of magnitudes of integers multiplied by product of all signs
+of each number in the vector, represented by 1, -1 or 0.
+Note: return nothing for empty arr.
+Example:
+>>> prod_signs([1, 2, 2, -4])
+9
+>>> prod_signs([0, 1])
+0
+>>> prod_signs([])
+nothing""""""
+function prod_signs(arr::Vector{Int64})::Union{Int64, Nothing} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_128_prod_signs.py,reworded,"using Test
+
+@testset begin
+
+candidate = prod_signs;
+	@test(candidate([1, 2, 2, -4]) == -9)
+	@test(candidate([0, 1]) == 0)
+	@test(candidate([1, 1, 1, 2, 3, -1, 1]) == -10)
+	@test(candidate(Vector{Int64}([])) == nothing)
+	@test(candidate([2, 4, 1, 2, -1, -1, 9]) == 20)
+	@test(candidate([-1, 1, -1, 1]) == 4)
+	@test(candidate([-1, 1, 1, 1]) == -4)
+	@test(candidate([-1, 1, 1, 0]) == 0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_129_minPath,jl,"""""""Given a grid with N rows and N columns (N >= 2) and a positive integer k, 
+each cell of the grid contains a value. Every integer in the range [1, N * N]
+inclusive appears exactly once on the cells of the grid.
+You have to find the minimum path of length k in the grid. You can start
+from any cell, and in each step you can move to any of the neighbor cells,
+in other words, you can go to cells which share an edge with you current
+cell.
+Please note that a path of length k means visiting exactly k cells (not
+necessarily distinct).
+You CANNOT go off the grid.
+A path A (of length k) is considered less than a path B (of length k) if
+after making the ordered vectors of the values on the cells that A and B go
+through (let's call them lst_A and lst_B), lst_A is lexicographically less
+than lst_B, in other words, there exist an integer index i (1 <= i <= k)
+such that lst_A[i] < lst_B[i] and for any j (1 <= j < i) we have
+lst_A[j] = lst_B[j].
+It is guaranteed that the answer is unique.
+Return an ordered vector of the values on the cells that the minimum path go through.
+Examples:    
+>>> minPath([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 3)
+[1, 2, 1]
+>>> minPath([[5, 9, 3], [4, 1, 6], [7, 8, 2]], 1)
+[1]""""""
+function minPath(grid::Vector{Vector{Int64}}, k::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_129_minPath.py,reworded,"using Test
+
+@testset begin
+
+candidate = minPath;
+	@test(candidate([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 3) == [1, 2, 1])
+	@test(candidate([[5, 9, 3], [4, 1, 6], [7, 8, 2]], 1) == [1])
+	@test(candidate([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]], 4) == [1, 2, 1, 2])
+	@test(candidate([[6, 4, 13, 10], [5, 7, 12, 1], [3, 16, 11, 15], [8, 14, 9, 2]], 7) == [1, 10, 1, 10, 1, 10, 1])
+	@test(candidate([[8, 14, 9, 2], [6, 4, 13, 15], [5, 7, 1, 12], [3, 10, 11, 16]], 5) == [1, 7, 1, 7, 1])
+	@test(candidate([[11, 8, 7, 2], [5, 16, 14, 4], [9, 3, 15, 6], [12, 13, 10, 1]], 9) == [1, 6, 1, 6, 1, 6, 1, 6, 1])
+	@test(candidate([[12, 13, 10, 1], [9, 3, 15, 6], [5, 16, 14, 4], [11, 8, 7, 2]], 12) == [1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6])
+	@test(candidate([[2, 7, 4], [3, 1, 5], [6, 8, 9]], 8) == [1, 3, 1, 3, 1, 3, 1, 3])
+	@test(candidate([[6, 1, 5], [3, 8, 9], [2, 7, 4]], 8) == [1, 5, 1, 5, 1, 5, 1, 5])
+	@test(candidate([[1, 2], [3, 4]], 10) == [1, 2, 1, 2, 1, 2, 1, 2, 1, 2])
+	@test(candidate([[1, 3], [3, 2]], 10) == [1, 3, 1, 3, 1, 3, 1, 3, 1, 3])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_12_longest,jl,""""""" Out of vector of strings, return the longest one. Return the first one in case of multiple
+strings of the same length. Return nothing in case the input vector is empty.
+>>> longest([])
+nothing
+>>> longest([""a"", ""b"", ""c""])
+""a""
+>>> longest([""a"", ""bb"", ""ccc""])
+""ccc""""""""
+function longest(strings::Vector{String})::Union{String, Nothing} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_12_longest.py,reworded,"using Test
+
+@testset begin
+
+candidate = longest;
+	@test(candidate(Vector{String}([])) == nothing)
+	@test(candidate([""x"", ""y"", ""z""]) == ""x"")
+	@test(candidate([""x"", ""yyy"", ""zzzz"", ""www"", ""kkkk"", ""abc""]) == ""zzzz"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_130_tri,jl,"""""""Everyone knows Fibonacci sequence, it was studied deeply by mathematicians in 
+the last couple centuries. However, what people don't know is Tribonacci sequence.
+Tribonacci sequence is defined by the recurrence:
+tri(1) = 3
+tri(n) = 1 + n / 2, if n is even.
+tri(n) =  tri(n - 1) + tri(n - 2) + tri(n + 1), if n is odd.
+For example:
+tri(2) = 1 + (2 / 2) = 2
+tri(4) = 3
+tri(3) = tri(2) + tri(1) + tri(4)
+       = 2 + 3 + 3 = 8 
+You are given a non-negative integer number n, you have to a return a vector of the 
+first n + 1 numbers of the Tribonacci sequence.
+Examples:
+>>> tri(3)
+[1, 3, 2, 8]""""""
+function tri(n::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_130_tri.py,reworded,"using Test
+
+@testset begin
+
+candidate = tri;
+	@test(candidate(3) == [1, 3, 2, 8])
+	@test(candidate(4) == [1, 3, 2, 8, 3])
+	@test(candidate(5) == [1, 3, 2, 8, 3, 15])
+	@test(candidate(6) == [1, 3, 2, 8, 3, 15, 4])
+	@test(candidate(7) == [1, 3, 2, 8, 3, 15, 4, 24])
+	@test(candidate(8) == [1, 3, 2, 8, 3, 15, 4, 24, 5])
+	@test(candidate(9) == [1, 3, 2, 8, 3, 15, 4, 24, 5, 35])
+	@test(candidate(20) == [1, 3, 2, 8, 3, 15, 4, 24, 5, 35, 6, 48, 7, 63, 8, 80, 9, 99, 10, 120, 11])
+	@test(candidate(0) == [1])
+	@test(candidate(1) == [1, 3])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_131_digits,jl,"""""""Given a positive integer n, return the product of the odd digits.
+Return 0 if all digits are even.
+For example:
+>>> digits(1)
+1
+>>> digits(4)
+0
+>>> digits(235)
+15""""""
+function digits(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_131_digits.py,reworded,"using Test
+
+@testset begin
+
+candidate = digits;
+	@test(candidate(5) == 5)
+	@test(candidate(54) == 5)
+	@test(candidate(120) == 1)
+	@test(candidate(5014) == 5)
+	@test(candidate(98765) == 315)
+	@test(candidate(5576543) == 2625)
+	@test(candidate(2468) == 0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_132_is_nested,jl,"""""""Create a function that takes a string as input which contains only square brackets.
+The function should return true if and only if there is a valid subsequence of brackets 
+where at least one bracket in the subsequence is nested.
+>>> is_nested(""[[]]"")
+true
+>>> is_nested(""[]]]]]]][[[[[]"")
+false
+>>> is_nested(""[][]"")
+false
+>>> is_nested(""[]"")
+false
+>>> is_nested(""[[][]]"")
+true
+>>> is_nested(""[[]][["")
+true""""""
+function is_nested(string::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_132_is_nested.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_nested;
+	@test(candidate(""[[]]"") == true)
+	@test(candidate(""[]]]]]]][[[[[]"") == false)
+	@test(candidate(""[][]"") == false)
+	@test(candidate(""[]"") == false)
+	@test(candidate(""[[[[]]]]"") == true)
+	@test(candidate(""[]]]]]]]]]]"") == false)
+	@test(candidate(""[][][[]]"") == true)
+	@test(candidate(""[[]"") == false)
+	@test(candidate(""[]]"") == false)
+	@test(candidate(""[[]][["") == true)
+	@test(candidate(""[[][]]"") == true)
+	@test(candidate("""") == false)
+	@test(candidate(""[[[[[[[["") == false)
+	@test(candidate(""]]]]]]]]"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_133_sum_squares,jl,"""""""You are given a vector of numbers.
+You need to return the sum of squared numbers in the given vector,
+round each element in the vector to the upper int(Ceiling) first.
+Examples:
+>>> lst([1.0, 2.0, 3.0])
+14
+>>> lst([1.0, 4.0, 9.0])
+98
+>>> lst([1.0, 3.0, 5.0, 7.0])
+84
+>>> lst([1.4, 4.2, 0.0])
+29
+>>> lst([-2.4, 1.0, 1.0])
+6""""""
+function sum_squares(lst::Vector{Float64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_133_sum_squares.py,reworded,"using Test
+
+@testset begin
+
+candidate = sum_squares;
+	@test(candidate([1.0, 2.0, 3.0]) == 14)
+	@test(candidate([1.0, 2.0, 3.0]) == 14)
+	@test(candidate([1.0, 3.0, 5.0, 7.0]) == 84)
+	@test(candidate([1.4, 4.2, 0.0]) == 29)
+	@test(candidate([-2.4, 1.0, 1.0]) == 6)
+	@test(candidate([100.0, 1.0, 15.0, 2.0]) == 10230)
+	@test(candidate([10000.0, 10000.0]) == 200000000)
+	@test(candidate([-1.4, 4.6, 6.3]) == 75)
+	@test(candidate([-1.4, 17.9, 18.9, 19.9]) == 1086)
+	@test(candidate([0.0]) == 0)
+	@test(candidate([-1.0]) == 1)
+	@test(candidate([-1.0, 1.0, 0.0]) == 2)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_134_check_if_last_char_is_a_letter,jl,"""""""Create a function that returns true if the last character
+of a given string is an alphabetical character and is not
+a part of a word, and false otherwise.
+Note: ""word"" is a group of characters separated by space.
+Examples:
+>>> check_if_last_char_is_a_letter(""apple pie"")
+false
+>>> check_if_last_char_is_a_letter(""apple pi e"")
+true
+>>> check_if_last_char_is_a_letter(""apple pi e "")
+false
+>>> check_if_last_char_is_a_letter("""")
+false""""""
+function check_if_last_char_is_a_letter(txt::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_134_check_if_last_char_is_a_letter.py,reworded,"using Test
+
+@testset begin
+
+candidate = check_if_last_char_is_a_letter;
+	@test(candidate(""apple"") == false)
+	@test(candidate(""apple pi e"") == true)
+	@test(candidate(""eeeee"") == false)
+	@test(candidate(""A"") == true)
+	@test(candidate(""Pumpkin pie "") == false)
+	@test(candidate(""Pumpkin pie 1"") == false)
+	@test(candidate("""") == false)
+	@test(candidate(""eeeee e "") == false)
+	@test(candidate(""apple pie"") == false)
+	@test(candidate(""apple pi e "") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_135_can_arrange,jl,"""""""Create a function which returns the largest index of an element which
+is not greater than or equal to the element immediately preceding it. If
+no such element exists then return -1. The given vector will not contain
+duplicate values.
+Examples:
+>>> can_arrange([1, 2, 4, 3, 5])
+3
+>>> can_arrange([1, 2, 3])
+-1""""""
+function can_arrange(arr::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_135_can_arrange.py,reworded,"using Test
+
+@testset begin
+
+candidate = can_arrange;
+	@test(candidate([1, 2, 4, 3, 5]) == 3)
+	@test(candidate([1, 2, 4, 5]) == -1)
+	@test(candidate([1, 4, 2, 5, 6, 7, 8, 9, 10]) == 2)
+	@test(candidate([4, 8, 5, 7, 3]) == 4)
+	@test(candidate(Vector{Int64}([])) == -1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_136_largest_smallest_integers,jl,"""""""Create a function that returns a tuple (a, b), where 'a' is
+the largest of negative integers, and 'b' is the smallest
+of positive integers in a vector.
+If there is no negative or positive integers, return them as nothing.
+Examples:
+>>> largest_smallest_integers([2, 4, 1, 3, 5, 7])
+(nothing, 1)
+>>> largest_smallest_integers([])
+(nothing, nothing)
+>>> largest_smallest_integers([0])
+(nothing, nothing)""""""
+function largest_smallest_integers(lst::Vector{Int64})::Tuple{Union{Int64, Nothing}, Union{Int64, Nothing}} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_136_largest_smallest_integers.py,reworded,"using Test
+
+@testset begin
+
+candidate = largest_smallest_integers;
+	@test(candidate([2, 4, 1, 3, 5, 7]) == (nothing, 1))
+	@test(candidate([2, 4, 1, 3, 5, 7, 0]) == (nothing, 1))
+	@test(candidate([1, 3, 2, 4, 5, 6, -2]) == (-2, 1))
+	@test(candidate([4, 5, 3, 6, 2, 7, -7]) == (-7, 2))
+	@test(candidate([7, 3, 8, 4, 9, 2, 5, -9]) == (-9, 2))
+	@test(candidate(Vector{Int64}([])) == (nothing, nothing))
+	@test(candidate([0]) == (nothing, nothing))
+	@test(candidate([-1, -3, -5, -6]) == (-1, nothing))
+	@test(candidate([-1, -3, -5, -6, 0]) == (-1, nothing))
+	@test(candidate([-6, -4, -4, -3, 1]) == (-3, 1))
+	@test(candidate([-6, -4, -4, -3, -100, 1]) == (-3, 1))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_138_is_equal_to_sum_even,jl,"""""""Evaluate whether the given number n can be written as the sum of exactly 4 positive even numbers
+Example
+>>> is_equal_to_sum_even(4)
+false
+>>> is_equal_to_sum_even(6)
+false
+>>> is_equal_to_sum_even(8)
+true""""""
+function is_equal_to_sum_even(n::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_138_is_equal_to_sum_even.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_equal_to_sum_even;
+	@test(candidate(4) == false)
+	@test(candidate(6) == false)
+	@test(candidate(8) == true)
+	@test(candidate(10) == true)
+	@test(candidate(11) == false)
+	@test(candidate(12) == true)
+	@test(candidate(13) == false)
+	@test(candidate(16) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_139_special_factorial,jl,"""""""The Brazilian factorial is defined as:
+brazilian_factorial(n) = n! * (n-1)! * (n-2)! * ... * 1!
+where n > 0
+For example:
+>>> special_factorial(4)
+288
+The function will receive an integer as input and should return the special
+factorial of this integer.""""""
+function special_factorial(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_139_special_factorial.py,reworded,"using Test
+
+@testset begin
+
+candidate = special_factorial;
+	@test(candidate(4) == 288)
+	@test(candidate(5) == 34560)
+	@test(candidate(7) == 125411328000)
+	@test(candidate(1) == 1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_13_greatest_common_divisor,jl,""""""" Return a greatest common divisor of two integers a and b
+>>> greatest_common_divisor(3, 5)
+1
+>>> greatest_common_divisor(25, 15)
+5""""""
+function greatest_common_divisor(a::Int64, b::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_13_greatest_common_divisor.py,reworded,"using Test
+
+@testset begin
+
+candidate = greatest_common_divisor;
+	@test(candidate(3, 7) == 1)
+	@test(candidate(10, 15) == 5)
+	@test(candidate(49, 14) == 7)
+	@test(candidate(144, 60) == 12)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_140_fix_spaces,jl,"""""""Given a string text, replace all spaces in it with underscores, 
+and if a string has more than 2 consecutive spaces, 
+then replace all consecutive spaces with - 
+>>> fix_spaces("" Example"")
+""Example""
+>>> fix_spaces("" Example 1"")
+""Example_1""
+>>> fix_spaces("" Example 2"")
+""_Example_2""
+>>> fix_spaces("" Example 3"")
+""_Example-3""""""""
+function fix_spaces(text::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_140_fix_spaces.py,reworded,"using Test
+
+@testset begin
+
+candidate = fix_spaces;
+	@test(candidate(""Example"") == ""Example"")
+	@test(candidate(""Mudasir Hanif "") == ""Mudasir_Hanif_"")
+	@test(candidate(""Yellow Yellow  Dirty  Fellow"") == ""Yellow_Yellow__Dirty__Fellow"")
+	@test(candidate(""Exa   mple"") == ""Exa-mple"")
+	@test(candidate(""   Exa 1 2 2 mple"") == ""-Exa_1_2_2_mple"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_141_file_name_check,jl,"""""""Create a function which takes a string representing a file's name, and returns
+'Yes' if the the file's name is valid, and returns 'No' otherwise.
+A file's name is considered to be valid if and only if all the following conditions 
+are met:
+- There should not be more than three digits ('0'-'9') in the file's name.
+- The file's name contains exactly one dot '.'
+- The substring before the dot should not be empty, and it starts with a letter from 
+the latin alphapet ('a'-'z' and 'A'-'Z').
+- The substring after the dot should be one of these: ['txt', 'exe', 'dll']
+Examples:
+>>> file_name_check(""example.txt"")
+""Yes""
+>>> file_name_check(""1example.dll"")
+""No""""""""
+function file_name_check(file_name::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_141_file_name_check.py,reworded,"using Test
+
+@testset begin
+
+candidate = file_name_check;
+	@test(candidate(""example.txt"") == ""Yes"")
+	@test(candidate(""1example.dll"") == ""No"")
+	@test(candidate(""s1sdf3.asd"") == ""No"")
+	@test(candidate(""K.dll"") == ""Yes"")
+	@test(candidate(""MY16FILE3.exe"") == ""Yes"")
+	@test(candidate(""His12FILE94.exe"") == ""No"")
+	@test(candidate(""_Y.txt"") == ""No"")
+	@test(candidate(""?aREYA.exe"") == ""No"")
+	@test(candidate(""/this_is_valid.dll"") == ""No"")
+	@test(candidate(""this_is_valid.wow"") == ""No"")
+	@test(candidate(""this_is_valid.txt"") == ""Yes"")
+	@test(candidate(""this_is_valid.txtexe"") == ""No"")
+	@test(candidate(""#this2_i4s_5valid.ten"") == ""No"")
+	@test(candidate(""@this1_is6_valid.exe"") == ""No"")
+	@test(candidate(""this_is_12valid.6exe4.txt"") == ""No"")
+	@test(candidate(""all.exe.txt"") == ""No"")
+	@test(candidate(""I563_No.exe"") == ""Yes"")
+	@test(candidate(""Is3youfault.txt"") == ""Yes"")
+	@test(candidate(""no_one#knows.dll"") == ""Yes"")
+	@test(candidate(""1I563_Yes3.exe"") == ""No"")
+	@test(candidate(""I563_Yes3.txtt"") == ""No"")
+	@test(candidate(""final..txt"") == ""No"")
+	@test(candidate(""final132"") == ""No"")
+	@test(candidate(""_f4indsartal132."") == ""No"")
+	@test(candidate("".txt"") == ""No"")
+	@test(candidate(""s."") == ""No"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_142_sum_squares,jl,"""""""""
+This function will take a vector of integers. For all entries in the vector, the function shall square the integer entry if its index is a 
+multiple of 3 and will cube the integer entry if its index is a multiple of 4 and not a multiple of 3. The function will not 
+change the entries in the vector whose indexes are not a multiple of 3 or 4. The function shall then return the sum of all entries. 
+Examples:
+>>> lst
+[1, 2, 3]
+>>> lst
+[]
+>>> lst
+[-1, -5, 2, -1, -5]""""""
+function sum_squares(lst::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_142_sum_squares.py,reworded,"using Test
+
+@testset begin
+
+candidate = sum_squares;
+	@test(candidate([1, 2, 3]) == 6)
+	@test(candidate([1, 4, 9]) == 14)
+	@test(candidate(Vector{Int64}([])) == 0)
+	@test(candidate([1, 1, 1, 1, 1, 1, 1, 1, 1]) == 9)
+	@test(candidate([-1, -1, -1, -1, -1, -1, -1, -1, -1]) == -3)
+	@test(candidate([0]) == 0)
+	@test(candidate([-1, -5, 2, -1, -5]) == -126)
+	@test(candidate([-56, -99, 1, 0, -2]) == 3030)
+	@test(candidate([-1, 0, 0, 0, 0, 0, 0, 0, -1]) == 0)
+	@test(candidate([-16, -9, -2, 36, 36, 26, -20, 25, -40, 20, -4, 12, -26, 35, 37]) == -14196)
+	@test(candidate([-1, -3, 17, -1, -15, 13, -1, 14, -14, -12, -5, 14, -14, 6, 13, 11, 16, 16, 4, 10]) == -1448)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_143_words_in_sentence,jl,"""""""You are given a string representing a sentence,
+the sentence contains some words separated by a space,
+and you have to return a string that contains the words from the original sentence,
+whose lengths are prime numbers,
+the order of the words in the new string should be the same as the original one.
+Example 1:
+>>> words_in_sentence(""This is a test"")
+""is""
+Example 2:
+>>> words_in_sentence(""lets go for swimming"")
+""go for""
+Constraints:
+    * 1 <= len(sentence) <= 100
+    * sentence contains only letters""""""
+function words_in_sentence(sentence::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_143_words_in_sentence.py,reworded,"using Test
+
+@testset begin
+
+candidate = words_in_sentence;
+	@test(candidate(""This is a test"") == ""is"")
+	@test(candidate(""lets go for swimming"") == ""go for"")
+	@test(candidate(""there is no place available here"") == ""there is no place"")
+	@test(candidate(""Hi I am Hussein"") == ""Hi am Hussein"")
+	@test(candidate(""go for it"") == ""go for it"")
+	@test(candidate(""here"") == """")
+	@test(candidate(""here is"") == ""is"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_144_simplify,jl,"""""""Your task is to implement a function that will simplify the expression
+x * n. The function returns true if x * n evaluates to a whole number and false
+otherwise. Both x and n, are string representation of a fraction, and have the following format,
+<numerator>/<denominator> where both numerator and denominator are positive whole numbers.
+You can assume that x, and n are valid fractions, and do not have zero as denominator.
+>>> simplify(""1/5"", ""5/1"")
+true
+>>> simplify(""1/6"", ""2/1"")
+false
+>>> simplify(""7/10"", ""10/2"")
+false""""""
+function simplify(x::String, n::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_144_simplify.py,reworded,"using Test
+
+@testset begin
+
+candidate = simplify;
+	@test(candidate(""1/5"", ""5/1"") == true)
+	@test(candidate(""1/6"", ""2/1"") == false)
+	@test(candidate(""5/1"", ""3/1"") == true)
+	@test(candidate(""7/10"", ""10/2"") == false)
+	@test(candidate(""2/10"", ""50/10"") == true)
+	@test(candidate(""7/2"", ""4/2"") == true)
+	@test(candidate(""11/6"", ""6/1"") == true)
+	@test(candidate(""2/3"", ""5/2"") == false)
+	@test(candidate(""5/2"", ""3/5"") == false)
+	@test(candidate(""2/4"", ""8/4"") == true)
+	@test(candidate(""2/4"", ""4/2"") == true)
+	@test(candidate(""1/5"", ""5/1"") == true)
+	@test(candidate(""1/5"", ""1/5"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_145_order_by_points,jl,"""""""Write a function which sorts the given vector of integers
+in ascending order according to the sum of their digits.
+Note: if there are several items with similar sum of their digits,
+order them based on their index in original vector.
+For example:
+>>> order_by_points([1, 11, -1, -11, -12])
+[-1, -11, 1, -12, 11]
+>>> order_by_points([])
+[]""""""
+function order_by_points(nums::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_145_order_by_points.py,reworded,"using Test
+
+@testset begin
+
+candidate = order_by_points;
+	@test(candidate([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11])
+	@test(candidate([1234, 423, 463, 145, 2, 423, 423, 53, 6, 37, 3457, 3, 56, 0, 46]) == [0, 2, 3, 6, 53, 423, 423, 423, 1234, 145, 37, 46, 56, 463, 3457])
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([1, -11, -32, 43, 54, -98, 2, -3]) == [-3, -32, -98, -11, 1, 2, 43, 54])
+	@test(candidate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]) == [1, 10, 2, 11, 3, 4, 5, 6, 7, 8, 9])
+	@test(candidate([0, 6, 6, -76, -21, 23, 4]) == [-76, -21, 0, 4, 23, 6, 6])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_146_specialFilter,jl,"""""""Write a function that takes a vector of numbers as input and returns 
+the number of elements in the vector that are greater than 10 and both 
+first and last digits of a number are odd (1, 3, 5, 7, 9).
+For example:
+>>> specialFilter([15, -73, 14, -15])
+1
+>>> specialFilter([33, -2, -3, 45, 21, 109])
+2""""""
+function specialFilter(nums::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_146_specialFilter.py,reworded,"using Test
+
+@testset begin
+
+candidate = specialFilter;
+	@test(candidate([5, -2, 1, -5]) == 0)
+	@test(candidate([15, -73, 14, -15]) == 1)
+	@test(candidate([33, -2, -3, 45, 21, 109]) == 2)
+	@test(candidate([43, -12, 93, 125, 121, 109]) == 4)
+	@test(candidate([71, -2, -33, 75, 21, 19]) == 3)
+	@test(candidate([1]) == 0)
+	@test(candidate(Vector{Int64}([])) == 0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_147_get_max_triples,jl,"""""""    You are given a positive integer n. You have to create an integer vector a of length n.
+For each i (1 ≤ i ≤ n), the value of a[i] = i * i - i + 1.
+Return the number of triples (a[i], a[j], a[k]) of a where i < j < k, 
+    and a[i] + a[j] + a[k] is a multiple of 3.
+    Example :
+    >>> get_max_triples(5)
+    1
+Explanation: 
+a = [1, 3, 7, 13, 21]
+The only valid triple is (1, 7, 13).""""""
+function get_max_triples(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_147_get_max_triples.py,reworded,"using Test
+
+@testset begin
+
+candidate = get_max_triples;
+	@test(candidate(5) == 1)
+	@test(candidate(6) == 4)
+	@test(candidate(10) == 36)
+	@test(candidate(100) == 53361)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_149_sorted_list_sum,jl,"""""""Write a function that accepts a vector of strings as a parameter,
+deletes the strings that have odd lengths from it,
+and returns the resulted vector with a sorted order,
+The vector is always a vector of strings and never a vector of numbers,
+and it may contain duplicates.
+The order of the vector should be ascending by length of each word, and you
+should return the vector sorted by that rule.
+If two words have the same length, sort the vector alphabetically.
+The function should return a vector of strings in sorted order.
+You may assume that all words will have the same length.
+For example:
+>>> list_sort([""aa"", ""a"", ""aaa""])
+[""aa""]
+>>> list_sort([""ab"", ""a"", ""aaa"", ""cd""])
+[""ab"", ""cd""]""""""
+function sorted_list_sum(lst::Vector{String})::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_149_sorted_list_sum.py,reworded,"using Test
+
+@testset begin
+
+candidate = sorted_list_sum;
+	@test(candidate([""aa"", ""a"", ""aaa""]) == [""aa""])
+	@test(candidate([""school"", ""AI"", ""asdf"", ""b""]) == [""AI"", ""asdf"", ""school""])
+	@test(candidate([""d"", ""b"", ""c"", ""a""]) == Vector{String}([]))
+	@test(candidate([""d"", ""dcba"", ""abcd"", ""a""]) == [""abcd"", ""dcba""])
+	@test(candidate([""AI"", ""ai"", ""au""]) == [""AI"", ""ai"", ""au""])
+	@test(candidate([""a"", ""b"", ""b"", ""c"", ""c"", ""a""]) == Vector{String}([]))
+	@test(candidate([""aaaa"", ""bbbb"", ""dd"", ""cc""]) == [""cc"", ""dd"", ""aaaa"", ""bbbb""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_14_all_prefixes,jl,""""""" Return vector of all prefixes from shortest to longest of the input string
+>>> all_prefixes(""abc"")
+[""a"", ""ab"", ""abc""]""""""
+function all_prefixes(string::String)::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_14_all_prefixes.py,reworded,"using Test
+
+@testset begin
+
+candidate = all_prefixes;
+	@test(candidate("""") == Vector{String}([]))
+	@test(candidate(""asdfgh"") == [""a"", ""as"", ""asd"", ""asdf"", ""asdfg"", ""asdfgh""])
+	@test(candidate(""WWW"") == [""W"", ""WW"", ""WWW""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_150_x_or_y,jl,"""""""A simple program which should return the value of x if n is 
+a prime number and should return the value of y otherwise.
+Examples:
+>>> x_or_y(7, 34, 12)
+34
+>>> x_or_y(15, 8, 5)
+5""""""
+function x_or_y(n::Int64, x::Int64, y::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_150_x_or_y.py,reworded,"using Test
+
+@testset begin
+
+candidate = x_or_y;
+	@test(candidate(7, 34, 12) == 34)
+	@test(candidate(15, 8, 5) == 5)
+	@test(candidate(3, 33, 5212) == 33)
+	@test(candidate(1259, 3, 52) == 3)
+	@test(candidate(7919, -1, 12) == -1)
+	@test(candidate(3609, 1245, 583) == 583)
+	@test(candidate(91, 56, 129) == 129)
+	@test(candidate(6, 34, 1234) == 1234)
+	@test(candidate(1, 2, 0) == 0)
+	@test(candidate(2, 2, 0) == 2)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_151_double_the_difference,jl,"""""""Given a vector of numbers, return the sum of squares of the numbers
+in the vector that are odd. Ignore numbers that are negative or not integers.
+>>> double_the_difference([1, 3, 2, 0])
+10
+>>> double_the_difference([-1, -2, 0])
+0
+>>> double_the_difference([9, -2])
+81
+>>> double_the_difference([0])
+0
+If the input vector is empty, return 0.""""""
+function double_the_difference(lst::Vector{Float64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_151_double_the_difference.py,reworded,"using Test
+
+@testset begin
+
+candidate = double_the_difference;
+	@test(candidate(Vector{Float64}([])) == 0)
+	@test(candidate([5.0, 4.0]) == 25)
+	@test(candidate([0.1, 0.2, 0.3]) == 0)
+	@test(candidate([-10.0, -20.0, -30.0]) == 0)
+	@test(candidate([-1.0, -2.0, 8.0]) == 0)
+	@test(candidate([0.2, 3.0, 5.0]) == 34)
+	@test(candidate([-9.0, -7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 9.0]) == 165)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_152_compare,jl,"""""""I think we all remember that feeling when the result of some long-awaited
+event is finally known. The feelings and thoughts you have at that moment are
+definitely worth noting down and comparing.
+Your task is to determine if a person correctly guessed the results of a number of matches.
+You are given two vectors of scores and guesses of equal length, where each index shows a match. 
+Return a vector of the same length denoting how far off each guess was. If they have guessed correctly,
+the value is 0, and if not, the value is the absolute difference between the guess and the score.
+example:
+>>> compare([1, 2, 3, 4, 5, 1], [1, 2, 3, 4, 2, -2])
+[0, 0, 0, 0, 3, 3]
+>>> compare([0, 5, 0, 0, 0, 4], [4, 1, 1, 0, 0, -2])
+[4, 4, 1, 0, 0, 6]""""""
+function compare(game::Vector{Int64}, guess::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_152_compare.py,reworded,"using Test
+
+@testset begin
+
+candidate = compare;
+	@test(candidate([1, 2, 3, 4, 5, 1], [1, 2, 3, 4, 2, -2]) == [0, 0, 0, 0, 3, 3])
+	@test(candidate([0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]) == [0, 0, 0, 0, 0, 0])
+	@test(candidate([1, 2, 3], [-1, -2, -3]) == [2, 4, 6])
+	@test(candidate([1, 2, 3, 5], [-1, 2, 3, 4]) == [2, 0, 0, 1])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_153_Strongest_Extension,jl,"""""""You will be given the name of a class (a string) and a vector of extensions.
+The extensions are to be used to load additional classes to the class. The
+strength of the extension is as follows: Let CAP be the number of the uppercase
+letters in the extension's name, and let SM be the number of lowercase letters 
+in the extension's name, the strength is given by the fraction CAP - SM. 
+You should find the strongest extension and return a string in this 
+format: ClassName.StrongestExtensionName.
+If there are two or more extensions with the same strength, you should
+choose the one that comes first in the vector.
+For example, if you are given ""Slices"" as the class and a vector of the
+extensions: ['SErviNGSliCes', 'Cheese', 'StuFfed'] then you should
+return 'Slices.SErviNGSliCes' since 'SErviNGSliCes' is the strongest extension 
+(its strength is -1).
+Example:
+>>> Strongest_Extension(""my_class"", [""AA"", ""Be"", ""CC""])
+""my_class.AA""""""""
+function Strongest_Extension(class_name::String, extensions::Vector{String})::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_153_Strongest_Extension.py,reworded,"using Test
+
+@testset begin
+
+candidate = Strongest_Extension;
+	@test(candidate(""Watashi"", [""tEN"", ""niNE"", ""eIGHt8OKe""]) == ""Watashi.eIGHt8OKe"")
+	@test(candidate(""Boku123"", [""nani"", ""NazeDa"", ""YEs.WeCaNe"", ""32145tggg""]) == ""Boku123.YEs.WeCaNe"")
+	@test(candidate(""__YESIMHERE"", [""t"", ""eMptY"", ""nothing"", ""zeR00"", ""NuLl__"", ""123NoooneB321""]) == ""__YESIMHERE.NuLl__"")
+	@test(candidate(""K"", [""Ta"", ""TAR"", ""t234An"", ""cosSo""]) == ""K.TAR"")
+	@test(candidate(""__HAHA"", [""Tab"", ""123"", ""781345"", ""-_-""]) == ""__HAHA.123"")
+	@test(candidate(""YameRore"", [""HhAas"", ""okIWILL123"", ""WorkOut"", ""Fails"", ""-_-""]) == ""YameRore.okIWILL123"")
+	@test(candidate(""finNNalLLly"", [""Die"", ""NowW"", ""Wow"", ""WoW""]) == ""finNNalLLly.WoW"")
+	@test(candidate(""_"", [""Bb"", ""91245""]) == ""_.Bb"")
+	@test(candidate(""Sp"", [""671235"", ""Bb""]) == ""Sp.671235"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_154_cycpattern_check,jl,"""""""You are given 2 words. You need to return true if the second word or any of its rotations is a substring in the first word
+>>> cycpattern_check(""abcd"", ""abd"")
+false
+>>> cycpattern_check(""hello"", ""ell"")
+true
+>>> cycpattern_check(""whassup"", ""psus"")
+false
+>>> cycpattern_check(""abab"", ""baa"")
+true
+>>> cycpattern_check(""efef"", ""eeff"")
+false
+>>> cycpattern_check(""himenss"", ""simen"")
+true""""""
+function cycpattern_check(a::String, b::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_154_cycpattern_check.py,reworded,"using Test
+
+@testset begin
+
+candidate = cycpattern_check;
+	@test(candidate(""xyzw"", ""xyw"") == false)
+	@test(candidate(""yello"", ""ell"") == true)
+	@test(candidate(""whattup"", ""ptut"") == false)
+	@test(candidate(""efef"", ""fee"") == true)
+	@test(candidate(""abab"", ""aabb"") == false)
+	@test(candidate(""winemtt"", ""tinem"") == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_155_even_odd_count,jl,"""""""Given an integer. return a tuple that has the number of even and odd digits respectively.
+Example:
+    >>> even_odd_count(-12)
+    (1, 1)
+    >>> even_odd_count(123)
+    (1, 2)""""""
+function even_odd_count(num::Int64)::Tuple{Int64, Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_155_even_odd_count.py,reworded,"using Test
+
+@testset begin
+
+candidate = even_odd_count;
+	@test(candidate(7) == (0, 1))
+	@test(candidate(-78) == (1, 1))
+	@test(candidate(3452) == (2, 2))
+	@test(candidate(346211) == (3, 3))
+	@test(candidate(-345821) == (3, 3))
+	@test(candidate(-2) == (1, 0))
+	@test(candidate(-45347) == (2, 3))
+	@test(candidate(0) == (1, 0))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_156_int_to_mini_roman,jl,"""""""Given a positive integer, obtain its roman numeral equivalent as a string,
+and return it in lowercase.
+Restrictions: 1 <= num <= 1000
+Examples:
+>>> int_to_mini_roman(19)
+""xix""
+>>> int_to_mini_roman(152)
+""clii""
+>>> int_to_mini_roman(426)
+""cdxxvi""""""""
+function int_to_mini_roman(number::Int64)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_156_int_to_mini_roman.py,reworded,"using Test
+
+@testset begin
+
+candidate = int_to_mini_roman;
+	@test(candidate(19) == ""xix"")
+	@test(candidate(152) == ""clii"")
+	@test(candidate(251) == ""ccli"")
+	@test(candidate(426) == ""cdxxvi"")
+	@test(candidate(500) == ""d"")
+	@test(candidate(1) == ""i"")
+	@test(candidate(4) == ""iv"")
+	@test(candidate(43) == ""xliii"")
+	@test(candidate(90) == ""xc"")
+	@test(candidate(94) == ""xciv"")
+	@test(candidate(532) == ""dxxxii"")
+	@test(candidate(900) == ""cm"")
+	@test(candidate(994) == ""cmxciv"")
+	@test(candidate(1000) == ""m"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_157_right_angle_triangle,jl,"""""""Given the lengths of the three sides of a triangle. Return true if the three
+sides form a right-angled triangle, false otherwise.
+A right-angled triangle is a triangle in which one angle is right angle or 
+90 degree.
+Example:
+>>> right_angle_triangle(3, 4, 5)
+true
+>>> right_angle_triangle(1, 2, 3)
+false""""""
+function right_angle_triangle(a::Int64, b::Int64, c::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_157_right_angle_triangle.py,reworded,"using Test
+
+@testset begin
+
+candidate = right_angle_triangle;
+	@test(candidate(3, 4, 5) == true)
+	@test(candidate(1, 2, 3) == false)
+	@test(candidate(10, 6, 8) == true)
+	@test(candidate(2, 2, 2) == false)
+	@test(candidate(7, 24, 25) == true)
+	@test(candidate(10, 5, 7) == false)
+	@test(candidate(5, 12, 13) == true)
+	@test(candidate(15, 8, 17) == true)
+	@test(candidate(48, 55, 73) == true)
+	@test(candidate(1, 1, 1) == false)
+	@test(candidate(2, 2, 10) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_158_find_max,jl,"""""""Write a function that accepts a vector of strings.
+The vector contains different words. Return the word with maximum number
+of unique characters. If multiple strings have maximum number of unique
+characters, return the one which comes first in lexicographical order.
+>>> find_max([""name"", ""of"", ""string""])
+""string""
+>>> find_max([""name"", ""enam"", ""game""])
+""enam""
+>>> find_max([""aaaaaaa"", ""bb"", ""cc""])
+""aaaaaaa""""""""
+function find_max(words::Vector{String})::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_158_find_max.py,reworded,"using Test
+
+@testset begin
+
+candidate = find_max;
+	@test(candidate([""name"", ""of"", ""string""]) == ""string"")
+	@test(candidate([""name"", ""enam"", ""game""]) == ""enam"")
+	@test(candidate([""aaaaaaa"", ""bb"", ""cc""]) == ""aaaaaaa"")
+	@test(candidate([""abc"", ""cba""]) == ""abc"")
+	@test(candidate([""play"", ""this"", ""game"", ""of"", ""footbott""]) == ""footbott"")
+	@test(candidate([""we"", ""are"", ""gonna"", ""rock""]) == ""gonna"")
+	@test(candidate([""we"", ""are"", ""a"", ""mad"", ""nation""]) == ""nation"")
+	@test(candidate([""this"", ""is"", ""a"", ""prrk""]) == ""this"")
+	@test(candidate([""b""]) == ""b"")
+	@test(candidate([""play"", ""play"", ""play""]) == ""play"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_159_eat,jl,"""""""You're a hungry rabbit, and you already have eaten a certain number of carrots,
+but now you need to eat more carrots to complete the day's meals.
+you should return a vector of [ total number of eaten carrots after your meals,
+                                the number of carrots left after your meals ]
+if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.
+Example:
+>>> eat(5, 6, 10)
+[11, 4]
+>>> eat(4, 8, 9)
+[12, 1]
+>>> eat(1, 10, 10)
+[11, 0]
+>>> eat(2, 11, 5)
+[7, 0]
+Variables:
+@number : integer
+    the number of carrots that you have eaten.
+@need : integer
+    the number of carrots that you need to eat.
+@remaining : integer
+    the number of remaining carrots thet exist in stock
+Constrain:
+* 0 <= number <= 1000
+* 0 <= need <= 1000
+* 0 <= remaining <= 1000
+Have fun :)""""""
+function eat(number::Int64, need::Int64, remaining::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_159_eat.py,reworded,"using Test
+
+@testset begin
+
+candidate = eat;
+	@test(candidate(5, 6, 10) == [11, 4])
+	@test(candidate(4, 8, 9) == [12, 1])
+	@test(candidate(1, 10, 10) == [11, 0])
+	@test(candidate(2, 11, 5) == [7, 0])
+	@test(candidate(4, 5, 7) == [9, 2])
+	@test(candidate(4, 5, 1) == [5, 0])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_15_string_sequence,jl,""""""" Return a string containing space-delimited numbers starting from 0 upto n inclusive.
+>>> string_sequence(0)
+""0""
+>>> string_sequence(5)
+""0 1 2 3 4 5""""""""
+function string_sequence(n::Int64)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_15_string_sequence.py,reworded,"using Test
+
+@testset begin
+
+candidate = string_sequence;
+	@test(candidate(0) == ""0"")
+	@test(candidate(3) == ""0 1 2 3"")
+	@test(candidate(10) == ""0 1 2 3 4 5 6 7 8 9 10"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_160_do_algebra,jl,"""""""Given two vectors operator, and operand. The first vector has basic algebra operations, and 
+the second vector is a vector of integers. Use the two given vectors to build the algebric 
+expression and return the evaluation of this expression.
+The basic algebra operations:
+Addition ( + ) 
+Subtraction ( - ) 
+Multiplication ( * ) 
+Floor division ( // ) 
+Exponentiation ( ** ) 
+Example:
+operator['+', '*', '-']
+vector = [2, 3, 4, 5]
+result = 2 + 3 * 4 - 5
+=> result = 9
+Note:
+    The length of operator vector is equal to the length of operand vector minus one.
+    Operand is a vector of of non-negative integers.
+    Operator vector has at least one operator, and operand vector has at least two operands.""""""
+function do_algebra(operator::Vector{String}, operand::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_160_do_algebra.py,reworded,"using Test
+
+@testset begin
+
+candidate = do_algebra;
+	@test(candidate([""**"", ""*"", ""+""], [2, 3, 4, 5]) == 37)
+	@test(candidate([""+"", ""*"", ""-""], [2, 3, 4, 5]) == 9)
+	@test(candidate([""//"", ""*""], [7, 3, 4]) == 8)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_161_solve,jl,"""""""You are given a string s.
+if s[i] is a letter, reverse its case from lower to upper or vise versa, 
+otherwise keep it as it is.
+If the string contains no letters, reverse the string.
+The function should return the resulted string.
+Examples
+>>> solve(""1234"")
+""4321""
+>>> solve(""ab"")
+""AB""
+>>> solve(""#a@C"")
+""#A@c""""""""
+function solve(s::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_161_solve.py,reworded,"using Test
+
+@testset begin
+
+candidate = solve;
+	@test(candidate(""AsDf"") == ""aSdF"")
+	@test(candidate(""1234"") == ""4321"")
+	@test(candidate(""ab"") == ""AB"")
+	@test(candidate(""#a@C"") == ""#A@c"")
+	@test(candidate(""#AsdfW^45"") == ""#aSDFw^45"")
+	@test(candidate(""#6@2"") == ""2@6#"")
+	@test(candidate(""#\$a^D"") == ""#\$A^d"")
+	@test(candidate(""#ccc"") == ""#CCC"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_162_string_to_md5,jl,"""""""Given a string 'text', return its md5 hash equivalent string.
+If 'text' is an empty string, return nothing.
+>>> string_to_md5(""Hello world"")
+""3e25960a79dbc69b674cd4ec67a72c62""""""""
+function string_to_md5(text::String)::Union{String, Nothing} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_162_string_to_md5.py,reworded,"using Test
+
+@testset begin
+
+candidate = string_to_md5;
+	@test(candidate(""Hello world"") == ""3e25960a79dbc69b674cd4ec67a72c62"")
+	@test(candidate("""") == nothing)
+	@test(candidate(""A B C"") == ""0ef78513b0cb8cef12743f5aeb35f888"")
+	@test(candidate(""password"") == ""5f4dcc3b5aa765d61d8327deb882cf99"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_163_generate_integers,jl,"""""""Given two positive integers a and b, return the even digits between a
+and b, in ascending order.
+For example:
+>>> generate_integers(2, 8)
+[2, 4, 6, 8]
+>>> generate_integers(8, 2)
+[2, 4, 6, 8]
+>>> generate_integers(10, 14)
+[]""""""
+function generate_integers(a::Int64, b::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_163_generate_integers.py,reworded,"using Test
+
+@testset begin
+
+candidate = generate_integers;
+	@test(candidate(2, 10) == [2, 4, 6, 8])
+	@test(candidate(10, 2) == [2, 4, 6, 8])
+	@test(candidate(132, 2) == [2, 4, 6, 8])
+	@test(candidate(17, 89) == Vector{Int64}([]))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_16_count_distinct_characters,jl,""""""" Given a string, find out how many distinct characters (regardless of case) does it consist of
+>>> count_distinct_characters(""xyzXYZ"")
+3
+>>> count_distinct_characters(""Jerry"")
+4""""""
+function count_distinct_characters(string::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_16_count_distinct_characters.py,reworded,"using Test
+
+@testset begin
+
+candidate = count_distinct_characters;
+	@test(candidate("""") == 0)
+	@test(candidate(""abcde"") == 5)
+	@test(candidate(""abcdecadeCADE"") == 5)
+	@test(candidate(""aaaaAAAAaaaa"") == 1)
+	@test(candidate(""Jerry jERRY JeRRRY"") == 5)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_17_parse_music,jl,""""""" Input to this function is a string representing musical notes in a special ASCII format.
+Your task is to parse this string and return vector of integers corresponding to how many beats does each
+not last.
+Here is a legend:
+'o' - whole note, lasts four beats
+'o|' - half note, lasts two beats
+'.|' - quater note, lasts one beat
+>>> parse_music(""o o| .| o| o| .| .| .| .| o o"")
+[4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]""""""
+function parse_music(music_string::String)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_17_parse_music.py,reworded,"using Test
+
+@testset begin
+
+candidate = parse_music;
+	@test(candidate("""") == Vector{Int64}([]))
+	@test(candidate(""o o o o"") == [4, 4, 4, 4])
+	@test(candidate("".| .| .| .|"") == [1, 1, 1, 1])
+	@test(candidate(""o| o| .| .| o o o o"") == [2, 2, 1, 1, 4, 4, 4, 4])
+	@test(candidate(""o| .| o| .| o o| o o|"") == [2, 1, 2, 1, 4, 2, 4, 2])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_18_how_many_times,jl,""""""" Find how many times a given substring can be found in the original string. Count overlaping cases.
+>>> how_many_times("""", ""a"")
+0
+>>> how_many_times(""aaa"", ""a"")
+3
+>>> how_many_times(""aaaa"", ""aa"")
+3""""""
+function how_many_times(string::String, substring::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_18_how_many_times.py,reworded,"using Test
+
+@testset begin
+
+candidate = how_many_times;
+	@test(candidate("""", ""x"") == 0)
+	@test(candidate(""xyxyxyx"", ""x"") == 4)
+	@test(candidate(""cacacacac"", ""cac"") == 4)
+	@test(candidate(""john doe"", ""john"") == 1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_19_sort_numbers,jl,""""""" Input is a space-delimited string of numberals from 'zero' to 'nine'.
+Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.
+Return the string with numbers sorted from smallest to largest
+>>> sort_numbers(""three one five"")
+""one three five""""""""
+function sort_numbers(numbers::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_19_sort_numbers.py,reworded,"using Test
+
+@testset begin
+
+candidate = sort_numbers;
+	@test(candidate("""") == """")
+	@test(candidate(""three"") == ""three"")
+	@test(candidate(""three five nine"") == ""three five nine"")
+	@test(candidate(""five zero four seven nine eight"") == ""zero four five seven eight nine"")
+	@test(candidate(""six five four three two one zero"") == ""zero one two three four five six"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_1_separate_paren_groups,jl,""""""" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+separate those group into separate strings and return the vector of those.
+Separate groups are balanced (each open brace is properly closed) and not nested within each other
+Ignore any spaces in the input string.
+>>> separate_paren_groups(""( ) (( )) (( )( ))"")
+[""()"", ""(())"", ""(()())""]""""""
+function separate_paren_groups(paren_string::String)::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_1_separate_paren_groups.py,reworded,"using Test
+
+@testset begin
+
+candidate = separate_paren_groups;
+	@test(candidate(""(()()) ((())) () ((())()())"") == [""(()())"", ""((()))"", ""()"", ""((())()())""])
+	@test(candidate(""() (()) ((())) (((())))"") == [""()"", ""(())"", ""((()))"", ""(((())))""])
+	@test(candidate(""(()(())((())))"") == [""(()(())((())))""])
+	@test(candidate(""( ) (( )) (( )( ))"") == [""()"", ""(())"", ""(()())""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_20_find_closest_elements,jl,""""""" From a supplied vector of numbers (of length at least two) select and return two that are the closest to each
+other and return them in order (smaller number, larger number).
+>>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])
+(2.0, 2.2)
+>>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])
+(2.0, 2.0)""""""
+function find_closest_elements(numbers::Vector{Float64})::Tuple{Float64, Float64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_20_find_closest_elements.py,reworded,"using Test
+
+@testset begin
+
+candidate = find_closest_elements;
+	@test(candidate([1.0, 2.0, 3.9, 4.0, 5.0, 2.2]) == (3.9, 4.0))
+	@test(candidate([1.0, 2.0, 5.9, 4.0, 5.0]) == (5.0, 5.9))
+	@test(candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.2]) == (2.0, 2.2))
+	@test(candidate([1.0, 2.0, 3.0, 4.0, 5.0, 2.0]) == (2.0, 2.0))
+	@test(candidate([1.1, 2.2, 3.1, 4.1, 5.1]) == (2.2, 3.1))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_21_rescale_to_unit,jl,""""""" Given vector of numbers (of at least two elements), apply a linear transform to that vector,
+such that the smallest number will become 0 and the largest will become 1
+>>> rescale_to_unit([1.0, 2.0, 3.0, 4.0, 5.0])
+[0.0, 0.25, 0.5, 0.75, 1.0]""""""
+function rescale_to_unit(numbers::Vector{Float64})::Vector{Float64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_21_rescale_to_unit.py,reworded,"using Test
+
+@testset begin
+
+candidate = rescale_to_unit;
+	@test(candidate([2.0, 49.9]) == [0.0, 1.0])
+	@test(candidate([100.0, 49.9]) == [1.0, 0.0])
+	@test(candidate([1.0, 2.0, 3.0, 4.0, 5.0]) == [0.0, 0.25, 0.5, 0.75, 1.0])
+	@test(candidate([2.0, 1.0, 5.0, 3.0, 4.0]) == [0.25, 0.0, 1.0, 0.5, 0.75])
+	@test(candidate([12.0, 11.0, 15.0, 13.0, 14.0]) == [0.25, 0.0, 1.0, 0.5, 0.75])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_22_filter_integers,jl,""""""" Filter given vector of any jlthon values only for integers
+>>> filter_integers([""a"", 3.14, 5])
+[5]
+>>> filter_integers([1, 2, 3, ""abc"", Dict(), []])
+[1, 2, 3]""""""
+function filter_integers(values::Vector{Any})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_22_filter_integers.py,reworded,"using Test
+
+@testset begin
+
+candidate = filter_integers;
+	@test(candidate(Vector{Any}([])) == Vector{Int64}([]))
+	@test(candidate([4, Dict(), [], 23.2, 9, ""adasd""]) == [4, 9])
+	@test(candidate([3, ""c"", 3, 3, ""a"", ""b""]) == [3, 3, 3])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_23_strlen,jl,""""""" Return length of given string
+>>> strlen("""")
+0
+>>> strlen(""abc"")
+3""""""
+function strlen(string::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_23_strlen.py,reworded,"using Test
+
+@testset begin
+
+candidate = strlen;
+	@test(candidate("""") == 0)
+	@test(candidate(""x"") == 1)
+	@test(candidate(""asdasnakj"") == 9)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_24_largest_divisor,jl,""""""" For a given number n, find the largest number that divides n evenly, smaller than n
+>>> largest_divisor(15)
+5""""""
+function largest_divisor(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_24_largest_divisor.py,reworded,"using Test
+
+@testset begin
+
+candidate = largest_divisor;
+	@test(candidate(3) == 1)
+	@test(candidate(7) == 1)
+	@test(candidate(10) == 5)
+	@test(candidate(100) == 50)
+	@test(candidate(49) == 7)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_25_factorize,jl,""""""" Return vector of prime factors of given integer in the order from smallest to largest.
+Each of the factors should be vectored number of times corresponding to how many times it appeares in factorization.
+Input number should be equal to the product of all factors
+>>> factorize(8)
+[2, 2, 2]
+>>> factorize(25)
+[5, 5]
+>>> factorize(70)
+[2, 5, 7]""""""
+function factorize(n::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_25_factorize.py,reworded,"using Test
+
+@testset begin
+
+candidate = factorize;
+	@test(candidate(2) == [2])
+	@test(candidate(4) == [2, 2])
+	@test(candidate(8) == [2, 2, 2])
+	@test(candidate(57) == [3, 19])
+	@test(candidate(3249) == [3, 3, 19, 19])
+	@test(candidate(185193) == [3, 3, 3, 19, 19, 19])
+	@test(candidate(20577) == [3, 19, 19, 19])
+	@test(candidate(18) == [2, 3, 3])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_26_remove_duplicates,jl,""""""" From a vector of integers, remove all elements that occur more than once.
+Keep order of elements left the same as in the input.
+>>> remove_duplicates([1, 2, 3, 2, 4])
+[1, 3, 4]""""""
+function remove_duplicates(numbers::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_26_remove_duplicates.py,reworded,"using Test
+
+@testset begin
+
+candidate = remove_duplicates;
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([1, 2, 3, 4]) == [1, 2, 3, 4])
+	@test(candidate([1, 2, 3, 2, 4, 3, 5]) == [1, 4, 5])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_27_flip_case,jl,""""""" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.
+>>> flip_case(""Hello"")
+""hELLO""""""""
+function flip_case(string::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_27_flip_case.py,reworded,"using Test
+
+@testset begin
+
+candidate = flip_case;
+	@test(candidate("""") == """")
+	@test(candidate(""Hello!"") == ""hELLO!"")
+	@test(candidate(""These violent delights have violent ends"") == ""tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_28_concatenate,jl,""""""" Concatenate vector of strings into a single string
+>>> concatenate([])
+""""
+>>> concatenate([""a"", ""b"", ""c""])
+""abc""""""""
+function concatenate(strings::Vector{String})::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_28_concatenate.py,reworded,"using Test
+
+@testset begin
+
+candidate = concatenate;
+	@test(candidate(Vector{String}([])) == """")
+	@test(candidate([""x"", ""y"", ""z""]) == ""xyz"")
+	@test(candidate([""x"", ""y"", ""z"", ""w"", ""k""]) == ""xyzwk"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_29_filter_by_prefix,jl,""""""" Filter an input vector of strings only for ones that start with a given prefix.
+>>> filter_by_prefix([], ""a"")
+[]
+>>> filter_by_prefix([""abc"", ""bcd"", ""cde"", ""array""], ""a"")
+[""abc"", ""array""]""""""
+function filter_by_prefix(strings::Vector{String}, prefix::String)::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_29_filter_by_prefix.py,reworded,"using Test
+
+@testset begin
+
+candidate = filter_by_prefix;
+	@test(candidate(Vector{String}([]), ""john"") == Vector{String}([]))
+	@test(candidate([""xxx"", ""asd"", ""xxy"", ""john doe"", ""xxxAAA"", ""xxx""], ""xxx"") == [""xxx"", ""xxxAAA"", ""xxx""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_2_truncate_number,jl,""""""" Given a positive floating point number, it can be decomposed into
+and integer part (largest integer smaller than given number) and decimals
+(leftover part always smaller than 1).
+Return the decimal part of the number.
+>>> truncate_number(3.5)
+0.5""""""
+function truncate_number(number::Float64)::Float64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_2_truncate_number.py,reworded,"using Test
+
+@testset begin
+
+candidate = truncate_number;
+	@test(candidate(3.5) == 0.5)
+	@test(candidate(1.25) == 0.25)
+	@test(candidate(123.0) == 0.0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_30_get_positive,jl,"""""""Return only positive numbers in the vector.
+>>> get_positive([-1, 2, -4, 5, 6])
+[2, 5, 6]
+>>> get_positive([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])
+[5, 3, 2, 3, 9, 123, 1]""""""
+function get_positive(l::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_30_get_positive.py,reworded,"using Test
+
+@testset begin
+
+candidate = get_positive;
+	@test(candidate([-1, -2, 4, 5, 6]) == [4, 5, 6])
+	@test(candidate([5, 3, -5, 2, 3, 3, 9, 0, 123, 1, -10]) == [5, 3, 2, 3, 3, 9, 123, 1])
+	@test(candidate([-1, -2]) == Vector{Int64}([]))
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_31_is_prime,jl,"""""""Return true if a given number is prime, and false otherwise.
+>>> is_prime(6)
+false
+>>> is_prime(101)
+true
+>>> is_prime(11)
+true
+>>> is_prime(13441)
+true
+>>> is_prime(61)
+true
+>>> is_prime(4)
+false
+>>> is_prime(1)
+false""""""
+function is_prime(n::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_31_is_prime.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_prime;
+	@test(candidate(6) == false)
+	@test(candidate(101) == true)
+	@test(candidate(11) == true)
+	@test(candidate(13441) == true)
+	@test(candidate(61) == true)
+	@test(candidate(4) == false)
+	@test(candidate(1) == false)
+	@test(candidate(5) == true)
+	@test(candidate(11) == true)
+	@test(candidate(17) == true)
+	@test(candidate(85) == false)
+	@test(candidate(77) == false)
+	@test(candidate(255379) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_33_sort_third,jl,"""""""This function takes a vector l and returns a vector l' such that
+l' is identical to l in the indicies that are not divisible by three, while its values at the indicies that are divisible by three are equal
+to the values of the corresponding indicies of l, but sorted.
+>>> sort_third([1, 2, 3])
+[1, 2, 3]
+>>> sort_third([5, 6, 3, 4, 8, 9, 2])
+[2, 6, 3, 4, 8, 9, 5]""""""
+function sort_third(l::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_33_sort_third.py,reworded,"using Test
+
+@testset begin
+
+candidate = sort_third;
+	@test(candidate([5, 6, 3, 4, 8, 9, 2]) == [2, 6, 3, 4, 8, 9, 5])
+	@test(candidate([5, 8, 3, 4, 6, 9, 2]) == [2, 8, 3, 4, 6, 9, 5])
+	@test(candidate([5, 6, 9, 4, 8, 3, 2]) == [2, 6, 9, 4, 8, 3, 5])
+	@test(candidate([5, 6, 3, 4, 8, 9, 2, 1]) == [2, 6, 3, 4, 8, 9, 5, 1])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_34_unique,jl,"""""""Return sorted unique elements in a vector
+>>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])
+[0, 2, 3, 5, 9, 123]""""""
+function unique(l::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_34_unique.py,reworded,"using Test
+
+@testset begin
+
+candidate = unique;
+	@test(candidate([5, 3, 5, 2, 3, 3, 9, 0, 123]) == [0, 2, 3, 5, 9, 123])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_35_max_element,jl,"""""""Return maximum element in the vector.
+>>> max_element([1, 2, 3])
+3
+>>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])
+123""""""
+function max_element(l::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_35_max_element.py,reworded,"using Test
+
+@testset begin
+
+candidate = max_element;
+	@test(candidate([1, 2, 3]) == 3)
+	@test(candidate([5, 3, -5, 2, -3, 3, 9, 0, 124, 1, -10]) == 124)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_36_fizz_buzz,jl,"""""""Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.
+>>> fizz_buzz(50)
+0
+>>> fizz_buzz(78)
+2
+>>> fizz_buzz(79)
+3""""""
+function fizz_buzz(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_36_fizz_buzz.py,reworded,"using Test
+
+@testset begin
+
+candidate = fizz_buzz;
+	@test(candidate(50) == 0)
+	@test(candidate(78) == 2)
+	@test(candidate(79) == 3)
+	@test(candidate(100) == 3)
+	@test(candidate(200) == 6)
+	@test(candidate(4000) == 192)
+	@test(candidate(10000) == 639)
+	@test(candidate(100000) == 8026)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_37_sort_even,jl,"""""""This function takes a vector l and returns a vector l' such that
+l' is identical to l in the odd indicies, while its values at the even indicies are equal
+to the values of the even indicies of l, but sorted.
+>>> sort_even([1, 2, 3])
+[1, 2, 3]
+>>> sort_even([5, 6, 3, 4])
+[3, 6, 5, 4]""""""
+function sort_even(l::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_37_sort_even.py,reworded,"using Test
+
+@testset begin
+
+candidate = sort_even;
+	@test(candidate([1, 2, 3]) == [1, 2, 3])
+	@test(candidate([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]) == [-10, 3, -5, 2, -3, 3, 5, 0, 9, 1, 123])
+	@test(candidate([5, 8, -12, 4, 23, 2, 3, 11, 12, -10]) == [-12, 8, 3, 4, 5, 2, 12, 11, 23, -10])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_39_prime_fib,jl,"""""""prime_fib returns n-th number that is a Fibonacci number and it's also prime.
+>>> prime_fib(1)
+2
+>>> prime_fib(2)
+3
+>>> prime_fib(3)
+5
+>>> prime_fib(4)
+13
+>>> prime_fib(5)
+89""""""
+function prime_fib(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_39_prime_fib.py,reworded,"using Test
+
+@testset begin
+
+candidate = prime_fib;
+	@test(candidate(1) == 2)
+	@test(candidate(2) == 3)
+	@test(candidate(3) == 5)
+	@test(candidate(4) == 13)
+	@test(candidate(5) == 89)
+	@test(candidate(6) == 233)
+	@test(candidate(7) == 1597)
+	@test(candidate(8) == 28657)
+	@test(candidate(9) == 514229)
+	@test(candidate(10) == 433494437)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_3_below_zero,jl,""""""" You're given a vector of deposit and withdrawal operations on a bank account that starts with
+zero balance. Your task is to detect if at any point the balance of account fallls below zero, and
+at that point function should return true. Otherwise it should return false.
+>>> below_zero([1, 2, 3])
+false
+>>> below_zero([1, 2, -4, 5])
+true""""""
+function below_zero(operations::Vector{Int64})::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_3_below_zero.py,reworded,"using Test
+
+@testset begin
+
+candidate = below_zero;
+	@test(candidate(Vector{Int64}([])) == false)
+	@test(candidate([1, 2, -3, 1, 2, -3]) == false)
+	@test(candidate([1, 2, -4, 5, 6]) == true)
+	@test(candidate([1, -1, 2, -2, 5, -5, 4, -4]) == false)
+	@test(candidate([1, -1, 2, -2, 5, -5, 4, -5]) == true)
+	@test(candidate([1, -2, 2, -2, 5, -5, 4, -4]) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_40_triples_sum_to_zero,jl,"""""""triples_sum_to_zero takes a vector of integers as an input.
+it returns true if there are three distinct elements in the vector that
+sum to zero, and false otherwise.
+>>> triples_sum_to_zero([1, 3, 5, 0])
+false
+>>> triples_sum_to_zero([1, 3, -2, 1])
+true
+>>> triples_sum_to_zero([1, 2, 3, 7])
+false
+>>> triples_sum_to_zero([2, 4, -5, 3, 9, 7])
+true
+>>> triples_sum_to_zero([1])
+false""""""
+function triples_sum_to_zero(l::Vector{Int64})::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_40_triples_sum_to_zero.py,reworded,"using Test
+
+@testset begin
+
+candidate = triples_sum_to_zero;
+	@test(candidate([1, 3, 5, 0]) == false)
+	@test(candidate([1, 3, 5, -1]) == false)
+	@test(candidate([1, 3, -2, 1]) == true)
+	@test(candidate([1, 2, 3, 7]) == false)
+	@test(candidate([1, 2, 5, 7]) == false)
+	@test(candidate([2, 4, -5, 3, 9, 7]) == true)
+	@test(candidate([1]) == false)
+	@test(candidate([1, 3, 5, -100]) == false)
+	@test(candidate([100, 3, 5, -100]) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_41_car_race_collision,jl,"""""""Imagine a road that's a perfectly straight infinitely long line.
+n cars are driving left to right;  simultaneously, a different set of n cars
+are driving right to left.   The two sets of cars start out being very far from
+each other.  All cars move in the same speed.  Two cars are said to collide
+when a car that's moving left to right hits a car that's moving right to left.
+However, the cars are infinitely sturdy and strong; as a result, they continue moving
+in their trajectory as if they did not collide.
+This function outputs the number of such collisions.""""""
+function car_race_collision(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_41_car_race_collision.py,reworded,"using Test
+
+@testset begin
+
+candidate = car_race_collision;
+	@test(candidate(2) == 4)
+	@test(candidate(3) == 9)
+	@test(candidate(4) == 16)
+	@test(candidate(8) == 64)
+	@test(candidate(10) == 100)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_42_incr_list,jl,"""""""Return vector with elements incremented by 1.
+>>> incr_list([1, 2, 3])
+[2, 3, 4]
+>>> incr_list([5, 3, 5, 2, 3, 3, 9, 0, 123])
+[6, 4, 6, 3, 4, 4, 10, 1, 124]""""""
+function incr_list(l::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_42_incr_list.py,reworded,"using Test
+
+@testset begin
+
+candidate = incr_list;
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([3, 2, 1]) == [4, 3, 2])
+	@test(candidate([5, 2, 5, 2, 3, 3, 9, 0, 123]) == [6, 3, 6, 3, 4, 4, 10, 1, 124])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_43_pairs_sum_to_zero,jl,"""""""pairs_sum_to_zero takes a vector of integers as an input.
+it returns true if there are two distinct elements in the vector that
+sum to zero, and false otherwise.
+>>> pairs_sum_to_zero([1, 3, 5, 0])
+false
+>>> pairs_sum_to_zero([1, 3, -2, 1])
+false
+>>> pairs_sum_to_zero([1, 2, 3, 7])
+false
+>>> pairs_sum_to_zero([2, 4, -5, 3, 5, 7])
+true
+>>> pairs_sum_to_zero([1])
+false""""""
+function pairs_sum_to_zero(l::Vector{Int64})::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_43_pairs_sum_to_zero.py,reworded,"using Test
+
+@testset begin
+
+candidate = pairs_sum_to_zero;
+	@test(candidate([1, 3, 5, 0]) == false)
+	@test(candidate([1, 3, -2, 1]) == false)
+	@test(candidate([1, 2, 3, 7]) == false)
+	@test(candidate([2, 4, -5, 3, 5, 7]) == true)
+	@test(candidate([1]) == false)
+	@test(candidate([-3, 9, -1, 3, 2, 30]) == true)
+	@test(candidate([-3, 9, -1, 3, 2, 31]) == true)
+	@test(candidate([-3, 9, -1, 4, 2, 30]) == false)
+	@test(candidate([-3, 9, -1, 4, 2, 31]) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_44_change_base,jl,"""""""Change numerical base of input number x to base.
+return string representation after the conversion.
+base numbers are less than 10.
+>>> change_base(8, 3)
+""22""
+>>> change_base(8, 2)
+""1000""
+>>> change_base(7, 2)
+""111""""""""
+function change_base(x::Int64, base::Int64)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_44_change_base.py,reworded,"using Test
+
+@testset begin
+
+candidate = change_base;
+	@test(candidate(8, 3) == ""22"")
+	@test(candidate(9, 3) == ""100"")
+	@test(candidate(234, 2) == ""11101010"")
+	@test(candidate(16, 2) == ""10000"")
+	@test(candidate(8, 2) == ""1000"")
+	@test(candidate(7, 2) == ""111"")
+	@test(candidate(2, 3) == ""2"")
+	@test(candidate(3, 4) == ""3"")
+	@test(candidate(4, 5) == ""4"")
+	@test(candidate(5, 6) == ""5"")
+	@test(candidate(6, 7) == ""6"")
+	@test(candidate(7, 8) == ""7"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_45_triangle_area,jl,"""""""Given length of a side and high return area for a triangle.
+>>> triangle_area(5, 3)
+7.5""""""
+function triangle_area(a::Int64, h::Int64)::Float64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_45_triangle_area.py,reworded,"using Test
+
+@testset begin
+
+candidate = triangle_area;
+	@test(candidate(5, 3) == 7.5)
+	@test(candidate(2, 2) == 2.0)
+	@test(candidate(10, 8) == 40.0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_46_fib4,jl,"""""""The Fib4 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:
+fib4(0) -> 0
+fib4(1) -> 0
+fib4(2) -> 2
+fib4(3) -> 0
+fib4(n) -> fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4).
+Please write a function to efficiently compute the n-th element of the fib4 number sequence.  Do not use recursion.
+>>> fib4(5)
+4
+>>> fib4(6)
+8
+>>> fib4(7)
+14""""""
+function fib4(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_46_fib4.py,reworded,"using Test
+
+@testset begin
+
+candidate = fib4;
+	@test(candidate(5) == 4)
+	@test(candidate(8) == 28)
+	@test(candidate(10) == 104)
+	@test(candidate(12) == 386)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_47_median,jl,"""""""Return median of elements in the vector l.
+>>> median([3, 1, 2, 4, 5])
+3
+>>> median([-10, 4, 6, 1000, 10, 20])
+15.0""""""
+function median(l::Vector{Int64})::Float64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_47_median.py,reworded,"using Test
+
+@testset begin
+
+candidate = median;
+	@test(candidate([3, 1, 2, 4, 5]) == 3)
+	@test(candidate([-10, 4, 6, 1000, 10, 20]) == 8.0)
+	@test(candidate([5]) == 5)
+	@test(candidate([6, 5]) == 5.5)
+	@test(candidate([8, 1, 3, 9, 9, 2, 7]) == 7)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_48_is_palindrome,jl,"""""""Checks if given string is a palindrome
+>>> is_palindrome("""")
+true
+>>> is_palindrome(""aba"")
+true
+>>> is_palindrome(""aaaaa"")
+true
+>>> is_palindrome(""zbcd"")
+false""""""
+function is_palindrome(text::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_48_is_palindrome.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_palindrome;
+	@test(candidate("""") == true)
+	@test(candidate(""aba"") == true)
+	@test(candidate(""aaaaa"") == true)
+	@test(candidate(""zbcd"") == false)
+	@test(candidate(""xywyx"") == true)
+	@test(candidate(""xywyz"") == false)
+	@test(candidate(""xywzx"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_49_modp,jl,"""""""Return 2^n modulo p (be aware of numerics).
+>>> modp(3, 5)
+3
+>>> modp(1101, 101)
+2
+>>> modp(0, 101)
+1
+>>> modp(3, 11)
+8
+>>> modp(100, 101)
+1""""""
+function modp(n::Int64, p::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_49_modp.py,reworded,"using Test
+
+@testset begin
+
+candidate = modp;
+	@test(candidate(3, 5) == 3)
+	@test(candidate(1101, 101) == 2)
+	@test(candidate(0, 101) == 1)
+	@test(candidate(3, 11) == 8)
+	@test(candidate(100, 101) == 1)
+	@test(candidate(30, 5) == 4)
+	@test(candidate(31, 5) == 3)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_4_mean_absolute_deviation,jl,""""""" For a given vector of input numbers, calculate Mean Absolute Deviation
+around the mean of this dataset.
+Mean Absolute Deviation is the average absolute difference between each
+element and a centerpoint (mean in this case):
+MAD = average | x - x_mean |
+>>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+1.0""""""
+function mean_absolute_deviation(numbers::Vector{Float64})::Float64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_4_mean_absolute_deviation.py,reworded,"using Test
+
+@testset begin
+
+candidate = mean_absolute_deviation;
+	@test(candidate([1.0, 2.0]) == 0.5)
+	@test(candidate([1.0, 2.0, 3.0, 4.0]) == 1.0)
+	@test(candidate([1.0, 2.0, 3.0, 4.0, 5.0]) == 1.2)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_51_remove_vowels,jl,"""""""remove_vowels is a function that takes string and returns string without vowels.
+>>> remove_vowels("""")
+""""
+>>> remove_vowels(""abcdef"")
+""bcdf""
+>>> remove_vowels(""aaaaa"")
+""""
+>>> remove_vowels(""aaBAA"")
+""B""
+>>> remove_vowels(""zbcd"")
+""zbcd""""""""
+function remove_vowels(text::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_51_remove_vowels.py,reworded,"using Test
+
+@testset begin
+
+candidate = remove_vowels;
+	@test(candidate("""") == """")
+	@test(candidate(""abcdef
+ghijklm"") == ""bcdf
+ghjklm"")
+	@test(candidate(""fedcba"") == ""fdcb"")
+	@test(candidate(""eeeee"") == """")
+	@test(candidate(""acBAA"") == ""cB"")
+	@test(candidate(""EcBOO"") == ""cB"")
+	@test(candidate(""ybcd"") == ""ybcd"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_52_below_threshold,jl,"""""""Return true if all numbers in the vector l are below threshold t.
+>>> below_threshold([1, 2, 4, 10], 100)
+true
+>>> below_threshold([1, 20, 4, 10], 5)
+false""""""
+function below_threshold(l::Vector{Int64}, t::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_52_below_threshold.py,reworded,"using Test
+
+@testset begin
+
+candidate = below_threshold;
+	@test(candidate([1, 2, 4, 10], 100) == true)
+	@test(candidate([1, 20, 4, 10], 5) == false)
+	@test(candidate([1, 20, 4, 10], 21) == true)
+	@test(candidate([1, 20, 4, 10], 22) == true)
+	@test(candidate([1, 8, 4, 10], 11) == true)
+	@test(candidate([1, 8, 4, 10], 10) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_53_add,jl,"""""""Add two numbers x and y
+>>> add(2, 3)
+5
+>>> add(5, 7)
+12""""""
+function add(x::Int64, y::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_53_add.py,reworded,"using Test
+
+@testset begin
+
+candidate = add;
+	@test(candidate(0, 1) == 1)
+	@test(candidate(1, 0) == 1)
+	@test(candidate(2, 3) == 5)
+	@test(candidate(5, 7) == 12)
+	@test(candidate(7, 5) == 12)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_54_same_chars,jl,"""""""Check if two words have the same characters.
+>>> same_chars(""eabcdzzzz"", ""dddzzzzzzzddeddabc"")
+true
+>>> same_chars(""abcd"", ""dddddddabc"")
+true
+>>> same_chars(""dddddddabc"", ""abcd"")
+true
+>>> same_chars(""eabcd"", ""dddddddabc"")
+false
+>>> same_chars(""abcd"", ""dddddddabce"")
+false
+>>> same_chars(""eabcdzzzz"", ""dddzzzzzzzddddabc"")
+false""""""
+function same_chars(s0::String, s1::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_54_same_chars.py,reworded,"using Test
+
+@testset begin
+
+candidate = same_chars;
+	@test(candidate(""eabcdzzzz"", ""dddzzzzzzzddeddabc"") == true)
+	@test(candidate(""abcd"", ""dddddddabc"") == true)
+	@test(candidate(""dddddddabc"", ""abcd"") == true)
+	@test(candidate(""eabcd"", ""dddddddabc"") == false)
+	@test(candidate(""abcd"", ""dddddddabcf"") == false)
+	@test(candidate(""eabcdzzzz"", ""dddzzzzzzzddddabc"") == false)
+	@test(candidate(""aabb"", ""aaccc"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_55_fib,jl,"""""""Return n-th Fibonacci number.
+>>> fib(10)
+55
+>>> fib(1)
+1
+>>> fib(8)
+21""""""
+function fib(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_55_fib.py,reworded,"using Test
+
+@testset begin
+
+candidate = fib;
+	@test(candidate(10) == 55)
+	@test(candidate(1) == 1)
+	@test(candidate(8) == 21)
+	@test(candidate(11) == 89)
+	@test(candidate(12) == 144)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_56_correct_bracketing,jl,""""""" brackets is a string of ""<"" and "">"".
+return true if every opening bracket has a corresponding closing bracket.
+>>> correct_bracketing(""<"")
+false
+>>> correct_bracketing(""<>"")
+true
+>>> correct_bracketing(""<<><>>"")
+true
+>>> correct_bracketing(""><<>"")
+false""""""
+function correct_bracketing(brackets::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_56_correct_bracketing.py,reworded,"using Test
+
+@testset begin
+
+candidate = correct_bracketing;
+	@test(candidate(""<>"") == true)
+	@test(candidate(""<<><>>"") == true)
+	@test(candidate(""<><><<><>><>"") == true)
+	@test(candidate(""<><><<<><><>><>><<><><<>>>"") == true)
+	@test(candidate(""<<<><>>>>"") == false)
+	@test(candidate(""><<>"") == false)
+	@test(candidate(""<"") == false)
+	@test(candidate(""<<<<"") == false)
+	@test(candidate("">"") == false)
+	@test(candidate(""<<>"") == false)
+	@test(candidate(""<><><<><>><>><<>"") == false)
+	@test(candidate(""<><><<><>><>>><>"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_57_monotonic,jl,"""""""Return true is vector elements are monotonically increasing or decreasing.
+>>> monotonic([1, 2, 4, 20])
+true
+>>> monotonic([1, 20, 4, 10])
+false
+>>> monotonic([4, 1, 0, -10])
+true""""""
+function monotonic(l::Vector{Int64})::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_57_monotonic.py,reworded,"using Test
+
+@testset begin
+
+candidate = monotonic;
+	@test(candidate([1, 2, 4, 10]) == true)
+	@test(candidate([1, 2, 4, 20]) == true)
+	@test(candidate([1, 20, 4, 10]) == false)
+	@test(candidate([4, 1, 0, -10]) == true)
+	@test(candidate([4, 1, 1, 0]) == true)
+	@test(candidate([1, 2, 3, 2, 5, 60]) == false)
+	@test(candidate([1, 2, 3, 4, 5, 60]) == true)
+	@test(candidate([9, 9, 9, 9]) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_58_common,jl,"""""""Return sorted unique common elements for two vectors.
+>>> common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121])
+[1, 5, 653]
+>>> common([5, 3, 2, 8], [3, 2])
+[2, 3]""""""
+function common(l1::Vector{Int64}, l2::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_58_common.py,reworded,"using Test
+
+@testset begin
+
+candidate = common;
+	@test(candidate([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]) == [1, 5, 653])
+	@test(candidate([5, 3, 2, 8], [3, 2]) == [2, 3])
+	@test(candidate([4, 3, 2, 8], [3, 2, 4]) == [2, 3, 4])
+	@test(candidate([4, 3, 2, 8], Vector{Int64}([])) == Vector{Int64}([]))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_59_largest_prime_factor,jl,"""""""Return the largest prime factor of n. Assume n > 1 and is not a prime.
+>>> largest_prime_factor(13195)
+29
+>>> largest_prime_factor(2048)
+2""""""
+function largest_prime_factor(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_59_largest_prime_factor.py,reworded,"using Test
+
+@testset begin
+
+candidate = largest_prime_factor;
+	@test(candidate(15) == 5)
+	@test(candidate(27) == 3)
+	@test(candidate(63) == 7)
+	@test(candidate(330) == 11)
+	@test(candidate(13195) == 29)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_5_intersperse,jl,""""""" Insert a number 'delimeter' between every two consecutive elements of input vector `numbers'
+>>> intersperse([], 4)
+[]
+>>> intersperse([1, 2, 3], 4)
+[1, 4, 2, 4, 3]""""""
+function intersperse(numbers::Vector{Int64}, delimeter::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_5_intersperse.py,reworded,"using Test
+
+@testset begin
+
+candidate = intersperse;
+	@test(candidate(Vector{Int64}([]), 7) == Vector{Int64}([]))
+	@test(candidate([5, 6, 3, 2], 8) == [5, 8, 6, 8, 3, 8, 2])
+	@test(candidate([2, 2, 2], 2) == [2, 2, 2, 2, 2])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_60_sum_to_n,jl,"""""""sum_to_n is a function that sums numbers from 1 to n.
+>>> sum_to_n(30)
+465
+>>> sum_to_n(100)
+5050
+>>> sum_to_n(5)
+15
+>>> sum_to_n(10)
+55
+>>> sum_to_n(1)
+1""""""
+function sum_to_n(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_60_sum_to_n.py,reworded,"using Test
+
+@testset begin
+
+candidate = sum_to_n;
+	@test(candidate(1) == 1)
+	@test(candidate(6) == 21)
+	@test(candidate(11) == 66)
+	@test(candidate(30) == 465)
+	@test(candidate(100) == 5050)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_61_correct_bracketing,jl,""""""" brackets is a string of ""("" and "")"".
+return true if every opening bracket has a corresponding closing bracket.
+>>> correct_bracketing(""("")
+false
+>>> correct_bracketing(""()"")
+true
+>>> correct_bracketing(""(()())"")
+true
+>>> correct_bracketing("")(()"")
+false""""""
+function correct_bracketing(brackets::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_61_correct_bracketing.py,reworded,"using Test
+
+@testset begin
+
+candidate = correct_bracketing;
+	@test(candidate(""()"") == true)
+	@test(candidate(""(()())"") == true)
+	@test(candidate(""()()(()())()"") == true)
+	@test(candidate(""()()((()()())())(()()(()))"") == true)
+	@test(candidate(""((()())))"") == false)
+	@test(candidate("")(()"") == false)
+	@test(candidate(""("") == false)
+	@test(candidate(""(((("") == false)
+	@test(candidate("")"") == false)
+	@test(candidate(""(()"") == false)
+	@test(candidate(""()()(()())())(()"") == false)
+	@test(candidate(""()()(()())()))()"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_62_derivative,jl,""""""" xs represent coefficients of a polynomial.
+xs[0] + xs[1] * x + xs[2] * x^2 + ....
+ Return derivative of this polynomial in the same form.
+>>> derivative([3, 1, 2, 4, 5])
+[1, 4, 12, 20]
+>>> derivative([1, 2, 3])
+[2, 6]""""""
+function derivative(xs::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_62_derivative.py,reworded,"using Test
+
+@testset begin
+
+candidate = derivative;
+	@test(candidate([3, 1, 2, 4, 5]) == [1, 4, 12, 20])
+	@test(candidate([1, 2, 3]) == [2, 6])
+	@test(candidate([3, 2, 1]) == [2, 2])
+	@test(candidate([3, 2, 1, 0, 4]) == [2, 2, 0, 16])
+	@test(candidate([1]) == Vector{Int64}([]))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_63_fibfib,jl,"""""""The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:
+fibfib(0) == 0
+fibfib(1) == 0
+fibfib(2) == 1
+fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).
+Please write a function to efficiently compute the n-th element of the fibfib number sequence.
+>>> fibfib(1)
+0
+>>> fibfib(5)
+4
+>>> fibfib(8)
+24""""""
+function fibfib(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_63_fibfib.py,reworded,"using Test
+
+@testset begin
+
+candidate = fibfib;
+	@test(candidate(2) == 1)
+	@test(candidate(1) == 0)
+	@test(candidate(5) == 4)
+	@test(candidate(8) == 24)
+	@test(candidate(10) == 81)
+	@test(candidate(12) == 274)
+	@test(candidate(14) == 927)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_64_vowels_count,jl,"""""""Write a function vowels_count which takes a string representing
+a word as input and returns the number of vowels in the string.
+Vowels in this case are 'a', 'e', 'i', 'o', 'u'. Here, 'y' is also a
+vowel, but only when it is at the end of the given word.
+Example:
+>>> vowels_count(""abcde"")
+2
+>>> vowels_count(""ACEDY"")
+3""""""
+function vowels_count(s::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_64_vowels_count.py,reworded,"using Test
+
+@testset begin
+
+candidate = vowels_count;
+	@test(candidate(""abcde"") == 2)
+	@test(candidate(""Alone"") == 3)
+	@test(candidate(""key"") == 2)
+	@test(candidate(""bye"") == 1)
+	@test(candidate(""keY"") == 2)
+	@test(candidate(""bYe"") == 1)
+	@test(candidate(""ACEDY"") == 3)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_65_circular_shift,jl,"""""""Circular shift the digits of the integer x, shift the digits right by shift
+and return the result as a string.
+If shift > number of digits, return digits reversed.
+>>> circular_shift(12, 1)
+""21""
+>>> circular_shift(12, 2)
+""12""""""""
+function circular_shift(x::Int64, shift::Int64)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_65_circular_shift.py,reworded,"using Test
+
+@testset begin
+
+candidate = circular_shift;
+	@test(candidate(100, 2) == ""001"")
+	@test(candidate(12, 2) == ""12"")
+	@test(candidate(97, 8) == ""79"")
+	@test(candidate(12, 1) == ""21"")
+	@test(candidate(11, 101) == ""11"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_66_digitSum,jl,"""""""Task
+Write a function that takes a string as input and returns the sum of the upper characters only'
+ASCII codes.
+Examples:
+>>> digitSum("""")
+0
+>>> digitSum(""abAB"")
+131
+>>> digitSum(""abcCd"")
+67
+>>> digitSum(""helloE"")
+69
+>>> digitSum(""woArBld"")
+131
+>>> digitSum(""aAaaaXa"")
+153""""""
+function digitSum(s::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_66_digitSum.py,reworded,"using Test
+
+@testset begin
+
+candidate = digitSum;
+	@test(candidate("""") == 0)
+	@test(candidate(""abAB"") == 131)
+	@test(candidate(""abcCd"") == 67)
+	@test(candidate(""helloE"") == 69)
+	@test(candidate(""woArBld"") == 131)
+	@test(candidate(""aAaaaXa"") == 153)
+	@test(candidate("" How are yOu?"") == 151)
+	@test(candidate(""You arE Very Smart"") == 327)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_67_fruit_distribution,jl,"""""""In this task, you will be given a string that represents a number of apples and oranges 
+that are distributed in a basket of fruit this basket contains 
+apples, oranges, and mango fruits. Given the string that represents the total number of 
+the oranges and apples and an integer that represent the total number of the fruits 
+in the basket return the number of the mango fruits in the basket.
+for examble:
+>>> fruit_distribution(""5 apples and 6 oranges"", 19)
+8
+>>> fruit_distribution(""0 apples and 1 oranges"", 3)
+2
+>>> fruit_distribution(""2 apples and 3 oranges"", 100)
+95
+>>> fruit_distribution(""100 apples and 1 oranges"", 120)
+19""""""
+function fruit_distribution(s::String, n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_67_fruit_distribution.py,reworded,"using Test
+
+@testset begin
+
+candidate = fruit_distribution;
+	@test(candidate(""5 apples and 6 oranges"", 19) == 8)
+	@test(candidate(""5 apples and 6 oranges"", 21) == 10)
+	@test(candidate(""0 apples and 1 oranges"", 3) == 2)
+	@test(candidate(""1 apples and 0 oranges"", 3) == 2)
+	@test(candidate(""2 apples and 3 oranges"", 100) == 95)
+	@test(candidate(""2 apples and 3 oranges"", 5) == 0)
+	@test(candidate(""1 apples and 100 oranges"", 120) == 19)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_68_pluck,jl,"""""""""Given a vector representing a branch of a tree that has non-negative integer nodes
+your task is to pluck one of the nodes and return it.
+The plucked node should be the node with the smallest even value.
+If multiple nodes with the same smallest even value are found return the node that has smallest index.
+The plucked node should be returned in a vector, [ smalest_value, its index ],
+If there are no even values or the given vector is empty, return [].
+Example 1:
+>>> pluck([4, 2, 3])
+[2, 1]
+Explanation: 2 has the smallest even value, and 2 has the smallest index.
+Example 2:
+>>> pluck([1, 2, 3])
+[2, 1]
+Explanation: 2 has the smallest even value, and 2 has the smallest index.
+Example 3:
+>>> pluck([])
+[]
+Example 4:
+>>> pluck([5, 0, 3, 0, 4, 2])
+[0, 1]
+Explanation: 0 is the smallest value, but  there are two zeros,
+             so we will choose the first zero, which has the smallest index.
+Constraints:
+    * 1 <= nodes.length <= 10000
+    * 0 <= node.value""""""
+function pluck(arr::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_68_pluck.py,reworded,"using Test
+
+@testset begin
+
+candidate = pluck;
+	@test(candidate([4, 2, 3]) == [2, 1])
+	@test(candidate([1, 2, 3]) == [2, 1])
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([5, 0, 3, 0, 4, 2]) == [0, 1])
+	@test(candidate([1, 2, 3, 0, 5, 3]) == [0, 3])
+	@test(candidate([5, 4, 8, 4, 8]) == [4, 1])
+	@test(candidate([7, 6, 7, 1]) == [6, 1])
+	@test(candidate([7, 9, 7, 1]) == Vector{Int64}([]))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_69_search,jl,"""""""You are given a non-empty vector of positive integers. Return the greatest integer that is greater than 
+zero, and has a frequency greater than or equal to the value of the integer itself. 
+The frequency of an integer is the number of times it appears in the vector.
+If no such a value exist, return -1.
+Examples:
+>>> search([4, 1, 2, 2, 3, 1])
+2
+>>> search([1, 2, 2, 3, 3, 3, 4, 4, 4])
+3
+>>> search([5, 5, 4, 4, 4])
+-1""""""
+function search(lst::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_69_search.py,reworded,"using Test
+
+@testset begin
+
+candidate = search;
+	@test(candidate([5, 5, 5, 5, 1]) == 1)
+	@test(candidate([4, 1, 4, 1, 4, 4]) == 4)
+	@test(candidate([3, 3]) == -1)
+	@test(candidate([8, 8, 8, 8, 8, 8, 8, 8]) == 8)
+	@test(candidate([2, 3, 3, 2, 2]) == 2)
+	@test(candidate([2, 7, 8, 8, 4, 8, 7, 3, 9, 6, 5, 10, 4, 3, 6, 7, 1, 7, 4, 10, 8, 1]) == 1)
+	@test(candidate([3, 2, 8, 2]) == 2)
+	@test(candidate([6, 7, 1, 8, 8, 10, 5, 8, 5, 3, 10]) == 1)
+	@test(candidate([8, 8, 3, 6, 5, 6, 4]) == -1)
+	@test(candidate([6, 9, 6, 7, 1, 4, 7, 1, 8, 8, 9, 8, 10, 10, 8, 4, 10, 4, 10, 1, 2, 9, 5, 7, 9]) == 1)
+	@test(candidate([1, 9, 10, 1, 3]) == 1)
+	@test(candidate([6, 9, 7, 5, 8, 7, 5, 3, 7, 5, 10, 10, 3, 6, 10, 2, 8, 6, 5, 4, 9, 5, 3, 10]) == 5)
+	@test(candidate([1]) == 1)
+	@test(candidate([8, 8, 10, 6, 4, 3, 5, 8, 2, 4, 2, 8, 4, 6, 10, 4, 2, 1, 10, 2, 1, 1, 5]) == 4)
+	@test(candidate([2, 10, 4, 8, 2, 10, 5, 1, 2, 9, 5, 5, 6, 3, 8, 6, 4, 10]) == 2)
+	@test(candidate([1, 6, 10, 1, 6, 9, 10, 8, 6, 8, 7, 3]) == 1)
+	@test(candidate([9, 2, 4, 1, 5, 1, 5, 2, 5, 7, 7, 7, 3, 10, 1, 5, 4, 2, 8, 4, 1, 9, 10, 7, 10, 2, 8, 10, 9, 4]) == 4)
+	@test(candidate([2, 6, 4, 2, 8, 7, 5, 6, 4, 10, 4, 6, 3, 7, 8, 8, 3, 1, 4, 2, 2, 10, 7]) == 4)
+	@test(candidate([9, 8, 6, 10, 2, 6, 10, 2, 7, 8, 10, 3, 8, 2, 6, 2, 3, 1]) == 2)
+	@test(candidate([5, 5, 3, 9, 5, 6, 3, 2, 8, 5, 6, 10, 10, 6, 8, 4, 10, 7, 7, 10, 8]) == -1)
+	@test(candidate([10]) == -1)
+	@test(candidate([9, 7, 7, 2, 4, 7, 2, 10, 9, 7, 5, 7, 2]) == 2)
+	@test(candidate([5, 4, 10, 2, 1, 1, 10, 3, 6, 1, 8]) == 1)
+	@test(candidate([7, 9, 9, 9, 3, 4, 1, 5, 9, 1, 2, 1, 1, 10, 7, 5, 6, 7, 6, 7, 7, 6]) == 1)
+	@test(candidate([3, 10, 10, 9, 2]) == -1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_6_parse_nested_parens,jl,""""""" Input to this function is a string represented multiple groups for nested parentheses separated by spaces.
+For each of the group, output the deepest level of nesting of parentheses.
+E.g. (()()) has maximum two levels of nesting while ((())) has three.
+>>> parse_nested_parens(""(()()) ((())) () ((())()())"")
+[2, 3, 1, 3]""""""
+function parse_nested_parens(paren_string::String)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_6_parse_nested_parens.py,reworded,"using Test
+
+@testset begin
+
+candidate = parse_nested_parens;
+	@test(candidate(""(()()) ((())) () ((())()())"") == [2, 3, 1, 3])
+	@test(candidate(""() (()) ((())) (((())))"") == [1, 2, 3, 4])
+	@test(candidate(""(()(())((())))"") == [4])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_70_strange_sort_list,jl,"""""""Given vector of integers, return vector in strange order.
+Strange sorting, is when you start with the minimum value,
+then maximum of the remaining integers, then minimum and so on.
+Examples:
+>>> strange_sort_list([1, 2, 3, 4])
+[1, 4, 2, 3]
+>>> strange_sort_list([5, 5, 5, 5])
+[5, 5, 5, 5]
+>>> strange_sort_list([])
+[]""""""
+function strange_sort_list(lst::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_70_strange_sort_list.py,reworded,"using Test
+
+@testset begin
+
+candidate = strange_sort_list;
+	@test(candidate([1, 2, 3, 4]) == [1, 4, 2, 3])
+	@test(candidate([5, 6, 7, 8, 9]) == [5, 9, 6, 8, 7])
+	@test(candidate([1, 2, 3, 4, 5]) == [1, 5, 2, 4, 3])
+	@test(candidate([5, 6, 7, 8, 9, 1]) == [1, 9, 5, 8, 6, 7])
+	@test(candidate([5, 5, 5, 5]) == [5, 5, 5, 5])
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([1, 2, 3, 4, 5, 6, 7, 8]) == [1, 8, 2, 7, 3, 6, 4, 5])
+	@test(candidate([0, 2, 2, 2, 5, 5, -5, -5]) == [-5, 5, -5, 5, 0, 2, 2, 2])
+	@test(candidate([111111]) == [111111])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_71_triangle_area,jl,"""""""Given the lengths of the three sides of a triangle. Return the area of
+the triangle rounded to 2 decimal points if the three sides form a valid triangle. 
+Otherwise return -1
+Three sides make a valid triangle when the sum of any two sides is greater 
+than the third side.
+Example:
+>>> triangle_area(3, 4, 5)
+6.0
+>>> triangle_area(1, 2, 10)
+-1""""""
+function triangle_area(a::Int64, b::Int64, c::Int64)::Float64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_71_triangle_area.py,reworded,"using Test
+
+@testset begin
+
+candidate = triangle_area;
+	@test(candidate(3, 4, 5) == 6.0)
+	@test(candidate(1, 2, 10) == -1)
+	@test(candidate(4, 8, 5) == 8.18)
+	@test(candidate(2, 2, 2) == 1.73)
+	@test(candidate(1, 2, 3) == -1)
+	@test(candidate(10, 5, 7) == 16.25)
+	@test(candidate(2, 6, 3) == -1)
+	@test(candidate(1, 1, 1) == 0.43)
+	@test(candidate(2, 2, 10) == -1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_72_will_it_fly,jl,"""""""Write a function that returns true if the object q will fly, and false otherwise.
+The object q will fly if it's balanced (it is a palindromic vector) and the sum of its elements is less than or equal the maximum possible weight w.
+Example:
+>>> will_it_fly([1, 2], 5)
+false
+# 1+2 is less than the maximum possible weight, but it's unbalanced.
+>>> will_it_fly([3, 2, 3], 1)
+false
+# it's balanced, but 3+2+3 is more than the maximum possible weight.
+>>> will_it_fly([3, 2, 3], 9)
+true
+# 3+2+3 is less than the maximum possible weight, and it's balanced.
+>>> will_it_fly([3], 5)
+true
+# 3 is less than the maximum possible weight, and it's balanced.""""""
+function will_it_fly(q::Vector{Int64}, w::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_72_will_it_fly.py,reworded,"using Test
+
+@testset begin
+
+candidate = will_it_fly;
+	@test(candidate([3, 2, 3], 9) == true)
+	@test(candidate([1, 2], 5) == false)
+	@test(candidate([3], 5) == true)
+	@test(candidate([3, 2, 3], 1) == false)
+	@test(candidate([1, 2, 3], 6) == false)
+	@test(candidate([5], 5) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_73_smallest_change,jl,"""""""Given a vector arr of integers, find the minimum number of elements that
+need to be changed to make the vector palindromic. A palindromic vector is a vector that
+is read the same backwards and forwards. In one change, you can change one element to any other element.
+For example:
+>>> smallest_change([1, 2, 3, 5, 4, 7, 9, 6])
+4
+>>> smallest_change([1, 2, 3, 4, 3, 2, 2])
+1
+>>> smallest_change([1, 2, 3, 2, 1])
+0""""""
+function smallest_change(arr::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_73_smallest_change.py,reworded,"using Test
+
+@testset begin
+
+candidate = smallest_change;
+	@test(candidate([1, 2, 3, 5, 4, 7, 9, 6]) == 4)
+	@test(candidate([1, 2, 3, 4, 3, 2, 2]) == 1)
+	@test(candidate([1, 4, 2]) == 1)
+	@test(candidate([1, 4, 4, 2]) == 1)
+	@test(candidate([1, 2, 3, 2, 1]) == 0)
+	@test(candidate([3, 1, 1, 3]) == 0)
+	@test(candidate([1]) == 0)
+	@test(candidate([0, 1]) == 1)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_74_total_match,jl,"""""""Write a function that accepts two vectors of strings and returns the vector that has 
+total number of chars in the all strings of the vector less than the other vector.
+if the two vectors have the same number of chars, return the first vector.
+Examples
+>>> total_match([], [])
+[]
+>>> total_match([""hi"", ""admin""], [""hI"", ""Hi""])
+[""hI"", ""Hi""]
+>>> total_match([""hi"", ""admin""], [""hi"", ""hi"", ""admin"", ""project""])
+[""hi"", ""admin""]
+>>> total_match([""hi"", ""admin""], [""hI"", ""hi"", ""hi""])
+[""hI"", ""hi"", ""hi""]
+>>> total_match([""4""], [""1"", ""2"", ""3"", ""4"", ""5""])
+[""4""]""""""
+function total_match(lst1::Vector{String}, lst2::Vector{String})::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_74_total_match.py,reworded,"using Test
+
+@testset begin
+
+candidate = total_match;
+	@test(candidate(Vector{String}([]), Vector{String}([])) == Vector{String}([]))
+	@test(candidate([""hi"", ""admin""], [""hi"", ""hi""]) == [""hi"", ""hi""])
+	@test(candidate([""hi"", ""admin""], [""hi"", ""hi"", ""admin"", ""project""]) == [""hi"", ""admin""])
+	@test(candidate([""4""], [""1"", ""2"", ""3"", ""4"", ""5""]) == [""4""])
+	@test(candidate([""hi"", ""admin""], [""hI"", ""Hi""]) == [""hI"", ""Hi""])
+	@test(candidate([""hi"", ""admin""], [""hI"", ""hi"", ""hi""]) == [""hI"", ""hi"", ""hi""])
+	@test(candidate([""hi"", ""admin""], [""hI"", ""hi"", ""hii""]) == [""hi"", ""admin""])
+	@test(candidate(Vector{String}([]), [""this""]) == Vector{String}([]))
+	@test(candidate([""this""], Vector{String}([])) == Vector{String}([]))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_75_is_multiply_prime,jl,"""""""Write a function that returns true if the given number is the multiplication of 3 prime numbers
+and false otherwise.
+Knowing that (a) is less then 100. 
+Example:
+>>> is_multiply_prime(30)
+true
+30 = 2 * 3 * 5""""""
+function is_multiply_prime(a::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_75_is_multiply_prime.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_multiply_prime;
+	@test(candidate(5) == false)
+	@test(candidate(30) == true)
+	@test(candidate(8) == true)
+	@test(candidate(10) == false)
+	@test(candidate(125) == true)
+	@test(candidate(105) == true)
+	@test(candidate(126) == false)
+	@test(candidate(729) == false)
+	@test(candidate(891) == false)
+	@test(candidate(1001) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_76_is_simple_power,jl,"""""""Your task is to write a function that returns true if a number x is a simple
+power of n and false in other cases.
+x is a simple power of n if n**int=x
+For example:
+>>> is_simple_power(1, 4)
+true
+>>> is_simple_power(2, 2)
+true
+>>> is_simple_power(8, 2)
+true
+>>> is_simple_power(3, 2)
+false
+>>> is_simple_power(3, 1)
+false
+>>> is_simple_power(5, 3)
+false""""""
+function is_simple_power(x::Int64, n::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_76_is_simple_power.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_simple_power;
+	@test(candidate(16, 2) == true)
+	@test(candidate(143214, 16) == false)
+	@test(candidate(4, 2) == true)
+	@test(candidate(9, 3) == true)
+	@test(candidate(16, 4) == true)
+	@test(candidate(24, 2) == false)
+	@test(candidate(128, 4) == false)
+	@test(candidate(12, 6) == false)
+	@test(candidate(1, 1) == true)
+	@test(candidate(1, 12) == true)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_77_iscube,jl,"""""""Write a function that takes an integer a and returns true 
+if this ingeger is a cube of some integer number.
+Note: you may assume the input is always valid.
+Examples:
+>>> iscube(1)
+true
+>>> iscube(2)
+false
+>>> iscube(-1)
+true
+>>> iscube(64)
+true
+>>> iscube(0)
+true
+>>> iscube(180)
+false""""""
+function iscube(a::Int64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_77_iscube.py,reworded,"using Test
+
+@testset begin
+
+candidate = iscube;
+	@test(candidate(1) == true)
+	@test(candidate(2) == false)
+	@test(candidate(-1) == true)
+	@test(candidate(64) == true)
+	@test(candidate(180) == false)
+	@test(candidate(1000) == true)
+	@test(candidate(0) == true)
+	@test(candidate(1729) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_78_hex_key,jl,"""""""You have been tasked to write a function that receives 
+a hexadecimal number as a string and counts the number of hexadecimal 
+digits that are primes (prime number, or a prime, is a natural number 
+greater than 1 that is not a product of two smaller natural numbers).
+Hexadecimal digits are 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.
+Prime numbers are 2, 3, 5, 7, 11, 13, 17,...
+So you have to determine a number of the following digits: 2, 3, 5, 7, 
+B (=decimal 11), D (=decimal 13).
+Note: you may assume the input is always correct or empty string, 
+and symbols A,B,C,D,E,F are always uppercase.
+Examples:
+>>> hex_key(""AB"")
+1
+>>> hex_key(""1077E"")
+2
+>>> hex_key(""ABED1A33"")
+4
+>>> hex_key(""123456789ABCDEF0"")
+6
+>>> hex_key(""2020"")
+2""""""
+function hex_key(num::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_78_hex_key.py,reworded,"using Test
+
+@testset begin
+
+candidate = hex_key;
+	@test(candidate(""AB"") == 1)
+	@test(candidate(""1077E"") == 2)
+	@test(candidate(""ABED1A33"") == 4)
+	@test(candidate(""2020"") == 2)
+	@test(candidate(""123456789ABCDEF0"") == 6)
+	@test(candidate(""112233445566778899AABBCCDDEEFF00"") == 12)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_79_decimal_to_binary,jl,"""""""You will be given a number in decimal form and your task is to convert it to
+binary format. The function should return a string, with each character representing a binary
+number. Each character in the string will be '0' or '1'.
+There will be an extra couple of characters 'db' at the beginning and at the end of the string.
+The extra characters are there to help with the format.
+Examples:
+>>> decimal_to_binary(15)
+""db1111db""
+>>> decimal_to_binary(32)
+""db100000db""""""""
+function decimal_to_binary(decimal::Int64)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_79_decimal_to_binary.py,reworded,"using Test
+
+@testset begin
+
+candidate = decimal_to_binary;
+	@test(candidate(0) == ""db0db"")
+	@test(candidate(32) == ""db100000db"")
+	@test(candidate(103) == ""db1100111db"")
+	@test(candidate(15) == ""db1111db"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_7_filter_by_substring,jl,""""""" Filter an input vector of strings only for ones that contain given substring
+>>> filter_by_substring([], ""a"")
+[]
+>>> filter_by_substring([""abc"", ""bacd"", ""cde"", ""array""], ""a"")
+[""abc"", ""bacd"", ""array""]""""""
+function filter_by_substring(strings::Vector{String}, substring::String)::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_7_filter_by_substring.py,reworded,"using Test
+
+@testset begin
+
+candidate = filter_by_substring;
+	@test(candidate(Vector{String}([]), ""john"") == Vector{String}([]))
+	@test(candidate([""xxx"", ""asd"", ""xxy"", ""john doe"", ""xxxAAA"", ""xxx""], ""xxx"") == [""xxx"", ""xxxAAA"", ""xxx""])
+	@test(candidate([""xxx"", ""asd"", ""aaaxxy"", ""john doe"", ""xxxAAA"", ""xxx""], ""xx"") == [""xxx"", ""aaaxxy"", ""xxxAAA"", ""xxx""])
+	@test(candidate([""grunt"", ""trumpet"", ""prune"", ""gruesome""], ""run"") == [""grunt"", ""prune""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_80_is_happy,jl,"""""""You are given a string s.
+Your task is to check if the string is hapjl or not.
+A string is hapjl if its length is at least 3 and every 3 consecutive letters are distinct
+For example:
+>>> is_happy(""a"")
+false
+>>> is_happy(""aa"")
+false
+>>> is_happy(""abcd"")
+true
+>>> is_happy(""aabb"")
+false
+>>> is_happy(""adb"")
+true
+>>> is_happy(""xyy"")
+false""""""
+function is_happy(s::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_80_is_happy.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_happy;
+	@test(candidate(""a"") == false)
+	@test(candidate(""aa"") == false)
+	@test(candidate(""abcd"") == true)
+	@test(candidate(""aabb"") == false)
+	@test(candidate(""adb"") == true)
+	@test(candidate(""xyy"") == false)
+	@test(candidate(""iopaxpoi"") == true)
+	@test(candidate(""iopaxioi"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_81_numerical_letter_grade,jl,"""""""It is the last week of the semester and the teacher has to give the grades
+to students. The teacher has been making her own algorithm for grading.
+The only problem is, she has lost the code she used for grading.
+She has given you a vector of GPAs for some students and you have to write 
+a function that can output a vector of letter grades using the following table:
+         GPA       |    Letter grade
+          4.0                A+
+        > 3.7                A 
+        > 3.3                A- 
+        > 3.0                B+
+        > 2.7                B 
+        > 2.3                B-
+        > 2.0                C+
+        > 1.7                C
+        > 1.3                C-
+        > 1.0                D+ 
+        > 0.7                D 
+        > 0.0                D-
+          0.0                E
+Example:
+>>> grade_equation([4.0, 3, 1.7, 2, 3.5])
+[""A+"", ""B"", ""C-"", ""C"", ""A-""]""""""
+function numerical_letter_grade(grades::Vector{Float64})::Vector{String} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_81_numerical_letter_grade.py,reworded,"using Test
+
+@testset begin
+
+candidate = numerical_letter_grade;
+	@test(candidate([4.0, 3, 1.7, 2, 3.5]) == [""A+"", ""B"", ""C-"", ""C"", ""A-""])
+	@test(candidate([1.2]) == [""D+""])
+	@test(candidate([0.5]) == [""D-""])
+	@test(candidate([0.0]) == [""E""])
+	@test(candidate([1.0, 0.3, 1.5, 2.8, 3.3]) == [""D"", ""D-"", ""C-"", ""B"", ""B+""])
+	@test(candidate([0.0, 0.7]) == [""E"", ""D-""])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_82_prime_length,jl,"""""""Write a function that takes a string and returns true if the string
+length is a prime number or false otherwise
+Examples
+>>> prime_length(""Hello"")
+true
+>>> prime_length(""abcdcba"")
+true
+>>> prime_length(""kittens"")
+true
+>>> prime_length(""orange"")
+false""""""
+function prime_length(string::String)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_82_prime_length.py,reworded,"using Test
+
+@testset begin
+
+candidate = prime_length;
+	@test(candidate(""Hello"") == true)
+	@test(candidate(""abcdcba"") == true)
+	@test(candidate(""kittens"") == true)
+	@test(candidate(""orange"") == false)
+	@test(candidate(""wow"") == true)
+	@test(candidate(""world"") == true)
+	@test(candidate(""MadaM"") == true)
+	@test(candidate(""Wow"") == true)
+	@test(candidate("""") == false)
+	@test(candidate(""HI"") == true)
+	@test(candidate(""go"") == true)
+	@test(candidate(""gogo"") == false)
+	@test(candidate(""aaaaaaaaaaaaaaa"") == false)
+	@test(candidate(""Madam"") == true)
+	@test(candidate(""M"") == false)
+	@test(candidate(""0"") == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_83_starts_one_ends,jl,"""""""Given a positive integer n, return the count of the numbers of n-digit
+positive integers that start or end with 1.""""""
+function starts_one_ends(n::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_83_starts_one_ends.py,reworded,"using Test
+
+@testset begin
+
+candidate = starts_one_ends;
+	@test(candidate(1) == 1)
+	@test(candidate(2) == 18)
+	@test(candidate(3) == 180)
+	@test(candidate(4) == 1800)
+	@test(candidate(5) == 18000)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_84_solve,jl,"""""""Given a positive integer N, return the total sum of its digits in binary.
+Example
+>>> solve(1000)
+""1""
+>>> solve(150)
+""110""
+>>> solve(147)
+""1100""
+Variables:
+    @N integer
+         Constraints: 0 ≤ N ≤ 10000.
+Output:
+     a string of binary number""""""
+function solve(N::Int64)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_84_solve.py,reworded,"using Test
+
+@testset begin
+
+candidate = solve;
+	@test(candidate(1000) == ""1"")
+	@test(candidate(150) == ""110"")
+	@test(candidate(147) == ""1100"")
+	@test(candidate(333) == ""1001"")
+	@test(candidate(963) == ""10010"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_85_add,jl,"""""""Given a non-empty vector of integers lst. add the even elements that are at odd indices..
+Examples:
+>>> add([4, 2, 6, 7])
+2""""""
+function add(lst::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_85_add.py,reworded,"using Test
+
+@testset begin
+
+candidate = add;
+	@test(candidate([4, 88]) == 88)
+	@test(candidate([4, 5, 6, 7, 2, 122]) == 122)
+	@test(candidate([4, 0, 6, 7]) == 0)
+	@test(candidate([4, 4, 6, 8]) == 12)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_86_anti_shuffle,jl,"""""""Write a function that takes a string and returns an ordered version of it.
+Ordered version of string, is a string where all words (separated by space)
+are replaced by a new word where all the characters arranged in
+ascending order based on ascii value.
+Note: You should keep the order of words and blank spaces in the sentence.
+For example:
+>>> anti_shuffle(""Hi"")
+""Hi""
+>>> anti_shuffle(""hello"")
+""ehllo""
+>>> anti_shuffle(""Hello World!!!"")
+""Hello !!!Wdlor""""""""
+function anti_shuffle(s::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_86_anti_shuffle.py,reworded,"using Test
+
+@testset begin
+
+candidate = anti_shuffle;
+	@test(candidate(""Hi"") == ""Hi"")
+	@test(candidate(""hello"") == ""ehllo"")
+	@test(candidate(""number"") == ""bemnru"")
+	@test(candidate(""abcd"") == ""abcd"")
+	@test(candidate(""Hello World!!!"") == ""Hello !!!Wdlor"")
+	@test(candidate("""") == """")
+	@test(candidate(""Hi. My name is Mister Robot. How are you?"") == "".Hi My aemn is Meirst .Rboot How aer ?ouy"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_87_get_row,jl,"""""""You are given a 2 dimensional data, as a nested vectors,
+which is similar to matrix, however, unlike matrices,
+each row may contain a different number of columns.
+Given lst, and integer x, find integers x in the vector,
+and return vector of tuples, [(x1, y1), (x2, y2) ...] such that
+each tuple is a coordinate - (row, columns), starting with 0.
+Sort coordinates initially by rows in ascending order.
+Also, sort coordinates of the row by columns in descending order.
+Examples:
+>>> get_row([[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 1, 6], [1, 2, 3, 4, 5, 1]], 1)
+[(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]
+>>> get_row([], 1)
+[]
+>>> get_row([[], [1], [1, 2, 3]], 3)
+[(2, 2)]""""""
+function get_row(lst::Vector{Vector{Int64}}, x::Int64)::Vector{Tuple{Int64, Int64}} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_87_get_row.py,reworded,"using Test
+
+@testset begin
+
+candidate = get_row;
+	@test(candidate([[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 1, 6], [1, 2, 3, 4, 5, 1]], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)])
+	@test(candidate([[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6]], 2) == [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1)])
+	@test(candidate([[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6], [1, 1, 3, 4, 5, 6], [1, 2, 1, 4, 5, 6], [1, 2, 3, 1, 5, 6], [1, 2, 3, 4, 1, 6], [1, 2, 3, 4, 5, 1]], 1) == [(0, 0), (1, 0), (2, 1), (2, 0), (3, 2), (3, 0), (4, 3), (4, 0), (5, 4), (5, 0), (6, 5), (6, 0)])
+	@test(candidate(Vector{Vector{Int64}}([]), 1) == Vector{Tuple{Int64, Int64}}([]))
+	@test(candidate([[1]], 2) == Vector{Tuple{Int64, Int64}}([]))
+	@test(candidate([[], [1], [1, 2, 3]], 3) == [(2, 2)])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_88_sort_array,jl,"""""""Given a vector of non-negative integers, return a cojl of the given vector after sorting,
+you will sort the given vector in ascending order if the sum( first index value, last index value) is odd,
+or sort it in descending order if the sum( first index value, last index value) is even.
+Note:
+* don't change the given vector.
+Examples:
+>>> sort_array([])
+[]
+>>> sort_array([5])
+[5]
+>>> sort_array([2, 4, 3, 0, 1, 5])
+[0, 1, 2, 3, 4, 5]
+>>> sort_array([2, 4, 3, 0, 1, 5, 6])
+[6, 5, 4, 3, 2, 1, 0]""""""
+function sort_array(array::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_88_sort_array.py,reworded,"using Test
+
+@testset begin
+
+candidate = sort_array;
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([5]) == [5])
+	@test(candidate([2, 4, 3, 0, 1, 5]) == [0, 1, 2, 3, 4, 5])
+	@test(candidate([2, 4, 3, 0, 1, 5, 6]) == [6, 5, 4, 3, 2, 1, 0])
+	@test(candidate([2, 1]) == [1, 2])
+	@test(candidate([15, 42, 87, 32, 11, 0]) == [0, 11, 15, 32, 42, 87])
+	@test(candidate([21, 14, 23, 11]) == [23, 21, 14, 11])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_89_encrypt,jl,"""""""Create a function encrypt that takes a string as an argument and
+returns a string encrypted with the alphabet being rotated. 
+The alphabet should be rotated in a manner such that the letters 
+shift down by two multiplied to two places.
+For example:
+>>> encrypt(""hi"")
+""lm""
+>>> encrypt(""asdfghjkl"")
+""ewhjklnop""
+>>> encrypt(""gf"")
+""kj""
+>>> encrypt(""et"")
+""ix""""""""
+function encrypt(s::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_89_encrypt.py,reworded,"using Test
+
+@testset begin
+
+candidate = encrypt;
+	@test(candidate(""hi"") == ""lm"")
+	@test(candidate(""asdfghjkl"") == ""ewhjklnop"")
+	@test(candidate(""gf"") == ""kj"")
+	@test(candidate(""et"") == ""ix"")
+	@test(candidate(""faewfawefaewg"") == ""jeiajeaijeiak"")
+	@test(candidate(""hellomyfriend"") == ""lippsqcjvmirh"")
+	@test(candidate(""dxzdlmnilfuhmilufhlihufnmlimnufhlimnufhfucufh"") == ""hbdhpqrmpjylqmpyjlpmlyjrqpmqryjlpmqryjljygyjl"")
+	@test(candidate(""a"") == ""e"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_8_sum_product,jl,""""""" For a given vector of integers, return a tuple consisting of a sum and a product of all the integers in a vector.
+Empty sum should be equal to 0 and empty product should be equal to 1.
+>>> sum_product([])
+(0, 1)
+>>> sum_product([1, 2, 3, 4])
+(10, 24)""""""
+function sum_product(numbers::Vector{Int64})::Tuple{Int64, Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_8_sum_product.py,reworded,"using Test
+
+@testset begin
+
+candidate = sum_product;
+	@test(candidate(Vector{Int64}([])) == (0, 1))
+	@test(candidate([1, 1, 1]) == (3, 1))
+	@test(candidate([100, 0]) == (100, 0))
+	@test(candidate([3, 5, 7]) == (15, 105))
+	@test(candidate([10]) == (10, 10))
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_90_next_smallest,jl,"""""""You are given a vector of integers.
+Write a function next_smallest() that returns the 2nd smallest element of the vector.
+Return nothing if there is no such element.
+>>> next_smallest([1, 2, 3, 4, 5])
+2
+>>> next_smallest([5, 1, 4, 3, 2])
+2
+>>> next_smallest([])
+nothing
+>>> next_smallest([1, 1])
+nothing""""""
+function next_smallest(lst::Vector{Int64})::Union{Int64, Nothing} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_90_next_smallest.py,reworded,"using Test
+
+@testset begin
+
+candidate = next_smallest;
+	@test(candidate([1, 2, 3, 4, 5]) == 2)
+	@test(candidate([5, 1, 4, 3, 2]) == 2)
+	@test(candidate(Vector{Int64}([])) == nothing)
+	@test(candidate([1, 1]) == nothing)
+	@test(candidate([1, 1, 1, 1, 0]) == 1)
+	@test(candidate([1, 1]) == nothing)
+	@test(candidate([-35, 34, 12, -45]) == -35)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_91_is_bored,jl,"""""""You'll be given a string of words, and your task is to count the number
+of boredoms. A boredom is a sentence that starts with the word ""I"".
+Sentences are delimited by '.', '?' or '!'.
+For example:
+>>> is_bored(""Hello world"")
+0
+>>> is_bored(""The sky is blue. The sun is shining. I love this weather"")
+1""""""
+function is_bored(S::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_91_is_bored.py,reworded,"using Test
+
+@testset begin
+
+candidate = is_bored;
+	@test(candidate(""Hello world"") == 0)
+	@test(candidate(""Is the sky blue?"") == 0)
+	@test(candidate(""I love It !"") == 1)
+	@test(candidate(""bIt"") == 0)
+	@test(candidate(""I feel good today. I will be productive. will kill It"") == 2)
+	@test(candidate(""You and I are going for a walk"") == 0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_92_any_int,jl,"""""""Create a function that takes 3 numbers.
+Returns true if one of the numbers is equal to the sum of the other two, and all numbers are integers.
+Returns false in any other cases.
+Examples
+>>> any_int(5, 2, 7)
+true
+>>> any_int(3, 2, 2)
+false
+>>> any_int(3, -2, 1)
+true
+>>> any_int(3.6, -2.2, 2)
+false""""""
+function any_int(x::Float64, y::Float64, z::Float64)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_92_any_int.py,reworded,"using Test
+
+@testset begin
+
+candidate = any_int;
+	@test(candidate(2, 3, 1) == true)
+	@test(candidate(2.5, 2, 3) == false)
+	@test(candidate(1.5, 5, 3.5) == false)
+	@test(candidate(2, 6, 2) == false)
+	@test(candidate(4, 2, 2) == true)
+	@test(candidate(2.2, 2.2, 2.2) == false)
+	@test(candidate(-4, 6, 2) == true)
+	@test(candidate(2, 1, 1) == true)
+	@test(candidate(3, 4, 7) == true)
+	@test(candidate(3.0, 4, 7) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_93_encode,jl,"""""""Write a function that takes a message, and encodes in such a 
+way that it swaps case of all letters, replaces all vowels in 
+the message with the letter that appears 2 places ahead of that 
+vowel in the english alphabet. 
+Assume only letters. 
+Examples:
+>>> encode(""test"")
+""TGST""
+>>> encode(""This is a message"")
+""tHKS KS C MGSSCGG""""""""
+function encode(message::String)::String 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_93_encode.py,reworded,"using Test
+
+@testset begin
+
+candidate = encode;
+	@test(candidate(""TEST"") == ""tgst"")
+	@test(candidate(""Mudasir"") == ""mWDCSKR"")
+	@test(candidate(""YES"") == ""ygs"")
+	@test(candidate(""This is a message"") == ""tHKS KS C MGSSCGG"")
+	@test(candidate(""I DoNt KnOw WhAt tO WrItE"") == ""k dQnT kNqW wHcT Tq wRkTg"")
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_94_skjkasdkd,jl,"""""""You are given a vector of integers.
+You need to find the largest prime value and return the sum of its digits.
+Examples:
+>>> skjkasdkd([0, 3, 2, 1, 3, 5, 7, 4, 5, 5, 5, 2, 181, 32, 4, 32, 3, 2, 32, 324, 4, 3])
+10
+>>> skjkasdkd([1, 0, 1, 8, 2, 4597, 2, 1, 3, 40, 1, 2, 1, 2, 4, 2, 5, 1])
+25
+>>> skjkasdkd([1, 3, 1, 32, 5107, 34, 83278, 109, 163, 23, 2323, 32, 30, 1, 9, 3])
+13
+>>> skjkasdkd([0, 724, 32, 71, 99, 32, 6, 0, 5, 91, 83, 0, 5, 6])
+11
+>>> skjkasdkd([0, 81, 12, 3, 1, 21])
+3
+>>> skjkasdkd([0, 8, 1, 2, 1, 7])
+7""""""
+function skjkasdkd(lst::Vector{Int64})::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_94_skjkasdkd.py,reworded,"using Test
+
+@testset begin
+
+candidate = skjkasdkd;
+	@test(candidate([0, 3, 2, 1, 3, 5, 7, 4, 5, 5, 5, 2, 181, 32, 4, 32, 3, 2, 32, 324, 4, 3]) == 10)
+	@test(candidate([1, 0, 1, 8, 2, 4597, 2, 1, 3, 40, 1, 2, 1, 2, 4, 2, 5, 1]) == 25)
+	@test(candidate([1, 3, 1, 32, 5107, 34, 83278, 109, 163, 23, 2323, 32, 30, 1, 9, 3]) == 13)
+	@test(candidate([0, 724, 32, 71, 99, 32, 6, 0, 5, 91, 83, 0, 5, 6]) == 11)
+	@test(candidate([0, 81, 12, 3, 1, 21]) == 3)
+	@test(candidate([0, 8, 1, 2, 1, 7]) == 7)
+	@test(candidate([8191]) == 19)
+	@test(candidate([8191, 123456, 127, 7]) == 19)
+	@test(candidate([127, 97, 8192]) == 10)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_95_check_dict_case,jl,"""""""Given a dictionary, return true if all keys are strings in lower 
+case or all keys are strings in upper case, else return false.
+The function should return false is the given dictionary is empty.
+Examples:
+>>> check_dict_case(Dict(""a"" => ""apple"", ""b"" => ""banana""))
+true
+>>> check_dict_case(Dict(""a"" => ""apple"", ""A"" => ""banana"", ""B"" => ""banana""))
+false
+>>> check_dict_case(Dict(""a"" => ""apple"", 8 => ""banana"", ""a"" => ""apple""))
+false
+>>> check_dict_case(Dict(""Name"" => ""John"", ""Age"" => ""36"", ""City"" => ""Houston""))
+false
+>>> check_dict_case(Dict(""STATE"" => ""NC"", ""ZIP"" => ""12345""))
+true""""""
+function check_dict_case(dict::Dict{String, String}>)::Bool 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_95_check_dict_case.py,reworded,"using Test
+
+@testset begin
+
+candidate = check_dict_case;
+	@test(candidate(Dict(""p"" => ""pineapple"", ""b"" => ""banana"")) == true)
+	@test(candidate(Dict(""p"" => ""pineapple"", ""A"" => ""banana"", ""B"" => ""banana"")) == false)
+	@test(candidate(Dict(""p"" => ""pineapple"", ""5"" => ""banana"", ""a"" => ""apple"")) == false)
+	@test(candidate(Dict(""Name"" => ""John"", ""Age"" => ""36"", ""City"" => ""Houston"")) == false)
+	@test(candidate(Dict(""STATE"" => ""NC"", ""ZIP"" => ""12345"")) == true)
+	@test(candidate(Dict(""fruit"" => ""Orange"", ""taste"" => ""Sweet"")) == true)
+	@test(candidate(Dict()) == false)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_96_count_up_to,jl,"""""""Implement a function that takes an non-negative integer and returns a vector of the first n
+integers that are prime numbers and less than n.
+for example:
+>>> count_up_to(5)
+[2, 3]
+>>> count_up_to(11)
+[2, 3, 5, 7]
+>>> count_up_to(0)
+[]
+>>> count_up_to(20)
+[2, 3, 5, 7, 11, 13, 17, 19]
+>>> count_up_to(1)
+[]
+>>> count_up_to(18)
+[2, 3, 5, 7, 11, 13, 17]""""""
+function count_up_to(n::Int64)::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_96_count_up_to.py,reworded,"using Test
+
+@testset begin
+
+candidate = count_up_to;
+	@test(candidate(5) == [2, 3])
+	@test(candidate(6) == [2, 3, 5])
+	@test(candidate(7) == [2, 3, 5])
+	@test(candidate(10) == [2, 3, 5, 7])
+	@test(candidate(0) == Vector{Int64}([]))
+	@test(candidate(22) == [2, 3, 5, 7, 11, 13, 17, 19])
+	@test(candidate(1) == Vector{Int64}([]))
+	@test(candidate(18) == [2, 3, 5, 7, 11, 13, 17])
+	@test(candidate(47) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43])
+	@test(candidate(101) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97])
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_97_multiply,jl,"""""""Complete the function that takes two integers and returns 
+the product of their unit digits.
+Assume the input is always valid.
+Examples:
+>>> multiply(148, 412)
+16
+>>> multiply(19, 28)
+72
+>>> multiply(2020, 1851)
+0
+>>> multiply(14, -15)
+20""""""
+function multiply(a::Int64, b::Int64)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_97_multiply.py,reworded,"using Test
+
+@testset begin
+
+candidate = multiply;
+	@test(candidate(148, 412) == 16)
+	@test(candidate(19, 28) == 72)
+	@test(candidate(2020, 1851) == 0)
+	@test(candidate(14, -15) == 20)
+	@test(candidate(76, 67) == 42)
+	@test(candidate(17, 27) == 49)
+	@test(candidate(0, 1) == 0)
+	@test(candidate(0, 0) == 0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_98_count_upper,jl,"""""""Given a string s, count the number of uppercase vowels in even indices.
+For example:
+>>> count_upper(""aBCdEf"")
+1
+>>> count_upper(""abcdefg"")
+0
+>>> count_upper(""dBBE"")
+0""""""
+function count_upper(s::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_98_count_upper.py,reworded,"using Test
+
+@testset begin
+
+candidate = count_upper;
+	@test(candidate(""aBCdEf"") == 1)
+	@test(candidate(""abcdefg"") == 0)
+	@test(candidate(""dBBE"") == 0)
+	@test(candidate(""B"") == 0)
+	@test(candidate(""U"") == 1)
+	@test(candidate("""") == 0)
+	@test(candidate(""EEEE"") == 2)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_99_closest_integer,jl,"""""""Create a function that takes a value (string) representing a number
+and returns the closest integer to it. If the number is equidistant
+from two integers, round it away from zero.
+Examples
+>>> closest_integer(""10"")
+10
+>>> closest_integer(""15.3"")
+15
+Note:
+Rounding away from zero means that if the given number is equidistant
+from two integers, the one you should return is the one that is the
+farthest from zero. For example closest_integer(""14.5"") should
+return 15 and closest_integer(""-14.5"") should return -15.""""""
+function closest_integer(value::String)::Int64 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_99_closest_integer.py,reworded,"using Test
+
+@testset begin
+
+candidate = closest_integer;
+	@test(candidate(""10"") == 10)
+	@test(candidate(""14.5"") == 15)
+	@test(candidate(""-15.5"") == -16)
+	@test(candidate(""15.3"") == 15)
+	@test(candidate(""0"") == 0)
+end
+","['\nfunction', '\nmacro', '\n\n']"
+HumanEval_9_rolling_max,jl,""""""" From a given vector of integers, generate a vector of rolling maximum element found until given moment
+in the sequence.
+>>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+[1, 2, 3, 3, 3, 4, 4]""""""
+function rolling_max(numbers::Vector{Int64})::Vector{Int64} 
+",transform,/home/arjun/repos/nuprl/MultiPL-E/datasets/../datasets/originals-with-cleaned-doctests/HumanEval_9_rolling_max.py,reworded,"using Test
+
+@testset begin
+
+candidate = rolling_max;
+	@test(candidate(Vector{Int64}([])) == Vector{Int64}([]))
+	@test(candidate([1, 2, 3, 4]) == [1, 2, 3, 4])
+	@test(candidate([4, 3, 2, 1]) == [4, 4, 4, 4])
+	@test(candidate([3, 2, 3, 100, 3]) == [3, 3, 3, 100, 100])
+end
+","['\nfunction', '\nmacro', '\n\n']"

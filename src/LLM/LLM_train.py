@@ -16,11 +16,20 @@ INTERNAL_TEST = False
 
 MAX_LENGTH = 1024
 
+def add_special_tokens_if_needed(tokenizer: AutoTokenizer, model: AutoModelForCausalLM):
+    if tokenizer.pad_token is None:
+        if tokenizer.eos_token:
+            tokenizer.pad_token = tokenizer.eos_token
+        else:
+            tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            print("Added new pad_token: [PAD]")
+            model.resize_token_embeddings(len(tokenizer))
+
 
 def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-360M-Instruct"
     model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
 
@@ -28,20 +37,15 @@ def model_small_lm_360m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
 def model_small_lm_135m() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-135M"
     model = AutoModelForCausalLM.from_pretrained(checkpoint, torch_dtype=torch.float16).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
 
 
 def model_small_lm_1b() -> tuple[AutoModelForCausalLM, AutoTokenizer]:
     checkpoint = "HuggingFaceTB/SmolLM-1.7B"
-    nf4_config = BitsAndBytesConfig( load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.float16 
-        )
-    model = AutoModelForCausalLM.from_pretrained(checkpoint,quantization_config = nf4_config).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint)
+    model = AutoModelForCausalLM.from_pretrained(checkpoint,torch_dtype=torch.float16).to(device)
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint, use_fast=True)
     add_special_tokens_if_needed(tokenizer, model)
     return model, tokenizer
 
@@ -71,24 +75,30 @@ def model_selector(model_name: str, signature: bool, baseline: bool) -> tuple:
 
     if model_name in model_map:
         model_function = model_map[model_name]
-        model = model_function()
+        model, tokenizer = model_function()
         path = get_model_path(f"{model_name}{path_suffix}")
-        return model, path
+        return (model, tokenizer), path
     else:
         raise ValueError(f"Invalid model name: {model_name}")
 
 
-def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: bool, sample_run: bool = False) -> Dataset:
-    if sample_run:
+def create_corpus(
+    data: DataFrame,
+    tokenizer: AutoTokenizer,
+    just_signature: bool,
+    sample: int = None
+) -> Dataset:
+    # If the user provided a sample size, use it. Otherwise, use the full dataset.
+    if sample is not None:
         print("Running a sample training run.")
-        c_dataset = Dataset.from_pandas(data.sample(1000))
+        c_dataset = Dataset.from_pandas(data.sample(min(sample, len(data))))
     else:
         c_dataset = Dataset.from_pandas(data)
 
     def tokenize_function(df):
         if just_signature:
             combined_texts = [
-                f"{header}{body}".strip()
+                f"{header}\n{body}".strip()
                 for header, body in zip(
                     df.get("function_header", []),
                     df.get("function_body", [])
@@ -119,8 +129,8 @@ def create_corpus(data: DataFrame, tokenizer: AutoTokenizer, just_signature: boo
 
     # Set the format for PyTorch tensors
     tokenized_dataset.set_format(type='torch', columns=['input_ids', 'attention_mask'])
-    '''if INTERNAL_TEST:
-        tokenized_dataset_inspection(tokenized_dataset, tokenizer)'''
+    if INTERNAL_TEST:
+        tokenized_dataset_inspection(tokenized_dataset, tokenizer)
 
     return tokenized_dataset
 
@@ -131,17 +141,43 @@ def batch_size_per_model(model: str) -> int:
     elif model == "135m":
         return 4
     elif model == "1.7b":
-        return 4
+        return 2
 
 
-def gradient_checkpointing_enable(model: str) -> int:
+def gradient_accumulation_steps_per_model(model: str) -> int:
     if model == "360m":
-        return 4
+        return 2
     elif model == "135m":
-        return 4
+        return 2
     elif model == "1.7b":
         return 4
 
+
+def enable_gradient_checkpointing(model: AutoModelForCausalLM):
+    model.gradient_checkpointing_enable()
+    print("Gradient checkpointing enabled.")
+
+
+def is_gpu_available():
+    return torch.cuda.is_available()
+
+def is_bf16_supported():
+    if not is_gpu_available():
+        return False
+
+    device_properties = torch.cuda.get_device_properties(0)
+    # BF16 support typically requires Compute Capability >= 8.0 (Ampere or newer)
+    return device_properties.major >= 8 or (device_properties.major == 7 and device_properties.minor == 5)
+
+def get_fp16_flag():
+    fp = is_gpu_available() and not is_bf16_supported()
+    print(f"fp16 flag: {fp}")
+    return fp
+
+def get_bf16_flag():
+    bf = is_gpu_available() and is_bf16_supported()
+    print(f"bf16 flag: {bf}")
+    return bf
 
 
 def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: Path):
@@ -152,41 +188,44 @@ def train_small(model_type: str, model, tokenizer, corpus: Dataset, save_path: P
     remove_all_files_and_subdirectories_in_folder(save_path)
 
     model.config.use_cache = False
-    if model_type == "1.7b":
-        model.gradient_checkpointing_enable()
-        model = prepare_model_for_kbit_training(model)
-        model = apply_lora_to_model(model, target_modules=["q_proj", "v_proj"], r=8, alpha=32, dropout=0.1)
-
-
+    if "1.7b" in model_type:
+        enable_gradient_checkpointing(model)
+        model = apply_lora_to_model(
+            model,
+            target_modules=["q_proj", "v_proj"],
+            r=8,
+            alpha=32,
+            dropout=0.1
+        )
 
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer,
-        mlm=False,  # Set to False for causal language modeling
+        mlm=False,
     )
-
-    
 
     # Define training arguments
     training_args = TrainingArguments(
-        learning_rate=1e-4,
+        learning_rate=5e-4,
         max_grad_norm=1.0,
         output_dir=str(save_path),  # Directory to save model checkpoints
         overwrite_output_dir=True,  # Overwrite the content of the output directory
-        num_train_epochs=5,  # Number of training epochs
+        num_train_epochs=1,  # Number of training epochs
         per_device_train_batch_size=batch_size_per_model(model_type),  # Batch size per device during training
-        gradient_accumulation_steps=gradient_checkpointing_enable(model_type),  # Accumulate gradients
+        gradient_accumulation_steps=gradient_accumulation_steps_per_model(model_type),  # Accumulate gradients
         warmup_steps=500,  # Number of warmup steps for learning rate scheduler
         weight_decay=0.01,  # Strength of weight decay
-        logging_dir='./logs',  # Directory for storing logs
-        logging_steps=50,  # Log every X updates steps
-        save_steps=20000,  # Save checkpoint every X updates steps
+        logging_steps=500,  # Log every X updates steps
+        save_steps=50000,  # Save checkpoint every X updates steps
         save_total_limit=2,  # Limit the total amount of checkpoints
-        fp16=True,  # Use mixed precision if available
+        fp16=get_fp16_flag(),  # Use mixed precision if available
+        bf16=get_bf16_flag(),  # turn this on if GPU supports bf16
         remove_unused_columns=True,  # Remove columns not used by the model
-        gradient_checkpointing=False,
+        dataloader_num_workers=4,  # Adjusted for optimal performance
+        gradient_checkpointing=True,  # Enable gradient checkpointing
+        optim="adamw_torch",  # Use AdamW optimizer implemented in PyTorch for better compatibility
     )
-    
-    
+
+
 
     # Initialize Trainer
     trainer = Trainer(
@@ -234,38 +273,47 @@ def select_data(baseline: bool) -> DataFrame:
         return DataHandler.get_parsed()
 
 
-def perform_train(model_type: str, signature: bool, baseline: bool, sample_run: bool = False):
+def perform_train(model_type: str, signature: bool, baseline: bool, sample: int = None):
     print(f"Training model: {model_type_definer(model_type, baseline, signature)}")
     data = select_data(baseline)
     (model, tokenizer), path = model_selector(model_type, signature, baseline)
-    corpus = create_corpus(data, tokenizer, signature, sample_run)
+    corpus = create_corpus(data, tokenizer, signature, sample)
     train_small(model_type, model, tokenizer, corpus, path)
 
 
-def perform_train_all(signature: bool, baseline: bool,  sample_run: bool = False):
+def perform_train_all(signature: bool, baseline: bool, sample: int = None):
     print("Training all models.")
     for model_type in base_model_types():
         print("-------------------------------------------------------------------------------------------------------------------------")
-        perform_train(model_type, signature, baseline,  sample_run)
+        perform_train(model_type, signature, baseline, sample)
 
 
 def main():
     argparse = ArgumentParser()
-    argparse.add_argument("--model", type=str, default="135m", help="Model name to use.",
-                          choices=base_model_types().append("all"))
-    argparse.add_argument("--sample_run", action="store_true", help="Run a sample training run.")
+    models = base_model_types() + ["all"]
+    argparse.add_argument(
+        "--model",
+        type=str,
+        default="135m",
+        help="Model name to use.",
+        choices=models
+    )
+    argparse.add_argument("--sample", type=int, default=None, help="Run training with a sample.")
     argparse.add_argument("--signature", action="store_true", help="Use only function signature for training.")
     argparse.add_argument("--baseline", action="store_true", help="Use only baseline for training.")
 
     args = argparse.parse_args()
-    print(f"sample_run: {args.sample_run}")
+    print(f"sample: {args.sample}")
     print(f"signature: {args.signature}")
     print(f"baseline: {args.baseline}")
 
+    if args.sample is not None and args.sample < 1:
+        raise ValueError("Sample run must be greater than 0.")
+
     if args.model == "all":
-        perform_train_all(args.signature, args.baseline, args.sample_run)
+        perform_train_all(args.signature, args.baseline, args.sample)
     else:
-        perform_train(args.model, args.signature, args.baseline, args.sample_run)
+        perform_train(args.model, args.signature, args.baseline, args.sample)
 
 
 if __name__ == "__main__":

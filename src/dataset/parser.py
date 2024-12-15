@@ -98,7 +98,7 @@ def get_function_header(function_definition) -> AnyStr:
     function = function_definition.children[0]
     identifier = function_definition.children[1]
     parameter_list = function_definition.children[2]
-    return f"{function.text.decode('utf-8')} {identifier.text.decode('utf-8')} {parameter_list.text.decode('utf-8')}"
+    return f"{function.text.decode('utf-8')} {identifier.text.decode('utf-8')}{parameter_list.text.decode('utf-8')}"
 
 
 def get_function_body(function_definition, keep_comments=True, keep_constraints=True):
@@ -167,7 +167,7 @@ def main():
 
     results = []
     for k, v in repository_to_files.items():
-        results.extend(parse_files(v))
+        results.extend(parse_files(v, args.remove_comments, args.remove_constraints))
         print(f"----- {k}")
 
     df = pd.DataFrame([r.__dict__ for r in results])
