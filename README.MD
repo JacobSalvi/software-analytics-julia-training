@@ -81,6 +81,7 @@ The models can be downloaded from the following links:
 - [360m]()
 - [1.7b](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/Ecn0xTQP00ROuE2lEt4o5R0BGFo7gFlfEgGlUKQEY2FMCA?e=dS60HK)
 
+IMPORTANT: Only the model with docstring and internal comments are available for download. (thus containing everything)
 # Evaluate
 To use the evaluation script, you need to have the model in the `models` directory trained. 
 
