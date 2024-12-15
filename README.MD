@@ -29,9 +29,20 @@ export PYTHONPATH="$PYTHONPATH:$PWD"
 ```
 
 # Scrape the data 
-The data is provvided and can be downloaded from [HERE](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EXbaGNS1xH9BiNFuXBDGbGoBEvVAy8DZfdT_SrclCmaLNg?e=FNkBos)
+To get scrape the github repositories run the next command:
 
-TODO command to scrape the data
+```bash
+python3 src/dataset/fetch_dataset.py
+```
+
+Afterwards it is necessary to scrape and parse the data to produce a 'json' file contained the raw data set.
+
+```bash
+python3 src/dataset/parser.py
+```
+
+The data is provided and can be downloaded from [HERE](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EXbaGNS1xH9BiNFuXBDGbGoBEvVAy8DZfdT_SrclCmaLNg?e=FNkBos)
+
 
 # Pre-Process the data 
 The raw Data is expected to be in the `data` directory. The name of the file is expected to be `fd.json`
