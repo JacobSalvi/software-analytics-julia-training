@@ -3,9 +3,9 @@ from pathlib import Path
 import torch
 from datasets import Dataset
 from pandas import DataFrame
-from peft import LoraConfig, get_peft_model,prepare_model_for_kbit_training
+from peft import LoraConfig, get_peft_model
 from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForLanguageModeling, Trainer, \
-    TrainingArguments,BitsAndBytesConfig
+    TrainingArguments
 from src.LLM.LLM_utils import model_type_definer
 from src.data.dataHanlder import DataHandler
 from src.utils.util import get_model_path, base_model_types, remove_all_files_and_subdirectories_in_folder
@@ -141,7 +141,7 @@ def batch_size_per_model(model: str) -> int:
     elif model == "135m":
         return 4
     elif model == "1.7b":
-        return 2
+        return 4
 
 
 def gradient_accumulation_steps_per_model(model: str) -> int:

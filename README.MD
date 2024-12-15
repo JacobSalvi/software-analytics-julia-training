@@ -24,13 +24,13 @@ export PYTHONPATH="$PYTHONPATH:$PWD"
 ```
 
 # Scrape the data 
-The data is provvided and can be downloaded from [HERE](https://drive.proton.me/urls/MZMDKRAXM0#DPBSHmy8ATHp)
+The data is provvided and can be downloaded from [HERE](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EXbaGNS1xH9BiNFuXBDGbGoBEvVAy8DZfdT_SrclCmaLNg?e=FNkBos)
 
 TODO command to scrape the data
 
 # Pre-Process the data 
 The raw Data is expected to be in the `data` directory. The name of the file is expected to be `fd.json`
-Download the raw data from [HERE](https://drive.proton.me/urls/MZMDKRAXM0#DPBSHmy8ATHp)
+Download the raw data from [HERE](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EXbaGNS1xH9BiNFuXBDGbGoBEvVAy8DZfdT_SrclCmaLNg?e=FNkBos)
 
 The data is pre-processed using the following command, you need to run this command before training the model.
 ```bash
@@ -76,7 +76,7 @@ python src/LLM/LLM_train.py --model "all" --baseline --sample=1000
 The models can be downloaded from the following links:
 - [135m](https://1drv.ms/u/s!AjZv2fgaLt2FyKU_6pirCIoG5S-CWQ?e=MqcmZP)
 - [360m](ADD link)
-- [1.7b](ADD link)
+- [1.7b](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/Ecn0xTQP00ROuE2lEt4o5R0BGFo7gFlfEgGlUKQEY2FMCA?e=dS60HK)
 
 # Evaluate
 To use the evaluation script, you need to have the model in the `models` directory trained. 
