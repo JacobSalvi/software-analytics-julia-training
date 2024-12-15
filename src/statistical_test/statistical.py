@@ -3,11 +3,19 @@ import pandas as pd
 import argparse
 import matplotlib.pyplot as plt
 from statsmodels.stats.contingency_tables import mcnemar
+from pathlib import Path
+
+def construct_file_path(file_name):
+    base_dir = Path(__file__).parent.parent
+    results_dir = base_dir / "benchmark" / "results"
+    file_path = results_dir / file_name
+    return file_path
 
 def read_results(file):
-    if not os.path.exists(file):
-        raise FileNotFoundError(f"File {file} does not exist.")
-    df = pd.read_json(file)
+    file_path = construct_file_path(file)
+    if not file_path.exists():
+        raise FileNotFoundError(f"File {file_path} does not exist.")
+    df = pd.read_json(file_path)
     return df['passed']
 
 def mcnemartest(n_11, n_10, n_01, n_00):
@@ -33,7 +41,7 @@ def graphs(models, copilot_file, specific_models=None):
     model_correct_counts = []
     model_incorrect_counts = []
     for model in models:
-        model_file = f"{model}_results_jl.json"
+        model_file = construct_file_path(f"{model}_results_jl.json")
         model_results = read_results(model_file)
         correct = model_results.sum()
         incorrect = len(model_results) - correct  
@@ -59,58 +67,37 @@ def graphs(models, copilot_file, specific_models=None):
 
     plt.show()
 
-def efficiency_of_models(model_0_file,model_1_file, model_2_file):
-    if not os.path.exists(model_0_file):
-        raise FileNotFoundError(f"File {model_0_file} does not exist")
-    if not os.path.exists(model_1_file):
-        raise FileNotFoundError(f"File {model_1_file} does not exist.")
-    if not os.path.exists(model_2_file):
-        raise FileNotFoundError(f"File {model_2_file} does not exist.")
+def efficiency_of_models(models):
+
+    for model in models :
+
+        model_file = construct_file_path(f"{model}_results_jl.json")
+        model_results = read_results(model_file)
+
+        correct = model_results.sum()
     
-    model_0_results = read_results(model_0_file)
-    model_1_results = read_results(model_1_file)
-    model_2_results = read_results(model_2_file)
+        total = len(model_results)
 
-    correct_0 = model_0_results.sum()
-    correct_1 = model_1_results.sum()
-    correct_2 = model_2_results.sum()
-    total = len(model_0_results)
-
-    print(f"Model CoPilot - Passed : {correct_0}/{total} ({(correct_0/total)*100:.2f}%)")
-    print(f"Model 135m - Passed: {correct_1}/{total} ({(correct_1/total)*100:.2f}%)")
-    print(f"Model 360m - Passed: {correct_2}/{total} ({(correct_2/total)*100:.2f}%)")
-
+        print(f"Model {model} - Passed: {correct}/{total} ({(correct/total)*100:.2f}%)")
     
-    failed_1 = total - correct_1
-    failed_2 = total - correct_2
-    effect_size(correct_1, failed_1, correct_2, failed_2)
+
 
 def compare_models(model_1, model_2):
 
-    model_1_file = f"{model_1}_results_jl.json"
-    model_2_file = f"{model_2}_results_jl.json"
-
-    if not os.path.exists(model_1_file):
-        raise FileNotFoundError(f"File {model_1_file} does not exist.")
-    if not os.path.exists(model_2_file):
-        raise FileNotFoundError(f"File {model_2_file} does not exist.")
-    
-
+    model_1_file = construct_file_path(f"{model_1}_results_jl.json")
+    model_2_file = construct_file_path(f"{model_2}_results_jl.json")
     model_1_results = read_results(model_1_file)
     model_2_results = read_results(model_2_file)
-
 
     correct_1 = model_1_results.sum()
     correct_2 = model_2_results.sum()
     total = len(model_1_results)
 
-    print(f"Calculating the effect size for the following 2 models ")
+    print(f"Calculating the effect size for the following 2 models")
 
-    
     failed_1 = total - correct_1
     failed_2 = total - correct_2
     effect_size(correct_1, failed_1, correct_2, failed_2)
-
 
 def main():
     arguments = argparse.ArgumentParser()
@@ -121,18 +108,20 @@ def main():
                            help="Optional list of specific models to analyze.")
     args = arguments.parse_args()
 
-    models = ["135m", "360m"]
     if args.specific_models:
         models = args.specific_models
+    else:
+        models = ["135m", "360m", "1.7b"]
 
-    copilot_file = "copilot_results_jl.json"
+    copilot_file = construct_file_path("copilot_results_jl.json")
 
     for model in models:
         file = f"{model}_results_jl.json"
 
-        if not os.path.exists(file):
+        if not construct_file_path(file).exists():
             print(f"Results file for {model} does not exist.")
             continue
+        file = construct_file_path(file)
 
         model_results = read_results(file)
         copilot_results = read_results(copilot_file)
@@ -149,17 +138,8 @@ def main():
         mcnemartest(n_11, n_10, n_01, n_00)
 
     graphs(models, copilot_file)
-
-    model_0 = "copilot"
-    model_1 = "135m"
-    model_2 = "360m"
-
-    model_0_file = f"{model_0}_results_jl.json"
-    model_1_file = f"{model_1}_results_jl.json"
-    model_2_file = f"{model_2}_results_jl.json"
-
-    print("Calculating the efficiency of the models")
-    efficiency_of_models(model_0_file,model_1_file, model_2_file)
+    print("Calculating the efficiency of the models specified")
+    efficiency_of_models(models)
 
     while True:
         print("Enter the 2 models you want to compare (or type 'exit' to quit):")
@@ -172,9 +152,6 @@ def main():
             print("Please enter exactly two models.")
             continue
         compare_models(models[0], models[1])  
-
-    
-
 
 if __name__ == "__main__":
     main()
