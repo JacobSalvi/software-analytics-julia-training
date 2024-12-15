@@ -65,14 +65,8 @@ def textbox(text, box="AI", name="Philippe", app=None):
 
 AVAILABLE_MODELS = [
     "360m",
-    "360M_signature",
-    "360m_baseline",
     "135m",
-    "135m_signature",
-    "135m_baseline",
     "1.7b",
-    "1.7b_signature",
-    "1.7b_baseline",
 ]
 
 # Define app
