@@ -84,6 +84,31 @@ The models can be downloaded from the following links:
 - [1.7b](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/Ecn0xTQP00ROuE2lEt4o5R0BGFo7gFlfEgGlUKQEY2FMCA?e=dS60HK)
 
 IMPORTANT: Only the model trained with docstring and internal comments are available for download. (thus containing everything)
+
+# Post processing
+Before evaluating the models they should be post processed.
+The completions created by the model often have syntax error caused a lack, or over inclusion, of 'end' keywords as in this example:
+```julia
+function fibonacci(n)
+  if n <= 2
+    return 1
+  end
+  return fibonacci(n - 1) 
+  + fibonacci(n - 2)
+end
+end
+end
+```
+The post processing script ensure that the number of 'end' keywords are correct.
+It is sufficient to run the 'src/utils/post_processing.py' script passing as input dir the directory containing the results
+produced by the ./generate.sh script.
+
+
+```bash
+python3 src/utils/post_process --input-dir ./results
+```
+
+
 # Evaluate
 To use the evaluation script, you need to have the model in the `models` directory trained. 
 
