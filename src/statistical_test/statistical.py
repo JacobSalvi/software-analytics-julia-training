@@ -4,11 +4,13 @@ import argparse
 import matplotlib.pyplot as plt
 from statsmodels.stats.contingency_tables import mcnemar
 
+
 def read_results(file):
     if not os.path.exists(file):
         raise FileNotFoundError(f"File {file} does not exist.")
     df = pd.read_json(file)
     return df['passed']
+
 
 def mcnemartest(n_11, n_10, n_01, n_00):
     table = [[n_11, n_10],
@@ -17,10 +19,12 @@ def mcnemartest(n_11, n_10, n_01, n_00):
     print(f"McNemar's Test - Statistic: {result.statistic}, p-value: {result.pvalue}")
     return result
 
+
 def effect_size(count_passed_1, count_failed_1, count_passed_2, count_failed_2):
     odds_ratio = (count_passed_1 / count_failed_1) / (count_passed_2 / count_failed_2)
     print(f"Odds Ratio (Effect Size): {odds_ratio}")
     return odds_ratio
+
 
 def graphs(models, copilot_file, specific_models=None):
     if specific_models:
@@ -59,6 +63,7 @@ def graphs(models, copilot_file, specific_models=None):
 
     plt.show()
 
+
 def efficiency_of_models(model_0_file,model_1_file, model_2_file):
     if not os.path.exists(model_0_file):
         raise FileNotFoundError(f"File {model_0_file} does not exist")
@@ -85,6 +90,7 @@ def efficiency_of_models(model_0_file,model_1_file, model_2_file):
     failed_2 = total - correct_2
     effect_size(correct_1, failed_1, correct_2, failed_2)
 
+
 def compare_models(model_1, model_2):
 
     model_1_file = f"{model_1}_results_jl.json"
@@ -103,8 +109,9 @@ def compare_models(model_1, model_2):
     correct_1 = model_1_results.sum()
     correct_2 = model_2_results.sum()
     total = len(model_1_results)
+    print(f"Model {model_2} - Passed: {correct_2}/{total} ({(correct_2 / total) * 100:.2f}%)")
 
-    print(f"Calculating the effect size for the following 2 models ")
+    print(f"Calculating the effect size for {model_1} and {model_2}")
 
     
     failed_1 = total - correct_1
@@ -117,11 +124,11 @@ def main():
     arguments.add_argument("--specific_models",
                            nargs='*',
                            type=str,
-                           choices=["135m", "360m", "1.7b"],
+                           choices=["135m", "360m", "1-7B"],
                            help="Optional list of specific models to analyze.")
     args = arguments.parse_args()
 
-    models = ["135m", "360m"]
+    models = ["135m", "360m", "1-7B"]
     if args.specific_models:
         models = args.specific_models
 
@@ -159,19 +166,12 @@ def main():
     model_2_file = f"{model_2}_results_jl.json"
 
     print("Calculating the efficiency of the models")
-    efficiency_of_models(model_0_file,model_1_file, model_2_file)
+    efficiency_of_models(model_0_file, model_1_file, model_2_file)
 
-    while True:
-        print("Enter the 2 models you want to compare (or type 'exit' to quit):")
-        user_input = input()
-        if user_input.lower() == 'exit': 
-            print("Exiting...")
-            break
-        models = user_input.split()
-        if len(models) != 2:  
-            print("Please enter exactly two models.")
-            continue
-        compare_models(models[0], models[1])  
+    print()
+    print("Comparing models")
+    for model in models:
+        compare_models("copilot", model)
 
     
 
