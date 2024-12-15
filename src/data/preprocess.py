@@ -34,13 +34,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--remove-no-docs", dest="remove_no_docs", action="store_true")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--input", type=Path, required=True)
     args = parser.parse_args()
 
-    if not get_raw_data_path().exists():
-        raise FileNotFoundError(
-            f"The file {get_raw_data_path().name} does not exist, please download the data first and put it the `/data` folder.")
-
-    df = pd.read_json(get_raw_data_path(), lines=True)
+    df = pd.read_json(args.input, lines=True)
 
     df = preprocess(df, remove_no_docs=args.remove_no_docs)
     output = args.output if args.output else util.data_dir().joinpath("function_definitions_preprocessed.json")
