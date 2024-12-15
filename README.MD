@@ -1,3 +1,6 @@
+# Download folder 
+Get all necessary files from the following link: [HERE](https://usi365-my.sharepoint.com/:f:/g/personal/alberj_usi_ch/EhpCa0rGW1BOrMcokjmBhg4B9WY5TPFzjHpybwH0y8-hkw?e=nFJqio)
+
 # Set up the environment
 Create a virtual environment:
 ```bash
@@ -74,8 +77,8 @@ python src/LLM/LLM_train.py --model "all" --baseline --sample=1000
 ```
 # Models download 
 The models can be downloaded from the following links:
-- [135m](https://1drv.ms/u/s!AjZv2fgaLt2FyKU_6pirCIoG5S-CWQ?e=MqcmZP)
-- [360m](ADD link)
+- [135m](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EQ3mZPFuUCxPv_c69mybHfMB7T66wDzoHYvNdtfbHcDI2w?e=E5esQB)
+- [360m]()
 - [1.7b](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/Ecn0xTQP00ROuE2lEt4o5R0BGFo7gFlfEgGlUKQEY2FMCA?e=dS60HK)
 
 # Evaluate
