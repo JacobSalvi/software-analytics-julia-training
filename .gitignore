@@ -170,3 +170,5 @@ cython_debug/
 data/fd.json
 data/fd_parsed.json
 benchmark/.DS_Store
+
+*_results_jl.json

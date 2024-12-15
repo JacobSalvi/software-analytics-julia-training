@@ -114,7 +114,11 @@ def compare_models(model_1, model_2):
 
 def main():
     arguments = argparse.ArgumentParser()
-    arguments.add_argument("--specific_models", nargs='*', type=str, help="Optional list of specific models to analyze")
+    arguments.add_argument("--specific_models",
+                           nargs='*',
+                           type=str,
+                           choices=["135m", "360m", "1.7b"],
+                           help="Optional list of specific models to analyze.")
     args = arguments.parse_args()
 
     models = ["135m", "360m"]
