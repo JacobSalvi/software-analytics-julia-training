@@ -40,9 +40,7 @@ Afterwards it is necessary to scrape and parse the data to produce a 'json' file
 ```bash
 python3 src/dataset/parser.py
 ```
-
 The data is provided and can be downloaded from [HERE](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EXbaGNS1xH9BiNFuXBDGbGoBEvVAy8DZfdT_SrclCmaLNg?e=FNkBos)
-
 
 # Pre-Process the data 
 The raw Data is expected to be in the `data` directory. The name of the file is expected to be `fd.json`
@@ -88,8 +86,8 @@ python src/LLM/LLM_train.py --model "all" --sample=1000
 
 # Models download 
 The models can be downloaded from the following links:
-- [135m](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EQ3mZPFuUCxPv_c69mybHfMB7T66wDzoHYvNdtfbHcDI2w?e=E5esQB)
-- [360m]()
+- [135m](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EZ3fNI0Z_jpEosYLBCz479QBcXO91B7jp3XwH89cMb1fzw?e=aDTIvz)
+- [360m](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EfsD112mlIxNv72n6iinlFABDycLrmQ6BGHMdjHMr5962Q?e=lmJfGs)
 - [1.7b](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/Ecn0xTQP00ROuE2lEt4o5R0BGFo7gFlfEgGlUKQEY2FMCA?e=dS60HK)
 
 IMPORTANT: Only models trained with docstring and without internal comments are available for download. (thus containing everything)
