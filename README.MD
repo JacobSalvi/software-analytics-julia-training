@@ -142,5 +142,5 @@ The results are stored in a json file named $MODELNAME_results_jl.json.
 Run the statistical.py to get the efficiency of the models on MultiPl-E benchmark and some statistics.
 
 ```bash
-python src/statistical.py --specific_models 135m 360m
+python src/statistical_test/statistical.py --specific_models 135m 360m 1-7B
 ```

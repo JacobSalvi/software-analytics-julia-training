@@ -5,11 +5,14 @@ import matplotlib.pyplot as plt
 from statsmodels.stats.contingency_tables import mcnemar
 from pathlib import Path
 
+from pathlib import Path
+
 def construct_file_path(file_name):
-    base_dir = Path(__file__).parent.parent
-    results_dir = base_dir / "benchmark" / "results"
+    base_dir = Path(__file__).resolve().parents[2] 
+    results_dir = base_dir / "benchmark"    
     file_path = results_dir / file_name
     return file_path
+
 
 def read_results(file):
     file_path = construct_file_path(file)
@@ -84,8 +87,15 @@ def efficiency_of_models(models):
 
 def compare_models(model_1, model_2):
 
-    model_1_file = construct_file_path(f"{model_1}_results_jl.json")
-    model_2_file = construct_file_path(f"{model_2}_results_jl.json")
+    
+    if model_1 == "copilot":
+        model_1_file = construct_file_path("copilot_multiple_predictions.json")
+    else :
+        model_1_file = construct_file_path(f"{model_1}_results_jl.json")
+    if model_2 == "copilot" :
+        model_2_file = construct_file_path("copilot_multiple_predictions.json")
+    else :
+        model_2_file = construct_file_path(f"{model_2}_results_jl.json")
     model_1_results = read_results(model_1_file)
     model_2_results = read_results(model_2_file)
 
@@ -104,16 +114,16 @@ def main():
     arguments.add_argument("--specific_models",
                            nargs='*',
                            type=str,
-                           choices=["135m", "360m", "1.7b"],
+                           choices=["135m", "360m", "1-7B"],
                            help="Optional list of specific models to analyze.")
     args = arguments.parse_args()
 
     if args.specific_models:
         models = args.specific_models
     else:
-        models = ["135m", "360m", "1.7b"]
+        models = ["135m", "360m", "1-7B"]
 
-    copilot_file = construct_file_path("copilot_results_jl.json")
+    copilot_file = "copilot_multiple_predictions.json"
 
     for model in models:
         file = f"{model}_results_jl.json"
@@ -137,9 +147,10 @@ def main():
         print(f"Results for {model}:")
         mcnemartest(n_11, n_10, n_01, n_00)
 
-    graphs(models, copilot_file)
+    
     print("Calculating the efficiency of the models specified")
     efficiency_of_models(models)
+    graphs(models, copilot_file)
 
     while True:
         print("Enter the 2 models you want to compare (or type 'exit' to quit):")
