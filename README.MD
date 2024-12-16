@@ -9,6 +9,8 @@ Create a virtual environment:
 python3 -m venv .venv
 ```
 
+To be noted that we used python3.12.
+
 Source the environment:
 ```bash
 sourche .venv/bin/activawe
@@ -112,7 +114,7 @@ produced by the ./generate.sh script.
 
 
 ```bash
-python3 src/utils/post_process --input-dir ./results
+python3 src/utils/post_processing.py --input-dir ./results
 ```
 
 
@@ -171,5 +173,5 @@ The results are stored in a json file named $MODELNAME_results_jl.json.
 Run the test.py in benchmark to get the efficiency of the models on MultiPl-E benchmark and some statistics.
 
 ```bash
-python src/statistical.py
+python src/statistical_test/statistical.py
 ```
