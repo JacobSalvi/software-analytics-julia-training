@@ -3,16 +3,19 @@ Get all necessary files from the following link: [HERE](https://usi365-my.sharep
 
 IMPORTANT: Only models trained with docstring and without internal comments are available for download. (thus containing everything)
 
+
 # Set up the environment
 Create a virtual environment:
 ```bash
 python3 -m venv .venv
 ```
+Please use **python 3.12** or higher
 
 Source the environment:
 ```bash
 sourche .venv/bin/activawe
 ```
+
 
 Source the environment on the server:
 ```bash
