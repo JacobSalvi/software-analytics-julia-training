@@ -1,3 +1,4 @@
+import itertools
 import os
 import pandas as pd
 import argparse
@@ -119,6 +120,25 @@ def compare_models(model_1, model_2):
     effect_size(correct_1, failed_1, correct_2, failed_2)
 
 
+def analyse_models(model_1, model_2):
+    model_1_file = f"{model_1}_results_jl.json"
+    model_2_file = f"{model_2}_results_jl.json"
+
+    model_results = read_results(model_1_file)
+    copilot_results = read_results(model_2_file)
+
+    n_11 = sum((model_results & copilot_results))
+    n_10 = sum((model_results & ~copilot_results))
+    n_01 = sum((~model_results & copilot_results))
+    n_00 = sum((~model_results & ~copilot_results))
+
+    print()
+    print(f"T test between {model_1} and {model_2}")
+    mcnemartest(n_11, n_10, n_01, n_00)
+
+    compare_models(model_1, model_2)
+
+
 def main():
     arguments = argparse.ArgumentParser()
     arguments.add_argument("--specific_models",
@@ -172,6 +192,13 @@ def main():
     print("Comparing models")
     for model in models:
         compare_models("copilot", model)
+
+
+    # compare between models
+    models = ["1-7B", "360m", "135m"]
+    pairs = list(itertools.combinations(models, 2))
+    for m1, m2 in pairs:
+        analyse_models(m1, m2)
 
     
 
