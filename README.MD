@@ -5,11 +5,6 @@ It allows users to scrape, preprocess, train, and evaluate language models of va
 The system includes post-processing, benchmarking, and a chatbot UI for interactive conversations.
 <img src="gitData/chat-bot.png" alt="chat bot example" width="720" height="350">
 
-# Download folder 
-Get all necessary files from the following link: [HERE](https://usi365-my.sharepoint.com/:f:/g/personal/alberj_usi_ch/EhpCa0rGW1BOrMcokjmBhg4B9WY5TPFzjHpybwH0y8-hkw?e=nFJqio)
-
-IMPORTANT: Only models trained with docstring and without internal comments are available for download. 
-
 
 # Set up the environment
 Create a virtual environment:
@@ -52,11 +47,9 @@ Afterwards it is necessary to scrape and parse the data to produce a 'json' file
 ```bash
 python3 src/dataset/parser.py
 ```
-The data is provided and can be downloaded from [HERE](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EXbaGNS1xH9BiNFuXBDGbGoBEvVAy8DZfdT_SrclCmaLNg?e=FNkBos)
 
 # Pre-Process the data 
 The raw Data is expected to be in the `data` directory. The name of the file is expected to be `fd.json`
-Download the raw data from [HERE](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EXbaGNS1xH9BiNFuXBDGbGoBEvVAy8DZfdT_SrclCmaLNg?e=FNkBos)
 
 The data is pre-processed using the following command, you need to run this command before training the model.
 ```bash
@@ -95,14 +88,6 @@ python src/LLM/LLM_train.py --model "all"
 ```bash
 python src/LLM/LLM_train.py --model "all" --sample=1000
 ```
-
-# Models download 
-The models can be downloaded from the following links:
-- [135m](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EZ3fNI0Z_jpEosYLBCz479QBcXO91B7jp3XwH89cMb1fzw?e=aDTIvz)
-- [360m](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/EfsD112mlIxNv72n6iinlFABDycLrmQ6BGHMdjHMr5962Q?e=lmJfGs)
-- [1.7b](https://usi365-my.sharepoint.com/:u:/g/personal/alberj_usi_ch/Ecn0xTQP00ROuE2lEt4o5R0BGFo7gFlfEgGlUKQEY2FMCA?e=dS60HK)
-
-IMPORTANT: Only models trained with docstring and without internal comments are available for download. (thus containing everything)
 
 # Post processing
 Before evaluating the models they should be post processed.
