@@ -1,7 +1,14 @@
+
+# Julia Chat bot AI
+The Julia Chatbot AI is a machine-learning-based chatbot trained on GitHub repositories of Julia to generate and understand Julia code. 
+It allows users to scrape, preprocess, train, and evaluate language models of various sizes (135m, 360m, 1.7b). 
+The system includes post-processing, benchmarking, and a chatbot UI for interactive conversations.
+<img src="gitData/chat-bot.png" alt="chat bot example" width="720" height="350">
+
 # Download folder 
 Get all necessary files from the following link: [HERE](https://usi365-my.sharepoint.com/:f:/g/personal/alberj_usi_ch/EhpCa0rGW1BOrMcokjmBhg4B9WY5TPFzjHpybwH0y8-hkw?e=nFJqio)
 
-IMPORTANT: Only models trained with docstring and without internal comments are available for download. (thus containing everything)
+IMPORTANT: Only models trained with docstring and without internal comments are available for download. 
 
 
 # Set up the environment
